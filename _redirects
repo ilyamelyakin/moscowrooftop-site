@@ -1,0 +1,5 @@
+# Cloudflare Pages path redirects.
+# Domain redirects like www -> apex are not handled here by Pages _redirects.
+# Configure them in Cloudflare after connecting the custom domain.
+
+/index.html / 301

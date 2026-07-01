@@ -1,0 +1,23 @@
+# Cloudflare Pages custom headers.
+# Keep CSP out of this file for now: analytics scripts are configured in script.js.
+
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+/assets/*
+  Cache-Control: public, max-age=2592000
+
+/*.css
+  Cache-Control: public, max-age=2592000
+
+/*.js
+  Cache-Control: public, max-age=2592000
+
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex
+
+https://:branch.:project.pages.dev/*
+  X-Robots-Tag: noindex
