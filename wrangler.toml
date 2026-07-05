@@ -1,8 +1,10 @@
 name = "moscowrooftop-site"
+main = "src/index.js"
 compatibility_date = "2026-07-05"
 
 [assets]
 directory = "."
+binding = "ASSETS"
 
 [[routes]]
 pattern = "moscowrooftop.ru"

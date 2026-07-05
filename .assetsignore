@@ -5,6 +5,7 @@
 README.md
 wrangler.toml
 ops/
+src/
 
 *.MOV
 *.mov
