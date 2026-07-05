@@ -28,6 +28,18 @@ export default {
       assetUrl.pathname = `${assetUrl.pathname}/index.html`;
     }
 
-    return env.ASSETS.fetch(new Request(assetUrl.toString(), request));
+    const response = await env.ASSETS.fetch(new Request(assetUrl.toString(), request));
+
+    if (url.hostname.endsWith(".workers.dev")) {
+      const headers = new Headers(response.headers);
+      headers.set("X-Robots-Tag", "noindex");
+      return new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers,
+      });
+    }
+
+    return response;
   },
 };
