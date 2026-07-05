@@ -14,8 +14,8 @@ export default {
       return Response.redirect(url.toString(), 301);
     }
 
-    if (url.pathname === "/index.html") {
-      url.pathname = "/";
+    if (url.pathname.endsWith("/index.html")) {
+      url.pathname = url.pathname.slice(0, -"index.html".length) || "/";
       return Response.redirect(url.toString(), 301);
     }
 

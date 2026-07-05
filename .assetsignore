@@ -4,6 +4,7 @@
 .assetsignore
 README.md
 wrangler.toml
+_redirects
 ops/
 src/
 

@@ -6,6 +6,7 @@ compatibility_date = "2026-07-05"
 directory = "."
 binding = "ASSETS"
 run_worker_first = true
+html_handling = "none"
 
 [[routes]]
 pattern = "moscowrooftop.ru"
