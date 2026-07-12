@@ -709,6 +709,29 @@ h1 {
   padding-top: 118px;
 }
 
+.breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: var(--container);
+  margin: 0 auto 14px;
+  color: var(--soft);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.breadcrumbs a {
+  color: var(--muted);
+}
+
+.breadcrumbs a:hover {
+  color: var(--gold);
+}
+
+.breadcrumbs [aria-current="page"] {
+  color: rgba(255, 248, 236, 0.78);
+}
+
 .page-hero {
   position: relative;
   width: var(--container);

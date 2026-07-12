@@ -14,6 +14,52 @@
     <link rel="canonical" href="https://moscowrooftop.ru/svidanie-na-kryshe/" />
     <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="../styles.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Главная",
+                "item": "https://moscowrooftop.ru/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Свидание на крыше",
+                "item": "https://moscowrooftop.ru/svidanie-na-kryshe/"
+              }
+            ]
+          },
+          {
+            "@type": "Service",
+            "name": "Свидание на крыше в Москве",
+            "serviceType": "Прогулка по крыше для двоих",
+            "url": "https://moscowrooftop.ru/svidanie-na-kryshe/",
+            "areaServed": {
+              "@type": "City",
+              "name": "Москва"
+            },
+            "provider": {
+              "@type": "Organization",
+              "name": "Moscow Rooftop",
+              "url": "https://moscowrooftop.ru/"
+            },
+            "offers": {
+              "@type": "Offer",
+              "price": "2000",
+              "priceCurrency": "RUB",
+              "availability": "https://schema.org/InStock",
+              "url": "https://moscowrooftop.ru/svidanie-na-kryshe/"
+            }
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <header class="site-header" aria-label="Главная навигация">
@@ -27,6 +73,9 @@
     </header>
 
     <main class="inner-page">
+      <nav class="breadcrumbs" aria-label="Хлебные крошки">
+        <a href="../">Главная</a><span aria-hidden="true">/</span><span aria-current="page">Свидание на крыше</span>
+      </nav>
       <section class="page-hero">
         <img src="../assets/roof-2.jpg" alt="Свидание на крыше в Москве" />
         <div class="page-hero-content">

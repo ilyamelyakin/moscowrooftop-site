@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Экскурсии по крышам Москвы | Запись через Telegram</title>
+    <title>Экскурсии по крышам Москвы — от 2000 ₽, 1 час | Moscow Rooftop</title>
     <meta name="description" content="Экскурсии по крышам Москвы: прогулка 1 час, виды на город, закаты и фотосессии. Цены от 2000 руб., актуальная запись через Telegram-бота." />
     <meta name="robots" content="index, follow" />
     <meta property="og:type" content="website" />
@@ -14,6 +14,52 @@
     <link rel="canonical" href="https://moscowrooftop.ru/ekskursii-po-krysham-moskvy/" />
     <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="../styles.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Главная",
+                "item": "https://moscowrooftop.ru/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Экскурсии по крышам Москвы",
+                "item": "https://moscowrooftop.ru/ekskursii-po-krysham-moskvy/"
+              }
+            ]
+          },
+          {
+            "@type": "Service",
+            "name": "Экскурсии по крышам Москвы",
+            "serviceType": "Экскурсия и прогулка по крыше",
+            "url": "https://moscowrooftop.ru/ekskursii-po-krysham-moskvy/",
+            "areaServed": {
+              "@type": "City",
+              "name": "Москва"
+            },
+            "provider": {
+              "@type": "Organization",
+              "name": "Moscow Rooftop",
+              "url": "https://moscowrooftop.ru/"
+            },
+            "offers": {
+              "@type": "Offer",
+              "price": "2000",
+              "priceCurrency": "RUB",
+              "availability": "https://schema.org/InStock",
+              "url": "https://moscowrooftop.ru/ekskursii-po-krysham-moskvy/"
+            }
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <header class="site-header" aria-label="Главная навигация">
@@ -27,6 +73,9 @@
     </header>
 
     <main class="inner-page">
+      <nav class="breadcrumbs" aria-label="Хлебные крошки">
+        <a href="../">Главная</a><span aria-hidden="true">/</span><span aria-current="page">Экскурсии по крышам Москвы</span>
+      </nav>
       <section class="page-hero">
         <img src="../assets/hero-fallback.jpg?v=20260518" alt="Экскурсии по крышам Москвы" />
         <div class="page-hero-content">
