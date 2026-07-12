@@ -1,11 +1,16 @@
-const YM_COUNTER_ID = 'YOUR_YM_COUNTER_ID';
-const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX';
+const YM_COUNTER_ID = '110631938';
+const GA_MEASUREMENT_ID = 'G-98JBGFFDDG';
 
 const TELEGRAM_BOT_URL = 'https://t.me/MoscowRoofTopBot';
 const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
 const UTM_STORAGE_KEY = 'moscow_rooftop_utm';
 const PLACEHOLDER_YM_ID = 'YOUR_YM_COUNTER_ID';
 const PLACEHOLDER_GA_ID = 'G-XXXXXXXXXX';
+const ANALYTICS_HOSTS = new Set(['moscowrooftop.ru', 'www.moscowrooftop.ru']);
+
+function isAnalyticsHost() {
+  return ANALYTICS_HOSTS.has(window.location.hostname);
+}
 
 function isRealYMId() {
   return Boolean(YM_COUNTER_ID && YM_COUNTER_ID !== PLACEHOLDER_YM_ID);
@@ -16,7 +21,7 @@ function isRealGAId() {
 }
 
 function initYandexMetrika() {
-  if (!isRealYMId() || typeof ym === 'function') {
+  if (!isAnalyticsHost() || !isRealYMId() || typeof ym === 'function') {
     return;
   }
 
@@ -32,7 +37,13 @@ function initYandexMetrika() {
     k.async = 1;
     k.src = r;
     a.parentNode.insertBefore(k, a);
-  })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js', 'ym');
+  })(
+    window,
+    document,
+    'script',
+    `https://mc.yandex.ru/metrika/tag.js?id=${encodeURIComponent(YM_COUNTER_ID)}`,
+    'ym'
+  );
 
   ym(YM_COUNTER_ID, 'init', {
     clickmap: true,
@@ -43,7 +54,7 @@ function initYandexMetrika() {
 }
 
 function initGoogleAnalytics() {
-  if (!isRealGAId() || typeof gtag === 'function') {
+  if (!isAnalyticsHost() || !isRealGAId() || typeof gtag === 'function') {
     return;
   }
 
@@ -62,13 +73,17 @@ function initGoogleAnalytics() {
 }
 
 function trackYMGoal(goalName, params = {}) {
-  if (typeof ym === 'function' && YM_COUNTER_ID !== PLACEHOLDER_YM_ID) {
+  if (isAnalyticsHost() && typeof ym === 'function' && YM_COUNTER_ID !== PLACEHOLDER_YM_ID) {
     ym(YM_COUNTER_ID, 'reachGoal', goalName, params);
   }
 }
 
 function trackGAEvent(eventName, params = {}) {
-  if (typeof gtag === 'function' && GA_MEASUREMENT_ID !== PLACEHOLDER_GA_ID) {
+  if (
+    isAnalyticsHost() &&
+    typeof gtag === 'function' &&
+    GA_MEASUREMENT_ID !== PLACEHOLDER_GA_ID
+  ) {
     gtag('event', eventName, params);
   }
 }
