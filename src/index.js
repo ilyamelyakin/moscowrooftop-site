@@ -19,6 +19,10 @@ export default {
       return Response.redirect(url.toString(), 301);
     }
 
+    if (url.pathname === "/bot" || url.pathname === "/bot/") {
+      return Response.redirect("https://t.me/MoscowRoofTopBot?start=instagram", 302);
+    }
+
     const assetUrl = new URL(request.url);
     const lastSegment = assetUrl.pathname.split("/").pop();
 

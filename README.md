@@ -162,4 +162,4 @@ https://t.me/MoscowRoofTopBot?start=site_hero_instagram
 - Build output directory: `/`
 - Production branch: `main`
 
-Файлы `_headers` и `_redirects` лежат в корне проекта, то есть в build output directory. В `_redirects` добавлен только path-redirect `/index.html -> /`, потому что доменные редиректы уровня `www -> moscowrooftop.ru` Cloudflare Pages через `_redirects` не поддерживает. После подключения домена настройте редирект `www.moscowrooftop.ru -> moscowrooftop.ru` в интерфейсе Cloudflare.
+Файлы `_headers` и `_redirects` лежат в корне проекта, то есть в build output directory. В `_redirects` хранится короткий переход `/bot` в Telegram. Доменные и HTTP-редиректы обрабатываются существующим Cloudflare Worker.
