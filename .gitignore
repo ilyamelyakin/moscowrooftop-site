@@ -13,6 +13,7 @@
 # Local/editor noise.
 .idea/
 .vscode/
+.wrangler/
 
 # VPS/nginx operational artifacts are intentionally not part of the Pages site.
 ops/
