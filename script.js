@@ -250,6 +250,7 @@ function getDestination(goalName) {
     instagram_click: 'instagram',
     tiktok_click: 'tiktok',
     phone_click: 'phone',
+    lead_form_open: 'lead_form',
   };
 
   return destinations[goalName] || '';
@@ -412,6 +413,234 @@ function bindVideoControls() {
   });
 }
 
+function getMoscowDateValue() {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Moscow',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function isValidContact(method, value) {
+  const normalized = value.trim();
+  const phoneDigits = normalized.replace(/\D/g, '');
+
+  if (method === 'whatsapp') {
+    return phoneDigits.length >= 10 && phoneDigits.length <= 15;
+  }
+
+  if (normalized.startsWith('@')) {
+    return /^@[a-zA-Z0-9_]{5,32}$/.test(normalized);
+  }
+
+  return phoneDigits.length >= 10 && phoneDigits.length <= 15;
+}
+
+function bindLeadForm() {
+  const form = document.getElementById('lead-form');
+
+  if (!form) {
+    return;
+  }
+
+  const dateInput = form.elements.date;
+  const peopleInput = form.elements.people;
+  const contactInput = form.elements.contact;
+  const contactLabel = document.getElementById('contact-label');
+  const status = document.getElementById('lead-status');
+  const submitButton = form.querySelector('.lead-submit');
+  const submitLabel = submitButton?.querySelector('.submit-label');
+  const submitLoading = submitButton?.querySelector('.submit-loading');
+  const successPanel = document.getElementById('lead-success');
+  const newLeadButton = document.getElementById('new-lead-button');
+  let hasTrackedStart = false;
+
+  dateInput.min = getMoscowDateValue();
+
+  const getContactMethod = () =>
+    form.querySelector('input[name="contactMethod"]:checked')?.value || 'telegram';
+
+  const updateContactField = () => {
+    const method = getContactMethod();
+    const isWhatsApp = method === 'whatsapp';
+
+    contactLabel.textContent = isWhatsApp ? 'Номер WhatsApp' : 'Аккаунт в Telegram или телефон';
+    contactInput.placeholder = isWhatsApp ? '+7 999 000-00-00' : '@username или +7 999 000-00-00';
+    contactInput.autocomplete = isWhatsApp ? 'tel' : 'username';
+    contactInput.inputMode = isWhatsApp ? 'tel' : 'text';
+    contactInput.removeAttribute('aria-invalid');
+  };
+
+  const setError = (input, message) => {
+    status.textContent = message;
+    input?.setAttribute('aria-invalid', 'true');
+    input?.focus();
+  };
+
+  const clearErrors = () => {
+    status.textContent = '';
+    form.querySelectorAll('[aria-invalid="true"]').forEach((input) => {
+      input.removeAttribute('aria-invalid');
+    });
+  };
+
+  const setSubmitting = (isSubmitting) => {
+    if (!submitButton) {
+      return;
+    }
+
+    submitButton.disabled = isSubmitting;
+    submitLabel.hidden = isSubmitting;
+    submitLoading.hidden = !isSubmitting;
+  };
+
+  form.addEventListener('focusin', () => {
+    if (hasTrackedStart) {
+      return;
+    }
+
+    hasTrackedStart = true;
+    trackEvent('lead_form_start', { location: 'booking' });
+  });
+
+  form.querySelectorAll('input[name="contactMethod"]').forEach((input) => {
+    input.addEventListener('change', updateContactField);
+  });
+
+  form.querySelectorAll('.stepper-button').forEach((button) => {
+    button.addEventListener('click', () => {
+      const step = Number(button.dataset.step || 0);
+      const current = Number(peopleInput.value || 1);
+      const next = Math.min(30, Math.max(1, current + step));
+
+      peopleInput.value = String(next);
+      peopleInput.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+  });
+
+  form.addEventListener('input', (event) => {
+    event.target?.removeAttribute?.('aria-invalid');
+    status.textContent = '';
+  });
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearErrors();
+
+    const formData = new FormData(form);
+    const lead = {
+      date: String(formData.get('date') || ''),
+      time: String(formData.get('time') || ''),
+      people: Number(formData.get('people')),
+      name: String(formData.get('name') || '').trim(),
+      contactMethod: String(formData.get('contactMethod') || ''),
+      contact: String(formData.get('contact') || '').trim(),
+      consent: formData.get('consent') === 'on',
+      website: String(formData.get('website') || ''),
+      page: window.location.pathname,
+      referrer: document.referrer,
+      utm: getStoredUTMParams(),
+    };
+
+    if (!lead.date || lead.date < dateInput.min) {
+      setError(dateInput, 'Выберите сегодняшнюю или будущую дату.');
+      return;
+    }
+
+    if (!lead.time) {
+      setError(form.elements.time, 'Выберите удобное время.');
+      return;
+    }
+
+    if (!Number.isInteger(lead.people) || lead.people < 1 || lead.people > 30) {
+      setError(peopleInput, 'Укажите количество человек от 1 до 30.');
+      return;
+    }
+
+    if (lead.name.length < 2) {
+      setError(form.elements.name, 'Укажите ваше имя.');
+      return;
+    }
+
+    if (!isValidContact(lead.contactMethod, lead.contact)) {
+      const message = lead.contactMethod === 'whatsapp'
+        ? 'Укажите корректный номер WhatsApp.'
+        : 'Укажите @username в Telegram или номер телефона.';
+      setError(contactInput, message);
+      return;
+    }
+
+    if (!lead.consent) {
+      setError(form.elements.consent, 'Подтвердите согласие на обработку данных.');
+      return;
+    }
+
+    const analyticsParams = {
+      contact_method: lead.contactMethod,
+      party_size: lead.people,
+      location: 'booking',
+    };
+
+    trackEvent('lead_form_submit', analyticsParams);
+    setSubmitting(true);
+
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 12000);
+
+    try {
+      const response = await fetch('/api/lead', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(lead),
+        signal: controller.signal,
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || 'Не удалось отправить заявку. Попробуйте ещё раз.');
+      }
+
+      trackEvent('lead_form_success', analyticsParams);
+      form.hidden = true;
+      successPanel.hidden = false;
+      successPanel.focus?.();
+    } catch (error) {
+      const message = error.name === 'AbortError'
+        ? 'Сервер отвечает слишком долго. Попробуйте ещё раз.'
+        : error.message || 'Не удалось отправить заявку. Попробуйте ещё раз.';
+
+      status.textContent = message;
+      trackEvent('lead_form_error', {
+        ...analyticsParams,
+        error_type: error.name === 'AbortError' ? 'timeout' : 'request_failed',
+      });
+    } finally {
+      window.clearTimeout(timeoutId);
+      setSubmitting(false);
+    }
+  });
+
+  newLeadButton?.addEventListener('click', () => {
+    form.reset();
+    peopleInput.value = '2';
+    dateInput.min = getMoscowDateValue();
+    updateContactField();
+    clearErrors();
+    successPanel.hidden = true;
+    form.hidden = false;
+    hasTrackedStart = false;
+    dateInput.focus();
+  });
+
+  updateContactField();
+}
+
 function bindFAQ() {
   const trackedQuestions = new Set();
 
@@ -448,6 +677,7 @@ function initSite() {
   bindGalleryView();
   bindScrollDepth();
   bindVideoControls();
+  bindLeadForm();
   bindFAQ();
 }
 
