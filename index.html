@@ -35,7 +35,7 @@
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=20260714-v3" />
     <link rel="manifest" href="/site.webmanifest?v=20260714-v3" />
     <link rel="preload" as="image" href="assets/hero-fallback.jpg?v=20260518" />
-    <link rel="stylesheet" href="styles.css?v=20260714-booking-v2" />
+    <link rel="stylesheet" href="styles.css?v=20260715-catalog" />
 
     <script type="application/ld+json">
       {
@@ -88,7 +88,7 @@
         <span>moscowrooftop.ru</span>
       </a>
       <nav class="header-nav" aria-label="Разделы сайта">
-        <a href="kryshi-moskvy/">Крыши Москвы</a>
+        <a href="#catalog">Каталог крыш</a>
         <a href="ekskursii-po-krysham-moskvy/">Экскурсии</a>
         <a href="svidanie-na-kryshe/">Свидание</a>
         <a href="fotosessiya-na-kryshe-moskva/">Фотосессия</a>
@@ -268,6 +268,221 @@
         </div>
       </section>
 
+      <section class="roof-catalog section" id="catalog" aria-labelledby="catalog-title">
+        <div class="section-heading">
+          <p class="eyebrow">Каталог</p>
+          <h2 id="catalog-title">Крыши Москвы</h2>
+          <p>Выберите подходящий вид и формат прогулки. Точный адрес и детали встречи мы сообщим после подтверждения записи.</p>
+        </div>
+
+        <div class="roof-catalog-grid">
+          <article class="roof-card" data-roof-id="fili-city" data-roof-name="Москва-Сити с высоты">
+            <button class="roof-card-media roof-preview" type="button" data-roof-id="fili-city" aria-label="Посмотреть фотографии локации Москва-Сити с высоты">
+              <picture>
+                <source
+                  type="image/webp"
+                  srcset="assets/locations/fili-moscow-city-05-640.webp 480w, assets/locations/fili-moscow-city-05-1280.webp 960w"
+                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                />
+                <img
+                  src="assets/locations/fili-moscow-city-05-640.jpg"
+                  srcset="assets/locations/fili-moscow-city-05-640.jpg 480w, assets/locations/fili-moscow-city-05-1280.jpg 960w"
+                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  width="960"
+                  height="1280"
+                  alt="Вечерняя панорама башен Москва-Сити с большой высоты"
+                  loading="lazy"
+                />
+              </picture>
+              <span class="roof-photo-count">5 фото</span>
+            </button>
+            <div class="roof-card-body">
+              <p class="roof-location">Фили</p>
+              <h3>Москва-Сити с высоты</h3>
+              <p>Панорама башен делового центра, Москва-реки и вечерних огней с большой высоты.</p>
+              <ul class="roof-tags" aria-label="Подходящие форматы">
+                <li>Вечер</li>
+                <li>Свидание</li>
+                <li>Фотосессия</li>
+              </ul>
+              <div class="roof-card-actions">
+                <button class="btn btn-primary roof-select-button" type="button" data-roof-id="fili-city">Выбрать крышу</button>
+                <button class="roof-gallery-button roof-preview" type="button" data-roof-id="fili-city">Смотреть фото</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="roof-card" data-roof-id="kurskaya-sunset" data-roof-name="Закат над историческим центром">
+            <button class="roof-card-media roof-preview" type="button" data-roof-id="kurskaya-sunset" aria-label="Посмотреть фотографии заката над историческим центром">
+              <picture>
+                <source
+                  type="image/webp"
+                  srcset="assets/locations/kurskaya-center-view-03-640.webp 480w, assets/locations/kurskaya-center-view-03-1280.webp 960w"
+                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                />
+                <img
+                  src="assets/locations/kurskaya-center-view-03-640.jpg"
+                  srcset="assets/locations/kurskaya-center-view-03-640.jpg 480w, assets/locations/kurskaya-center-view-03-1280.jpg 960w"
+                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  width="960"
+                  height="1280"
+                  alt="Оранжевый закат над высотками и крышами исторического центра Москвы"
+                  loading="lazy"
+                />
+              </picture>
+              <span class="roof-photo-count">4 фото</span>
+            </button>
+            <div class="roof-card-body">
+              <p class="roof-location">Курская</p>
+              <h3>Закат над историческим центром</h3>
+              <p>Высотки, купола и городские крыши в мягком вечернем свете.</p>
+              <ul class="roof-tags" aria-label="Подходящие форматы">
+                <li>Прогулка</li>
+                <li>Закат</li>
+                <li>Фотосессия</li>
+              </ul>
+              <div class="roof-card-actions">
+                <button class="btn btn-primary roof-select-button" type="button" data-roof-id="kurskaya-sunset">Выбрать крышу</button>
+                <button class="roof-gallery-button roof-preview" type="button" data-roof-id="kurskaya-sunset">Смотреть фото</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="roof-card" data-roof-id="marksistskaya-high-rise" data-roof-name="Высотка в закатном свете">
+            <button class="roof-card-media roof-preview" type="button" data-roof-id="marksistskaya-high-rise" aria-label="Посмотреть фотографию высотки в закатном свете">
+              <picture>
+                <source
+                  type="image/webp"
+                  srcset="assets/locations/marksistskaya-high-rise-01-640.webp 480w, assets/locations/marksistskaya-high-rise-01-1280.webp 960w"
+                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                />
+                <img
+                  src="assets/locations/marksistskaya-high-rise-01-640.jpg"
+                  srcset="assets/locations/marksistskaya-high-rise-01-640.jpg 480w, assets/locations/marksistskaya-high-rise-01-1280.jpg 960w"
+                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  width="960"
+                  height="1280"
+                  alt="Сталинская высотка и вечерний город под красным небом"
+                  loading="lazy"
+                />
+              </picture>
+              <span class="roof-photo-count">1 фото</span>
+            </button>
+            <div class="roof-card-body">
+              <p class="roof-location">Марксистская</p>
+              <h3>Высотка в закатном свете</h3>
+              <p>Выразительный силуэт сталинской высотки и огни вечернего центра.</p>
+              <ul class="roof-tags" aria-label="Подходящие форматы">
+                <li>Свидание</li>
+                <li>Закат</li>
+                <li>Фото</li>
+              </ul>
+              <div class="roof-card-actions">
+                <button class="btn btn-primary roof-select-button" type="button" data-roof-id="marksistskaya-high-rise">Выбрать крышу</button>
+                <button class="roof-gallery-button roof-preview" type="button" data-roof-id="marksistskaya-high-rise">Смотреть фото</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="roof-card" data-roof-id="rimskaya-skyline" data-roof-name="Высотка и Москва-Сити">
+            <button class="roof-card-media roof-preview" type="button" data-roof-id="rimskaya-skyline" aria-label="Посмотреть фотографии высотки и Москва-Сити">
+              <picture>
+                <source
+                  type="image/webp"
+                  srcset="assets/locations/rimskaya-city-sunset-01-640.webp 480w, assets/locations/rimskaya-city-sunset-01-1280.webp 960w"
+                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                />
+                <img
+                  src="assets/locations/rimskaya-city-sunset-01-640.jpg"
+                  srcset="assets/locations/rimskaya-city-sunset-01-640.jpg 480w, assets/locations/rimskaya-city-sunset-01-1280.jpg 960w"
+                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  width="960"
+                  height="1280"
+                  alt="Сталинская высотка на фоне башен Москва-Сити во время заката"
+                  loading="lazy"
+                />
+              </picture>
+              <span class="roof-photo-count">2 фото</span>
+            </button>
+            <div class="roof-card-body">
+              <p class="roof-location">Римская</p>
+              <h3>Высотка и Москва-Сити</h3>
+              <p>Классическая Москва на переднем плане и современный деловой центр вдали.</p>
+              <ul class="roof-tags" aria-label="Подходящие форматы">
+                <li>Прогулка</li>
+                <li>Закат</li>
+                <li>Свидание</li>
+              </ul>
+              <div class="roof-card-actions">
+                <button class="btn btn-primary roof-select-button" type="button" data-roof-id="rimskaya-skyline">Выбрать крышу</button>
+                <button class="roof-gallery-button roof-preview" type="button" data-roof-id="rimskaya-skyline">Смотреть фото</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="roof-card" data-roof-id="taganskaya-golden-hour" data-roof-name="Золотой час над центром">
+            <button class="roof-card-media roof-preview" type="button" data-roof-id="taganskaya-golden-hour" aria-label="Посмотреть фотографии золотого часа над центром">
+              <picture>
+                <source
+                  type="image/webp"
+                  srcset="assets/locations/taganskaya-golden-hour-03-640.webp 480w, assets/locations/taganskaya-golden-hour-03-1280.webp 960w"
+                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                />
+                <img
+                  src="assets/locations/taganskaya-golden-hour-03-640.jpg"
+                  srcset="assets/locations/taganskaya-golden-hour-03-640.jpg 480w, assets/locations/taganskaya-golden-hour-03-1280.jpg 960w"
+                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  width="960"
+                  height="1280"
+                  alt="Солнечный диск и силуэты центра Москвы в золотом вечернем свете"
+                  loading="lazy"
+                />
+              </picture>
+              <span class="roof-photo-count">3 фото</span>
+            </button>
+            <div class="roof-card-body">
+              <p class="roof-location">Таганская</p>
+              <h3>Золотой час над центром</h3>
+              <p>Тёплый свет, панорама центра и выразительные городские силуэты.</p>
+              <ul class="roof-tags" aria-label="Подходящие форматы">
+                <li>Прогулка</li>
+                <li>Закат</li>
+                <li>Фотосессия</li>
+              </ul>
+              <div class="roof-card-actions">
+                <button class="btn btn-primary roof-select-button" type="button" data-roof-id="taganskaya-golden-hour">Выбрать крышу</button>
+                <button class="roof-gallery-button roof-preview" type="button" data-roof-id="taganskaya-golden-hour">Смотреть фото</button>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <p class="roof-catalog-note">Фотографии показывают характер вида. Доступность конкретной локации зависит от даты, времени и погоды.</p>
+      </section>
+
+      <dialog class="roof-lightbox" id="roof-lightbox" aria-labelledby="roof-lightbox-title">
+        <div class="roof-lightbox-shell">
+          <header class="roof-lightbox-header">
+            <div>
+              <p class="eyebrow">Фотографии локации</p>
+              <h2 id="roof-lightbox-title">Крыша Москвы</h2>
+            </div>
+            <button class="roof-lightbox-close" type="button" aria-label="Закрыть просмотр" title="Закрыть">×</button>
+          </header>
+          <div class="roof-lightbox-stage">
+            <button class="roof-lightbox-control roof-lightbox-prev" type="button" aria-label="Предыдущая фотография" title="Предыдущая">←</button>
+            <figure>
+              <picture>
+                <source id="roof-lightbox-source" type="image/webp" />
+                <img id="roof-lightbox-image" src="assets/locations/fili-moscow-city-05-1280.jpg" width="960" height="1280" alt="" />
+              </picture>
+              <figcaption id="roof-lightbox-counter">1 из 1</figcaption>
+            </figure>
+            <button class="roof-lightbox-control roof-lightbox-next" type="button" aria-label="Следующая фотография" title="Следующая">→</button>
+          </div>
+        </div>
+      </dialog>
+
       <section class="booking section" id="booking">
         <div class="booking-panel">
           <div class="booking-copy">
@@ -306,8 +521,17 @@
             </a>
           </p>
 
+          <div class="selected-roof" id="selected-roof" role="status" aria-live="polite" hidden>
+            <div>
+              <span>Выбранная локация</span>
+              <strong id="selected-roof-name"></strong>
+            </div>
+            <a href="#catalog">Изменить выбор</a>
+          </div>
+
           <div class="lead-form-shell">
             <form class="lead-form" id="lead-form" novalidate>
+              <input id="lead-roof" name="roof" type="hidden" value="" />
               <div class="form-honeypot" aria-hidden="true">
                 <label for="lead-website">Сайт</label>
                 <input id="lead-website" name="website" type="text" tabindex="-1" autocomplete="off" />
@@ -518,6 +742,6 @@
       <span>Экскурсии по крышам Москвы</span>
     </footer>
 
-    <script src="script.js?v=20260714-booking-v2"></script>
+    <script src="script.js?v=20260715-catalog"></script>
   </body>
 </html>

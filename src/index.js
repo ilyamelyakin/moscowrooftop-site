@@ -90,6 +90,7 @@ function parseLead(payload) {
     name: cleanText(payload.name, 80),
     contactMethod: cleanText(payload.contactMethod, 12).toLowerCase(),
     contact: cleanText(payload.contact, 100),
+    roof: cleanText(payload.roof, 120),
     consent: payload.consent === true,
     website: cleanText(payload.website, 100),
     page: cleanText(payload.page, 160),
@@ -165,16 +166,20 @@ function formatLeadMessage(lead) {
   const sourceLine = sourceDetails.length
     ? `${source} (${sourceDetails.join(", ")})`
     : source;
-
-  return [
-    "<b>Новая заявка с сайта</b>",
-    "",
+  const bookingDetails = [
+    lead.roof && `<b>Локация:</b> ${escapeHtml(lead.roof)}`,
     `<b>Дата:</b> ${escapeHtml(formatDate(lead.date))}`,
     `<b>Время:</b> ${escapeHtml(lead.time)}`,
     `<b>Количество человек:</b> ${lead.people}`,
     `<b>Имя:</b> ${escapeHtml(lead.name)}`,
     `<b>Ответить в:</b> ${method}`,
     `<b>Контакт:</b> ${escapeHtml(lead.contact)}`,
+  ].filter(Boolean);
+
+  return [
+    "<b>Новая заявка с сайта</b>",
+    "",
+    ...bookingDetails,
     "",
     `<b>Источник:</b> ${escapeHtml(sourceLine)}`,
     `<b>Страница:</b> ${escapeHtml(lead.page || "/")}`,

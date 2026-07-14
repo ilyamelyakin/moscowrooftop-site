@@ -7,6 +7,49 @@ const UTM_STORAGE_KEY = 'moscow_rooftop_utm';
 const PLACEHOLDER_YM_ID = 'YOUR_YM_COUNTER_ID';
 const PLACEHOLDER_GA_ID = 'G-XXXXXXXXXX';
 const ANALYTICS_HOSTS = new Set(['moscowrooftop.ru', 'www.moscowrooftop.ru']);
+const ROOF_SELECTION_KEY = 'moscow_rooftop_selected_roof';
+const ROOF_GALLERIES = {
+  'fili-city': {
+    name: 'Москва-Сити с высоты',
+    images: [
+      { base: 'assets/locations/fili-moscow-city-05', alt: 'Панорама Москва-Сити и Москва-реки с большой высоты вечером' },
+      { base: 'assets/locations/fili-moscow-city-01', alt: 'Башни Москва-Сити и вечерний город за ограждением высокой площадки' },
+      { base: 'assets/locations/fili-moscow-city-02', alt: 'Подсвеченные башни Москва-Сити и изгиб Москва-реки' },
+      { base: 'assets/locations/fili-moscow-city-03', alt: 'Вечерний вид на небоскрёбы Москва-Сити' },
+      { base: 'assets/locations/fili-moscow-city-04', alt: 'Панорама делового центра Москвы после заката' },
+    ],
+  },
+  'kurskaya-sunset': {
+    name: 'Закат над историческим центром',
+    images: [
+      { base: 'assets/locations/kurskaya-center-view-03', alt: 'Оранжевый закат над высотками и крышами центра Москвы' },
+      { base: 'assets/locations/kurskaya-center-view-01', alt: 'Вечерняя панорама исторического центра Москвы' },
+      { base: 'assets/locations/kurskaya-center-view-02', alt: 'Подсвеченная сталинская высотка в вечернем городе' },
+      { base: 'assets/locations/kurskaya-center-view-04', alt: 'Купола, городские крыши и Москва-Сити вдалеке' },
+    ],
+  },
+  'marksistskaya-high-rise': {
+    name: 'Высотка в закатном свете',
+    images: [
+      { base: 'assets/locations/marksistskaya-high-rise-01', alt: 'Сталинская высотка и вечерний город под красным небом' },
+    ],
+  },
+  'rimskaya-skyline': {
+    name: 'Высотка и Москва-Сити',
+    images: [
+      { base: 'assets/locations/rimskaya-city-sunset-01', alt: 'Сталинская высотка на фоне Москва-Сити в золотом свете' },
+      { base: 'assets/locations/rimskaya-city-sunset-02', alt: 'Силуэт высотки и башен Москва-Сити на закате' },
+    ],
+  },
+  'taganskaya-golden-hour': {
+    name: 'Золотой час над центром',
+    images: [
+      { base: 'assets/locations/taganskaya-golden-hour-03', alt: 'Солнце и силуэты центра Москвы в золотом вечернем свете' },
+      { base: 'assets/locations/taganskaya-golden-hour-01', alt: 'Панорама центра Москвы в тёплом вечернем свете' },
+      { base: 'assets/locations/taganskaya-golden-hour-02', alt: 'Городские здания и высотка в лучах золотого часа' },
+    ],
+  },
+};
 
 function isAnalyticsHost() {
   return ANALYTICS_HOSTS.has(window.location.hostname);
@@ -336,6 +379,213 @@ function bindGalleryView() {
   checkGalleryPosition();
 }
 
+function bindRoofCatalog() {
+  const catalog = document.getElementById('catalog');
+  const form = document.getElementById('lead-form');
+  const roofInput = form?.elements.roof;
+
+  if (!catalog || !form || !roofInput) {
+    return;
+  }
+
+  const cards = [...catalog.querySelectorAll('.roof-card[data-roof-id]')];
+  const selectedPanel = document.getElementById('selected-roof');
+  const selectedName = document.getElementById('selected-roof-name');
+  const booking = document.getElementById('booking');
+  const dialog = document.getElementById('roof-lightbox');
+  const lightboxTitle = document.getElementById('roof-lightbox-title');
+  const lightboxSource = document.getElementById('roof-lightbox-source');
+  const lightboxImage = document.getElementById('roof-lightbox-image');
+  const lightboxCounter = document.getElementById('roof-lightbox-counter');
+  const closeButton = dialog?.querySelector('.roof-lightbox-close');
+  const previousButton = dialog?.querySelector('.roof-lightbox-prev');
+  const nextButton = dialog?.querySelector('.roof-lightbox-next');
+  let selectedRoofId = '';
+  let activeRoofId = '';
+  let activeImageIndex = 0;
+  let hasTrackedCatalogView = false;
+
+  const getCard = (roofId) => cards.find((card) => card.dataset.roofId === roofId);
+
+  const saveSelection = (roofId) => {
+    try {
+      sessionStorage.setItem(ROOF_SELECTION_KEY, roofId);
+    } catch (error) {
+      console.warn('[Catalog] Roof selection storage is unavailable', error);
+    }
+  };
+
+  const restoreSelection = () => {
+    try {
+      return sessionStorage.getItem(ROOF_SELECTION_KEY) || '';
+    } catch (error) {
+      console.warn('[Catalog] Roof selection storage is unavailable', error);
+      return '';
+    }
+  };
+
+  const applySelection = (roofId, { persist = true, scroll = false } = {}) => {
+    const card = getCard(roofId);
+
+    if (!card) {
+      return;
+    }
+
+    selectedRoofId = roofId;
+    roofInput.value = card.dataset.roofName || ROOF_GALLERIES[roofId]?.name || roofId;
+    roofInput.dataset.roofId = roofId;
+    selectedName.textContent = roofInput.value;
+    selectedPanel.hidden = false;
+
+    cards.forEach((item) => {
+      const isSelected = item === card;
+      item.classList.toggle('is-selected', isSelected);
+      item.querySelector('.roof-select-button')?.setAttribute('aria-pressed', String(isSelected));
+    });
+
+    if (persist) {
+      saveSelection(roofId);
+    }
+
+    if (scroll && booking) {
+      const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 'auto'
+        : 'smooth';
+      booking.scrollIntoView({ behavior, block: 'start' });
+    }
+  };
+
+  const updateLightbox = () => {
+    const gallery = ROOF_GALLERIES[activeRoofId];
+    const image = gallery?.images[activeImageIndex];
+
+    if (!gallery || !image || !lightboxImage || !lightboxSource) {
+      return;
+    }
+
+    lightboxTitle.textContent = gallery.name;
+    lightboxSource.srcset = `${image.base}-640.webp 480w, ${image.base}-1280.webp 960w`;
+    lightboxSource.sizes = '(max-width: 640px) calc(100vw - 110px), 760px';
+    lightboxImage.src = `${image.base}-1280.jpg`;
+    lightboxImage.srcset = `${image.base}-640.jpg 480w, ${image.base}-1280.jpg 960w`;
+    lightboxImage.sizes = '(max-width: 640px) calc(100vw - 110px), 760px';
+    lightboxImage.alt = image.alt;
+    lightboxCounter.textContent = `${activeImageIndex + 1} из ${gallery.images.length}`;
+
+    const hasMultipleImages = gallery.images.length > 1;
+    previousButton.hidden = !hasMultipleImages;
+    nextButton.hidden = !hasMultipleImages;
+  };
+
+  const changeLightboxImage = (direction) => {
+    const gallery = ROOF_GALLERIES[activeRoofId];
+
+    if (!gallery?.images.length) {
+      return;
+    }
+
+    activeImageIndex = (activeImageIndex + direction + gallery.images.length) % gallery.images.length;
+    updateLightbox();
+  };
+
+  const openLightbox = (roofId) => {
+    if (!dialog || !ROOF_GALLERIES[roofId]) {
+      return;
+    }
+
+    activeRoofId = roofId;
+    activeImageIndex = 0;
+    updateLightbox();
+
+    if (typeof dialog.showModal === 'function') {
+      dialog.showModal();
+    } else {
+      dialog.setAttribute('open', '');
+    }
+
+    trackEvent('roof_card_open', { roof_id: roofId, location: 'catalog' });
+  };
+
+  const closeLightbox = () => {
+    if (!dialog) {
+      return;
+    }
+
+    if (typeof dialog.close === 'function') {
+      dialog.close();
+    } else {
+      dialog.removeAttribute('open');
+    }
+  };
+
+  catalog.querySelectorAll('.roof-select-button').forEach((button) => {
+    button.setAttribute('aria-pressed', 'false');
+    button.addEventListener('click', () => {
+      const roofId = button.dataset.roofId || '';
+      applySelection(roofId, { scroll: true });
+      trackEvent('roof_booking_click', { roof_id: roofId, location: 'catalog' });
+    });
+  });
+
+  catalog.querySelectorAll('.roof-preview').forEach((button) => {
+    button.addEventListener('click', () => openLightbox(button.dataset.roofId || ''));
+  });
+
+  closeButton?.addEventListener('click', closeLightbox);
+  previousButton?.addEventListener('click', () => changeLightboxImage(-1));
+  nextButton?.addEventListener('click', () => changeLightboxImage(1));
+  dialog?.addEventListener('click', (event) => {
+    if (event.target === dialog) {
+      closeLightbox();
+    }
+  });
+  dialog?.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') {
+      changeLightboxImage(-1);
+    }
+    if (event.key === 'ArrowRight') {
+      changeLightboxImage(1);
+    }
+  });
+
+  form.addEventListener('reset', () => {
+    window.requestAnimationFrame(() => {
+      if (selectedRoofId) {
+        applySelection(selectedRoofId, { persist: false });
+      }
+    });
+  });
+
+  const trackCatalogView = () => {
+    if (hasTrackedCatalogView) {
+      return;
+    }
+
+    hasTrackedCatalogView = true;
+    trackEvent('roof_catalog_view', { section: 'catalog' });
+  };
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          trackCatalogView();
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.2 }
+    );
+    observer.observe(catalog);
+  } else {
+    trackCatalogView();
+  }
+
+  const restoredRoofId = restoreSelection();
+  if (getCard(restoredRoofId)) {
+    applySelection(restoredRoofId, { persist: false });
+  }
+}
+
 function bindScrollDepth() {
   const trackedDepth = {
     50: false,
@@ -450,6 +700,7 @@ function bindLeadForm() {
   const dateInput = form.elements.date;
   const peopleInput = form.elements.people;
   const contactInput = form.elements.contact;
+  const roofInput = form.elements.roof;
   const contactLabel = document.getElementById('contact-label');
   const status = document.getElementById('lead-status');
   const submitButton = form.querySelector('.lead-submit');
@@ -569,6 +820,7 @@ function bindLeadForm() {
       name: String(formData.get('name') || '').trim(),
       contactMethod: String(formData.get('contactMethod') || ''),
       contact: String(formData.get('contact') || '').trim(),
+      roof: String(formData.get('roof') || '').trim(),
       consent: formData.get('consent') === 'on',
       website: String(formData.get('website') || ''),
       page: window.location.pathname,
@@ -613,6 +865,7 @@ function bindLeadForm() {
       contact_method: lead.contactMethod,
       party_size: lead.people,
       location: 'booking',
+      roof_id: roofInput?.dataset.roofId || 'not_selected',
     };
 
     trackEvent('lead_form_submit', analyticsParams);
@@ -705,6 +958,7 @@ function initSite() {
   updateTelegramLinks();
   bindTrackedLinks();
   bindGalleryView();
+  bindRoofCatalog();
   bindScrollDepth();
   bindVideoControls();
   bindLeadForm();
