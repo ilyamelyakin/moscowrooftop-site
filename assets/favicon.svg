@@ -1,5 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="18" fill="#0b0a09"/>
-  <path d="M13 42 26 22l9 13 5-8 11 15H13Z" fill="#f6c56f"/>
-  <path d="M13 43h38" stroke="#fff8ec" stroke-width="3" stroke-linecap="round"/>
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Силуэт сталинской высотки на фоне башен Москва-Сити">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFE49C"/>
+      <stop offset="0.55" stop-color="#FDB23C"/>
+      <stop offset="1" stop-color="#F97316"/>
+    </linearGradient>
+    <linearGradient id="goldDim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E8A234"/>
+      <stop offset="1" stop-color="#C05A10"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="12" fill="#0B0A08"/>
+  <g fill="#5C2708">
+    <path d="M7.5,58 V27 L12.5,25 V58 Z"/>
+    <path d="M52.5,58 V31 L57,29.3 V58 Z"/>
+    <path d="M45,58 C45.6,42 46.2,28 48.4,19.5 L51.2,21 C51.5,33 51.5,45 51.8,58 Z"/>
+  </g>
+  <g fill="#8A3D10">
+    <path d="M20.3,58 C21.6,49 22.2,43.5 22.3,38 C22.4,31.5 21.2,25.5 21.5,21.8 L26.4,20.3 C26.7,25.5 25.5,31.5 25.6,38 C25.7,43.5 25.3,49 26.6,58 Z"/>
+    <path d="M37.6,58 L38.2,16 L42.9,12.4 L43.4,58 Z"/>
+  </g>
+  <path d="M13.5,58 V47.6 L14.7,47.3 L15.3,44.4 L15.9,47 L21,45.7 V58 Z" fill="url(#goldDim)"/>
+  <path d="M50.5,58 V47.6 L49.3,47.3 L48.7,44.4 L48.1,47 L43,45.7 V58 Z" fill="url(#goldDim)"/>
+  <path fill="url(#gold)" d="M20,58
+    L20.5,40 L21,40 L21.6,35.8 L22.2,40 L24.2,40
+    L24.5,27 L25,27 L25.6,23.2 L26.2,27 L27.6,27
+    L27.9,19 L31.2,15.6
+    L31.75,9.4 L32.25,9.4
+    L32.8,15.6 L36.1,19
+    L36.4,27 L37.8,27 L38.4,23.2 L39,27 L39.5,27
+    L39.8,40 L41.8,40 L42.4,35.8 L43,40 L43.5,40
+    L44,58 Z"/>
+  <polygon points="32,4.5 32.85,6.25 34.6,7 32.85,7.75 32,9.5 31.15,7.75 29.4,7 31.15,6.25" fill="#FFD873"/>
 </svg>
