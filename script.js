@@ -457,6 +457,14 @@ function bindLeadForm() {
   const submitLoading = submitButton?.querySelector('.submit-loading');
   const successPanel = document.getElementById('lead-success');
   const newLeadButton = document.getElementById('new-lead-button');
+  const fieldErrors = {
+    date: document.getElementById('lead-date-error'),
+    time: document.getElementById('lead-time-error'),
+    people: document.getElementById('lead-people-error'),
+    name: document.getElementById('lead-name-error'),
+    contact: document.getElementById('lead-contact-error'),
+    consent: document.getElementById('lead-consent-error'),
+  };
   let hasTrackedStart = false;
 
   dateInput.min = getMoscowDateValue();
@@ -473,18 +481,40 @@ function bindLeadForm() {
     contactInput.autocomplete = isWhatsApp ? 'tel' : 'username';
     contactInput.inputMode = isWhatsApp ? 'tel' : 'text';
     contactInput.removeAttribute('aria-invalid');
+    fieldErrors.contact.textContent = '';
   };
 
   const setError = (input, message) => {
-    status.textContent = message;
+    status.textContent = '';
+    const fieldError = fieldErrors[input?.name];
+    if (fieldError) {
+      fieldError.textContent = message;
+    } else {
+      status.textContent = message;
+    }
     input?.setAttribute('aria-invalid', 'true');
     input?.focus();
+  };
+
+  const clearFieldError = (input) => {
+    if (!input) {
+      return;
+    }
+
+    input.removeAttribute('aria-invalid');
+    const fieldError = fieldErrors[input.name];
+    if (fieldError) {
+      fieldError.textContent = '';
+    }
   };
 
   const clearErrors = () => {
     status.textContent = '';
     form.querySelectorAll('[aria-invalid="true"]').forEach((input) => {
       input.removeAttribute('aria-invalid');
+    });
+    Object.values(fieldErrors).forEach((fieldError) => {
+      fieldError.textContent = '';
     });
   };
 
@@ -518,12 +548,12 @@ function bindLeadForm() {
       const next = Math.min(30, Math.max(1, current + step));
 
       peopleInput.value = String(next);
-      peopleInput.dispatchEvent(new Event('change', { bubbles: true }));
+      peopleInput.dispatchEvent(new Event('input', { bubbles: true }));
     });
   });
 
   form.addEventListener('input', (event) => {
-    event.target?.removeAttribute?.('aria-invalid');
+    clearFieldError(event.target);
     status.textContent = '';
   });
 

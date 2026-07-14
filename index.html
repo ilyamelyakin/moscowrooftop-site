@@ -34,7 +34,7 @@
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="preload" as="image" href="assets/hero-fallback.jpg?v=20260518" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=20260714-booking-v2" />
 
     <script type="application/ld+json">
       {
@@ -269,119 +269,140 @@
 
       <section class="booking section" id="booking">
         <div class="booking-panel">
-          <div class="booking-layout">
-            <div class="booking-copy">
-              <div class="section-heading align-left">
-                <p class="eyebrow">Запись</p>
-                <h2>Оставить заявку</h2>
-                <p>Укажите удобные дату и время. Мы свяжемся с вами в Telegram или WhatsApp и подтвердим детали.</p>
-              </div>
-
-              <div class="booking-points" aria-label="Что будет после заявки">
-                <p><strong>1.</strong> Проверим свободное время</p>
-                <p><strong>2.</strong> Свяжемся удобным способом</p>
-                <p><strong>3.</strong> Подтвердим место и детали</p>
-              </div>
-
-              <a
-                class="booking-telegram-link track-link"
-                href="https://t.me/MoscowRoofTopBot"
-                target="_blank"
-                rel="noopener"
-                data-goal="telegram_click"
-              >
-                Предпочитаете Telegram? Открыть бота
-              </a>
+          <div class="booking-copy">
+            <div class="section-heading align-left">
+              <p class="eyebrow">Запись</p>
+              <h2>Оставить заявку</h2>
+              <p>Укажите удобные дату и время. Мы свяжемся с вами в Telegram или WhatsApp и подтвердим детали.</p>
             </div>
+          </div>
 
-            <div class="lead-form-shell">
-              <form class="lead-form" id="lead-form" novalidate>
-                <div class="form-honeypot" aria-hidden="true">
-                  <label for="lead-website">Сайт</label>
-                  <input id="lead-website" name="website" type="text" tabindex="-1" autocomplete="off" />
-                </div>
+          <div class="booking-steps" aria-label="Что будет после заявки">
+            <div class="booking-step">
+              <span aria-hidden="true">1</span>
+              <p>Проверим свободное время</p>
+            </div>
+            <div class="booking-step">
+              <span aria-hidden="true">2</span>
+              <p>Свяжемся удобным способом</p>
+            </div>
+            <div class="booking-step">
+              <span aria-hidden="true">3</span>
+              <p>Подтвердим место и детали</p>
+            </div>
+          </div>
 
-                <div class="lead-form-grid">
-                  <label class="form-field" for="lead-date">
-                    <span>Дата</span>
-                    <input id="lead-date" name="date" type="date" required />
-                  </label>
+          <p class="booking-telegram-choice">
+            Предпочитаете Telegram?
+            <a
+              class="booking-telegram-link track-link"
+              href="https://t.me/MoscowRoofTopBot"
+              target="_blank"
+              rel="noopener"
+              data-goal="telegram_click"
+            >
+              Открыть бота <span aria-hidden="true">→</span>
+            </a>
+          </p>
 
-                  <label class="form-field" for="lead-time">
-                    <span>Время</span>
-                    <input id="lead-time" name="time" type="time" step="1800" required />
-                  </label>
-                </div>
+          <div class="lead-form-shell">
+            <form class="lead-form" id="lead-form" novalidate>
+              <div class="form-honeypot" aria-hidden="true">
+                <label for="lead-website">Сайт</label>
+                <input id="lead-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+              </div>
 
+              <div class="lead-form-grid">
+                <label class="form-field" for="lead-date">
+                  <span>Дата</span>
+                  <input id="lead-date" name="date" type="date" aria-describedby="lead-date-error" required />
+                  <small class="field-error" id="lead-date-error"></small>
+                </label>
+
+                <label class="form-field" for="lead-time">
+                  <span>Время</span>
+                  <input id="lead-time" name="time" type="time" step="1800" aria-describedby="lead-time-error" required />
+                  <small class="field-error" id="lead-time-error"></small>
+                </label>
+              </div>
+
+              <div class="lead-form-grid lead-form-grid-details">
                 <div class="form-field">
                   <span id="people-label">Количество человек</span>
                   <div class="people-stepper" role="group" aria-labelledby="people-label">
                     <button class="stepper-button" type="button" data-step="-1" aria-label="Уменьшить количество" title="Уменьшить">−</button>
-                    <input id="lead-people" name="people" type="number" min="1" max="30" value="2" inputmode="numeric" aria-label="Количество человек" required />
+                    <input id="lead-people" name="people" type="number" min="1" max="30" value="2" inputmode="numeric" aria-label="Количество человек" aria-describedby="lead-people-error" required />
                     <button class="stepper-button" type="button" data-step="1" aria-label="Увеличить количество" title="Увеличить">+</button>
                   </div>
+                  <small class="field-error" id="lead-people-error"></small>
                 </div>
 
                 <label class="form-field" for="lead-name">
                   <span>Ваше имя</span>
-                  <input id="lead-name" name="name" type="text" maxlength="80" autocomplete="name" placeholder="Как к вам обращаться" required />
+                  <input id="lead-name" name="name" type="text" maxlength="80" autocomplete="name" placeholder="Как к вам обращаться" aria-describedby="lead-name-error" required />
+                  <small class="field-error" id="lead-name-error"></small>
                 </label>
-
-                <fieldset class="contact-fieldset">
-                  <legend>Куда вам ответить</legend>
-                  <div class="contact-methods">
-                    <input id="contact-telegram" name="contactMethod" type="radio" value="telegram" checked />
-                    <label for="contact-telegram">
-                      <span class="method-icon method-icon-telegram" aria-hidden="true">
-                        <svg viewBox="0 0 24 24"><path d="M21.7 4.4 18.5 20c-.2 1-1.4 1.4-2.2.8l-4.8-3.6-2.5 2.4c-.5.5-1.3.2-1.4-.5l-.6-4.7-4.5-1.5c-1-.3-1.1-1.8-.1-2.2L20 3c1-.4 1.9.4 1.7 1.4Z" /></svg>
-                      </span>
-                      Telegram
-                    </label>
-
-                    <input id="contact-whatsapp" name="contactMethod" type="radio" value="whatsapp" />
-                    <label for="contact-whatsapp">
-                      <span class="method-icon method-icon-whatsapp" aria-hidden="true">
-                        <svg viewBox="0 0 24 24"><path d="M12 2a9.7 9.7 0 0 0-8.4 14.6L2.2 22l5.5-1.4A9.8 9.8 0 1 0 12 2Zm0 17.7a8 8 0 0 1-4.1-1.1l-.3-.2-3.3.9.9-3.2-.2-.3A8 8 0 1 1 12 19.7Zm4.4-6c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6.1l-.7.9c-.1.2-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.2-.3.2-.5.6-1 .1-.1.1-.3 0-.5l-.7-1.8c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.7.7-1 1.5-1 2.5 0 1.5 1.1 3 1.3 3.2.1.2 2.2 3.4 5.4 4.7 2.6 1.1 3.2.7 3.8.6.6-.1 1.8-.7 2.1-1.5.3-.7.3-1.3.2-1.5-.1-.2-.3-.2-.5-.3Z" /></svg>
-                      </span>
-                      WhatsApp
-                    </label>
-                  </div>
-                </fieldset>
-
-                <label class="form-field" for="lead-contact">
-                  <span id="contact-label">Аккаунт в Telegram или телефон</span>
-                  <input
-                    id="lead-contact"
-                    name="contact"
-                    type="text"
-                    maxlength="100"
-                    autocomplete="username"
-                    placeholder="@username или +7 999 000-00-00"
-                    aria-describedby="contact-hint"
-                    required
-                  />
-                  <small id="contact-hint">Напишем только по этой заявке</small>
-                </label>
-
-                <label class="form-consent" for="lead-consent">
-                  <input id="lead-consent" name="consent" type="checkbox" required />
-                  <span>Согласен на обработку указанных данных для связи по заявке</span>
-                </label>
-
-                <p class="form-status" id="lead-status" role="status" aria-live="polite"></p>
-
-                <button class="btn btn-primary lead-submit" type="submit">
-                  <span class="submit-label">Отправить заявку</span>
-                  <span class="submit-loading" hidden>Отправляем…</span>
-                </button>
-              </form>
-
-              <div class="lead-success" id="lead-success" role="status" hidden>
-                <span class="success-mark" aria-hidden="true">✓</span>
-                <h3>Заявка отправлена</h3>
-                <p>Мы получили данные и скоро свяжемся с вами выбранным способом.</p>
-                <button class="btn btn-secondary" id="new-lead-button" type="button">Отправить ещё одну</button>
               </div>
+
+              <fieldset class="contact-fieldset">
+                <legend>Куда вам ответить</legend>
+                <div class="contact-methods">
+                  <input id="contact-telegram" name="contactMethod" type="radio" value="telegram" checked />
+                  <label for="contact-telegram">
+                    <span class="method-icon method-icon-telegram" aria-hidden="true">
+                      <svg width="22" height="22" viewBox="0 0 24 24" focusable="false"><path d="M21.7 4.4 18.5 20c-.2 1-1.4 1.4-2.2.8l-4.8-3.6-2.5 2.4c-.5.5-1.3.2-1.4-.5l-.6-4.7-4.5-1.5c-1-.3-1.1-1.8-.1-2.2L20 3c1-.4 1.9.4 1.7 1.4Z" /></svg>
+                    </span>
+                    Telegram
+                  </label>
+
+                  <input id="contact-whatsapp" name="contactMethod" type="radio" value="whatsapp" />
+                  <label for="contact-whatsapp">
+                    <span class="method-icon method-icon-whatsapp" aria-hidden="true">
+                      <svg width="22" height="22" viewBox="0 0 24 24" focusable="false"><path d="M12 2a9.7 9.7 0 0 0-8.4 14.6L2.2 22l5.5-1.4A9.8 9.8 0 1 0 12 2Zm0 17.7a8 8 0 0 1-4.1-1.1l-.3-.2-3.3.9.9-3.2-.2-.3A8 8 0 1 1 12 19.7Zm4.4-6c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6.1l-.7.9c-.1.2-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.2-.3.2-.5.6-1 .1-.1.1-.3 0-.5l-.7-1.8c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.7.7-1 1.5-1 2.5 0 1.5 1.1 3 1.3 3.2.1.2 2.2 3.4 5.4 4.7 2.6 1.1 3.2.7 3.8.6.6-.1 1.8-.7 2.1-1.5.3-.7.3-1.3.2-1.5-.1-.2-.3-.2-.5-.3Z" /></svg>
+                    </span>
+                    WhatsApp
+                  </label>
+                </div>
+              </fieldset>
+
+              <label class="form-field" for="lead-contact">
+                <span id="contact-label">Аккаунт в Telegram или телефон</span>
+                <input
+                  id="lead-contact"
+                  name="contact"
+                  type="text"
+                  maxlength="100"
+                  autocomplete="username"
+                  placeholder="@username или +7 9…"
+                  aria-describedby="contact-hint lead-contact-error"
+                  required
+                />
+                <small id="contact-hint">Напишем только по этой заявке</small>
+                <small class="field-error" id="lead-contact-error"></small>
+              </label>
+
+              <div class="consent-field">
+                <label class="form-consent" for="lead-consent">
+                  <input id="lead-consent" name="consent" type="checkbox" aria-describedby="lead-consent-error" required />
+                  <span class="consent-check" aria-hidden="true"></span>
+                  <span class="consent-text">Согласен на обработку указанных данных для связи по заявке</span>
+                </label>
+                <small class="field-error" id="lead-consent-error"></small>
+              </div>
+
+              <p class="form-status" id="lead-status" role="status" aria-live="polite"></p>
+
+              <button class="btn btn-primary lead-submit" type="submit">
+                <span class="submit-label">Отправить заявку</span>
+                <span class="submit-loading" hidden>Отправляем…</span>
+              </button>
+            </form>
+
+            <div class="lead-success" id="lead-success" role="status" hidden>
+              <span class="success-mark" aria-hidden="true">✓</span>
+              <h3>Заявка отправлена</h3>
+              <p>Мы получили данные и скоро свяжемся с вами выбранным способом.</p>
+              <button class="btn btn-secondary" id="new-lead-button" type="button">Отправить ещё одну</button>
             </div>
           </div>
         </div>
@@ -496,6 +517,6 @@
       <span>Экскурсии по крышам Москвы</span>
     </footer>
 
-    <script src="script.js?v=20260714-lead-form"></script>
+    <script src="script.js?v=20260714-booking-v2"></script>
   </body>
 </html>
