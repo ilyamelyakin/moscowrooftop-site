@@ -7,17 +7,26 @@
     <meta name="description" content="Необычное свидание на крыше в Москве: виды на город, закат и приватная атмосфера. Прогулка 1 час, запись через Telegram-бота." />
     <meta name="robots" content="index, follow" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Moscow Rooftop" />
     <meta property="og:url" content="https://moscowrooftop.ru/svidanie-na-kryshe/" />
     <meta property="og:title" content="Свидание на крыше в Москве" />
     <meta property="og:description" content="Камерное свидание над Москвой: закат, виды и атмосферная прогулка." />
-    <meta property="og:image" content="https://moscowrooftop.ru/assets/og-image.jpg" />
+    <meta property="og:image" content="https://moscowrooftop.ru/assets/og-cover.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Закат над Москвой: башни Москва-Сити и подсвеченная высотка" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Свидание на крыше в Москве" />
+    <meta name="twitter:description" content="Камерное свидание над Москвой: закат, виды и атмосферная прогулка." />
+    <meta name="twitter:image" content="https://moscowrooftop.ru/assets/og-cover.jpg" />
     <link rel="canonical" href="https://moscowrooftop.ru/svidanie-na-kryshe/" />
     <link rel="icon" href="/assets/favicon.svg?v=20260714-v3" type="image/svg+xml" />
     <link rel="icon" href="/assets/favicon.ico?v=20260714-v3" sizes="any" />
     <link rel="icon" href="/assets/favicon-48.png?v=20260714-v3" type="image/png" sizes="48x48" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=20260714-v3" />
     <link rel="manifest" href="/site.webmanifest?v=20260714-v3" />
-    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="../styles.css?v=20260715-seo" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -60,6 +69,35 @@
               "availability": "https://schema.org/InStock",
               "url": "https://moscowrooftop.ru/svidanie-na-kryshe/"
             }
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Можно ли прийти только вдвоем?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Да, формат хорошо подходит для пары. Детали лучше уточнить при записи."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Можно ли сделать сюрприз?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Да. Напишите в Telegram-бот, что это сюрприз, и заранее согласуйте сценарий."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Что если плохая погода?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Если погода мешает прогулке, предложим перенос на другое удобное время."
+                }
+              }
+            ]
           }
         ]
       }
@@ -81,7 +119,22 @@
         <a href="../">Главная</a><span aria-hidden="true">/</span><span aria-current="page">Свидание на крыше</span>
       </nav>
       <section class="page-hero">
-        <img src="../assets/roof-2.jpg" alt="Свидание на крыше в Москве" />
+        <picture>
+          <source
+            type="image/webp"
+            srcset="../assets/roof-2-640.webp 640w, ../assets/roof-2-1280.webp 1280w, ../assets/roof-2-1600.webp 1600w"
+            sizes="(max-width: 1160px) 100vw, 1160px"
+          />
+          <img
+            src="../assets/roof-2-1280.jpg"
+            srcset="../assets/roof-2-640.jpg 640w, ../assets/roof-2-1280.jpg 1280w, ../assets/roof-2-1600.jpg 1600w"
+            sizes="(max-width: 1160px) 100vw, 1160px"
+            width="1600"
+            height="2135"
+            fetchpriority="high"
+            alt="Свидание на крыше в Москве"
+          />
+        </picture>
         <div class="page-hero-content">
           <p class="eyebrow">Для двоих</p>
           <h1>Свидание на крыше в Москве</h1>
@@ -117,6 +170,7 @@
           <h2>Записаться</h2>
           <p>Бот покажет доступные варианты и поможет выбрать дату для свидания.</p>
           <a class="btn btn-primary track-link" href="https://t.me/MoscowRoofTopBot" target="_blank" rel="noopener" data-goal="telegram_click">Открыть Telegram-бота</a>
+          <a class="btn btn-secondary track-link" href="../#booking" data-goal="lead_form_open" data-location="side_panel">Оставить заявку на сайте</a>
         </aside>
       </section>
 
@@ -139,6 +193,6 @@
       <section class="final-cta"><div><p class="eyebrow">Вечер над городом</p><h2>Сделаем свидание необычным?</h2></div><div class="final-actions"><a class="btn btn-primary track-link" href="https://t.me/MoscowRoofTopBot" target="_blank" rel="noopener" data-goal="telegram_click">Записаться</a></div></section>
     </main>
     <footer class="site-footer"><a href="../">moscowrooftop.ru</a><a href="../kryshi-moskvy/">Крыши Москвы</a><a href="../ekskursii-po-krysham-moskvy/">Экскурсии</a><a href="../fotosessiya-na-kryshe-moskva/">Фотосессия</a><a href="../faq/">FAQ</a><span>Свидание на крыше</span></footer>
-    <script src="../script.js?v=20260712-analytics"></script>
+    <script src="../script.js?v=20260715-seo"></script>
   </body>
 </html>

@@ -159,9 +159,7 @@ button {
   align-items: end;
   overflow: hidden;
   padding: 128px max(16px, calc((100vw - 1160px) / 2)) 70px;
-  background-image: url("assets/hero-fallback.jpg?v=20260518");
-  background-position: center;
-  background-size: cover;
+  background-color: #14100e;
   isolation: isolate;
 }
 
@@ -173,7 +171,13 @@ button {
 
 .hero-bg {
   z-index: -3;
-  background: #14100e url("assets/hero-fallback.jpg?v=20260518") center / cover no-repeat;
+  background: #14100e;
+}
+
+.hero-bg picture {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .hero-image {
@@ -361,9 +365,10 @@ h1 {
   backdrop-filter: blur(18px);
 }
 
-.trust-grid h2 {
+.trust-grid .trust-title {
   margin: 16px 0 0;
   font-size: 1rem;
+  font-weight: 700;
   line-height: 1.28;
 }
 
@@ -1465,7 +1470,7 @@ h1 {
   border-radius: 12px;
   background:
     linear-gradient(120deg, rgba(255, 158, 79, 0.22), rgba(255, 111, 97, 0.1) 42%, rgba(147, 197, 253, 0.1)),
-    url("assets/roof-6.jpg") center / cover no-repeat;
+    url("assets/roof-6-1280.jpg") center / cover no-repeat;
   box-shadow: var(--shadow);
   isolation: isolate;
   overflow: hidden;
@@ -1714,7 +1719,8 @@ h1 {
   transform: translateY(-3px);
 }
 
-.page-faq {
+.page-faq,
+.page-section {
   width: var(--container);
   margin: clamp(70px, 9vw, 110px) auto 0;
 }

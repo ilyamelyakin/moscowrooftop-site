@@ -1,5 +1,11 @@
 const LEAD_PATH = "/api/lead";
 const MAX_BODY_BYTES = 12_000;
+// Short slug aliases that may appear in external links; keep canonical URLs unique.
+const PAGE_REDIRECTS = new Map([
+  ["/ekskursii-po-krysham", "/ekskursii-po-krysham-moskvy/"],
+  ["/fotosessiya-na-kryshe", "/fotosessiya-na-kryshe-moskva/"],
+  ["/zakaty-na-kryshah", "/zakaty-na-kryshah-moskvy/"],
+]);
 const ALLOWED_ORIGINS = new Set([
   "https://moscowrooftop.ru",
   "https://www.moscowrooftop.ru",
@@ -291,10 +297,18 @@ export default {
     const url = new URL(request.url);
     const forwardedProto = request.headers.get("x-forwarded-proto");
     const cfVisitor = request.headers.get("cf-visitor") || "";
+    // Requests proxied by Cloudflare always carry cf-visitor/x-forwarded-proto;
+    // their absence means local wrangler dev, where forcing HTTPS would loop.
+    const isLocalDev =
+      (!cfVisitor && !forwardedProto) ||
+      url.port !== "" ||
+      url.hostname === "localhost" ||
+      url.hostname === "127.0.0.1";
     const isHttp =
-      url.protocol === "http:" ||
-      forwardedProto === "http" ||
-      cfVisitor.includes('\"scheme\":\"http\"');
+      !isLocalDev &&
+      (url.protocol === "http:" ||
+        forwardedProto === "http" ||
+        cfVisitor.includes('\"scheme\":\"http\"'));
 
     if (isHttp || url.hostname === "www.moscowrooftop.ru") {
       url.protocol = "https:";
@@ -313,6 +327,22 @@ export default {
 
     if (url.pathname === "/bot" || url.pathname === "/bot/") {
       return Response.redirect("https://t.me/MoscowRoofTopBot?start=instagram", 302);
+    }
+
+    const normalizedPath =
+      url.pathname.length > 1 && url.pathname.endsWith("/")
+        ? url.pathname.slice(0, -1)
+        : url.pathname;
+    const redirectTarget = PAGE_REDIRECTS.get(normalizedPath);
+    if (redirectTarget) {
+      url.pathname = redirectTarget;
+      return Response.redirect(url.toString(), 301);
+    }
+
+    const pathSegment = url.pathname.split("/").pop();
+    if (pathSegment && !pathSegment.includes(".")) {
+      url.pathname = `${url.pathname}/`;
+      return Response.redirect(url.toString(), 301);
     }
 
     const assetUrl = new URL(request.url);

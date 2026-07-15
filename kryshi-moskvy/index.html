@@ -10,22 +10,26 @@
     />
     <meta name="robots" content="index, follow" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Moscow Rooftop" />
     <meta property="og:url" content="https://moscowrooftop.ru/kryshi-moskvy/" />
     <meta property="og:title" content="Крыши Москвы: как проходит прогулка и что видно" />
     <meta property="og:description" content="Виды на Москву с высоты, форматы прогулок, длительность и подготовка к маршруту." />
-    <meta property="og:image" content="https://moscowrooftop.ru/assets/og-image.jpg" />
+    <meta property="og:image" content="https://moscowrooftop.ru/assets/og-cover.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Закат над Москвой: башни Москва-Сити и подсвеченная высотка" />
     <meta property="og:locale" content="ru_RU" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Крыши Москвы: как проходит прогулка и что видно" />
     <meta name="twitter:description" content="Виды на Москву с высоты, закаты, свидания и фотосессии на крыше. Запись через Telegram." />
-    <meta name="twitter:image" content="https://moscowrooftop.ru/assets/og-image.jpg" />
+    <meta name="twitter:image" content="https://moscowrooftop.ru/assets/og-cover.jpg" />
     <link rel="canonical" href="https://moscowrooftop.ru/kryshi-moskvy/" />
     <link rel="icon" href="/assets/favicon.svg?v=20260714-v3" type="image/svg+xml" />
     <link rel="icon" href="/assets/favicon.ico?v=20260714-v3" sizes="any" />
     <link rel="icon" href="/assets/favicon-48.png?v=20260714-v3" type="image/png" sizes="48x48" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=20260714-v3" />
     <link rel="manifest" href="/site.webmanifest?v=20260714-v3" />
-    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="../styles.css?v=20260715-seo" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -126,7 +130,22 @@
         <a href="../">Главная</a><span aria-hidden="true">/</span><span aria-current="page">Крыши Москвы</span>
       </nav>
       <section class="page-hero">
-        <img src="../assets/hero-fallback.jpg?v=20260518" alt="Крыши Москвы с видом на город" />
+        <picture>
+          <source
+            type="image/webp"
+            srcset="../assets/hero-fallback-768.webp 768w, ../assets/hero-fallback-1280.webp 1280w, ../assets/hero-fallback-1920.webp 1920w"
+            sizes="(max-width: 1160px) 100vw, 1160px"
+          />
+          <img
+            src="../assets/hero-fallback-1280.jpg"
+            srcset="../assets/hero-fallback-768.jpg 768w, ../assets/hero-fallback-1280.jpg 1280w, ../assets/hero-fallback-1920.jpg 1920w"
+            sizes="(max-width: 1160px) 100vw, 1160px"
+            width="1920"
+            height="2560"
+            fetchpriority="high"
+            alt="Крыши Москвы с видом на город"
+          />
+        </picture>
         <div class="page-hero-content">
           <p class="eyebrow">Гид по формату</p>
           <h1>Крыши Москвы</h1>
@@ -163,7 +182,24 @@
           <h2>Быстрая запись</h2>
           <p>Откройте Telegram-бота, посмотрите доступные варианты и выберите формат: прогулка, свидание, фотосессия или закат.</p>
           <a class="btn btn-primary track-link" href="https://t.me/MoscowRoofTopBot" target="_blank" rel="noopener" data-goal="telegram_click">Открыть Telegram-бота</a>
+          <a class="btn btn-secondary track-link" href="../#booking" data-goal="lead_form_open" data-location="side_panel">Оставить заявку на сайте</a>
         </aside>
+      </section>
+
+      <section class="page-section" aria-labelledby="catalog-views-title">
+        <div class="section-heading">
+          <p class="eyebrow">Каталог</p>
+          <h2 id="catalog-views-title">Какие виды есть в каталоге</h2>
+          <p>Пять локаций у метро Фили, Курская, Марксистская, Римская и Таганская. Точный адрес сообщаем после подтверждения записи.</p>
+        </div>
+        <div class="related-grid">
+          <a class="mini-card" href="../#catalog"><strong>Москва-Сити с высоты — Фили</strong><span>Панорама башен делового центра, Москва-реки и вечерних огней.</span></a>
+          <a class="mini-card" href="../#catalog"><strong>Закат над центром — Курская</strong><span>Высотки, купола и городские крыши в мягком вечернем свете.</span></a>
+          <a class="mini-card" href="../#catalog"><strong>Высотка в закатном свете — Марксистская</strong><span>Выразительный силуэт сталинской высотки и огни вечернего центра.</span></a>
+          <a class="mini-card" href="../#catalog"><strong>Высотка и Москва-Сити — Римская</strong><span>Классическая Москва на переднем плане и деловой центр вдали.</span></a>
+          <a class="mini-card" href="../#catalog"><strong>Золотой час над центром — Таганская</strong><span>Тёплый свет, панорама центра и выразительные городские силуэты.</span></a>
+          <a class="mini-card" href="../#catalog"><strong>Смотреть каталог с фото →</strong><span>Все локации с фотографиями и выбором крыши в один клик.</span></a>
+        </div>
       </section>
 
       <section class="related-grid" aria-label="Форматы прогулок по крышам Москвы">
@@ -213,6 +249,6 @@
       <a href="../faq/">FAQ</a>
       <span>Крыши Москвы</span>
     </footer>
-    <script src="../script.js?v=20260712-analytics"></script>
+    <script src="../script.js?v=20260715-seo"></script>
   </body>
 </html>

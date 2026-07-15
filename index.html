@@ -12,13 +12,17 @@
     <meta name="theme-color" content="#0b0a09" />
 
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Moscow Rooftop" />
     <meta property="og:url" content="https://moscowrooftop.ru/" />
     <meta property="og:title" content="Прогулки по крышам Москвы | Moscow Rooftop" />
     <meta
       property="og:description"
       content="Экскурсии и прогулки по крышам Москвы: закаты, Москва-Сити, свидания и фотосессии над городом."
     />
-    <meta property="og:image" content="https://moscowrooftop.ru/assets/og-image.jpg" />
+    <meta property="og:image" content="https://moscowrooftop.ru/assets/og-cover.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Закат над Москвой: башни Москва-Сити и подсвеченная высотка" />
     <meta property="og:locale" content="ru_RU" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Прогулки по крышам Москвы | Moscow Rooftop" />
@@ -26,7 +30,7 @@
       name="twitter:description"
       content="Экскурсии и прогулки по крышам Москвы: закаты, Москва-Сити, свидания и фотосессии над городом."
     />
-    <meta name="twitter:image" content="https://moscowrooftop.ru/assets/og-image.jpg" />
+    <meta name="twitter:image" content="https://moscowrooftop.ru/assets/og-cover.jpg" />
 
     <link rel="canonical" href="https://moscowrooftop.ru/" />
     <link rel="icon" href="/assets/favicon.svg?v=20260714-v3" type="image/svg+xml" />
@@ -34,42 +38,138 @@
     <link rel="icon" href="/assets/favicon-48.png?v=20260714-v3" type="image/png" sizes="48x48" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=20260714-v3" />
     <link rel="manifest" href="/site.webmanifest?v=20260714-v3" />
-    <link rel="preload" as="image" href="assets/hero-fallback.jpg?v=20260518" />
-    <link rel="stylesheet" href="styles.css?v=20260715-catalog" />
+    <link
+      rel="preload"
+      as="image"
+      fetchpriority="high"
+      imagesrcset="assets/hero-fallback-768.webp 768w, assets/hero-fallback-1280.webp 1280w, assets/hero-fallback-1920.webp 1920w"
+      imagesizes="100vw"
+    />
+    <link rel="stylesheet" href="styles.css?v=20260715-seo" />
 
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "LocalBusiness",
-        "name": "Moscow Rooftop",
-        "alternateName": "Экскурсии по крышам Москвы",
-        "url": "https://moscowrooftop.ru/",
-        "image": "https://moscowrooftop.ru/assets/hero-fallback.jpg",
-        "description": "Экскурсии, фотосессии и прогулки по крышам Москвы. Закаты, виды на Москва-Сити и атмосферные маршруты.",
-        "areaServed": {
-          "@type": "City",
-          "name": "Москва"
-        },
-        "sameAs": [
-          "https://www.instagram.com/ilya.melyakin/",
-          "https://www.tiktok.com/@ilya.melyakin/"
-        ],
-        "makesOffer": {
-          "@type": "Offer",
-          "itemOffered": {
-            "@type": "Service",
-            "name": "Экскурсии по крышам Москвы",
-            "description": "Прогулки по крышам, закаты, фотосессии и необычные свидания над Москвой.",
-            "areaServed": "Москва"
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://moscowrooftop.ru/#website",
+            "url": "https://moscowrooftop.ru/",
+            "name": "Moscow Rooftop",
+            "inLanguage": "ru-RU",
+            "publisher": { "@id": "https://moscowrooftop.ru/#business" }
           },
-          "availability": "https://schema.org/InStock",
-          "url": "https://moscowrooftop.ru/#booking"
-        },
-        "potentialAction": {
-          "@type": "ReserveAction",
-          "target": "https://moscowrooftop.ru/#booking",
-          "name": "Оставить заявку"
-        }
+          {
+            "@type": "LocalBusiness",
+            "@id": "https://moscowrooftop.ru/#business",
+            "name": "Moscow Rooftop",
+            "alternateName": "Экскурсии по крышам Москвы",
+            "url": "https://moscowrooftop.ru/",
+            "image": "https://moscowrooftop.ru/assets/og-cover.jpg",
+            "description": "Экскурсии, фотосессии и прогулки по крышам Москвы. Закаты, виды на Москва-Сити и атмосферные маршруты.",
+            "priceRange": "от 2000 ₽",
+            "areaServed": {
+              "@type": "City",
+              "name": "Москва"
+            },
+            "sameAs": [
+              "https://www.instagram.com/ilya.melyakin/",
+              "https://www.tiktok.com/@ilya.melyakin/"
+            ],
+            "makesOffer": {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Экскурсии по крышам Москвы",
+                "description": "Прогулки по крышам, закаты, фотосессии и необычные свидания над Москвой.",
+                "areaServed": "Москва"
+              },
+              "availability": "https://schema.org/InStock",
+              "url": "https://moscowrooftop.ru/#booking"
+            },
+            "potentialAction": {
+              "@type": "ReserveAction",
+              "target": "https://moscowrooftop.ru/#booking",
+              "name": "Оставить заявку"
+            }
+          },
+          {
+            "@type": "ItemList",
+            "@id": "https://moscowrooftop.ru/#catalog-list",
+            "name": "Каталог крыш Москвы",
+            "url": "https://moscowrooftop.ru/#catalog",
+            "numberOfItems": 5,
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "Москва-Сити с высоты — Фили" },
+              { "@type": "ListItem", "position": 2, "name": "Закат над историческим центром — Курская" },
+              { "@type": "ListItem", "position": 3, "name": "Высотка в закатном свете — Марксистская" },
+              { "@type": "ListItem", "position": 4, "name": "Высотка и Москва-Сити — Римская" },
+              { "@type": "ListItem", "position": 5, "name": "Золотой час над центром — Таганская" }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://moscowrooftop.ru/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Это безопасно?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Да. Мы выбираем проверенные маршруты и заранее объясняем, как вести себя на площадке."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Сколько длится прогулка?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Базовый формат — 1 час. При возможности прогулку можно продлить ещё на час за 500 рублей с человека."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Как одеться на прогулку?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Выбирайте удобную нескользящую обувь и одежду по погоде: вечером на высоте прохладнее, чем на улице, поэтому лучше взять тёплый слой."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Можно ли устроить фотосессию?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Да, можно прийти со своим фотографом или просто сделать красивые кадры на телефон."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Как записаться?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Оставьте заявку на сайте или откройте Telegram-бота. Мы подтвердим свободное время и пришлём детали."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Можно ли прийти парой?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Конечно. Крыши особенно хорошо подходят для свиданий и небольших сюрпризов."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Что делать, если плохая погода?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Если погода мешает прогулке, мы заранее свяжемся и предложим перенос."
+                }
+              }
+            ]
+          }
+        ]
       }
     </script>
 
@@ -106,7 +206,23 @@
     <main id="top">
       <section class="hero section-dark" aria-label="Экскурсии по крышам Москвы">
         <div class="hero-bg" aria-hidden="true">
-          <img class="hero-image" src="assets/hero-fallback.jpg?v=20260518" alt="" />
+          <picture>
+            <source
+              type="image/webp"
+              srcset="assets/hero-fallback-768.webp 768w, assets/hero-fallback-1280.webp 1280w, assets/hero-fallback-1920.webp 1920w"
+              sizes="100vw"
+            />
+            <img
+              class="hero-image"
+              src="assets/hero-fallback-1280.jpg"
+              srcset="assets/hero-fallback-768.jpg 768w, assets/hero-fallback-1280.jpg 1280w, assets/hero-fallback-1920.jpg 1920w"
+              sizes="100vw"
+              width="1920"
+              height="2560"
+              fetchpriority="high"
+              alt=""
+            />
+          </picture>
         </div>
         <div class="hero-overlay" aria-hidden="true"></div>
 
@@ -155,23 +271,23 @@
         <div class="trust-grid">
           <article>
             <span class="trust-dot"></span>
-            <h2>Живые виды на Москву</h2>
+            <p class="trust-title">Живые виды на Москву</p>
           </article>
           <article>
             <span class="trust-dot"></span>
-            <h2>Атмосферные закаты</h2>
+            <p class="trust-title">Атмосферные закаты</p>
           </article>
           <article>
             <span class="trust-dot"></span>
-            <h2>Подходит для свиданий</h2>
+            <p class="trust-title">Подходит для свиданий</p>
           </article>
           <article>
             <span class="trust-dot"></span>
-            <h2>Можно сделать фотосессию</h2>
+            <p class="trust-title">Можно сделать фотосессию</p>
           </article>
           <article>
             <span class="trust-dot"></span>
-            <h2>Запись на сайте или в Telegram</h2>
+            <p class="trust-title">Запись на сайте или в Telegram</p>
           </article>
         </div>
       </section>
@@ -185,28 +301,92 @@
 
         <div class="feature-grid">
           <a class="feature-card" href="ekskursii-po-krysham-moskvy/">
-            <img src="assets/roof-1.jpg" alt="Вид с московской крыши" loading="lazy" />
+            <picture>
+              <source
+                type="image/webp"
+                srcset="assets/roof-1-640.webp 640w, assets/roof-1-1280.webp 1280w"
+                sizes="(max-width: 640px) calc(100vw - 20px), (max-width: 980px) 48vw, 270px"
+              />
+              <img
+                src="assets/roof-1-640.jpg"
+                srcset="assets/roof-1-640.jpg 640w, assets/roof-1-1280.jpg 1280w"
+                sizes="(max-width: 640px) calc(100vw - 20px), (max-width: 980px) 48vw, 270px"
+                width="640"
+                height="853"
+                alt="Вид с московской крыши"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
             <div>
               <h3>Прогулка по крыше</h3>
               <p>Покажем точку с характером и проведем по маршруту без суеты.</p>
             </div>
           </a>
           <a class="feature-card" href="zakaty-na-kryshah-moskvy/">
-            <img src="assets/roof-2.jpg" alt="Закат над Москвой" loading="lazy" />
+            <picture>
+              <source
+                type="image/webp"
+                srcset="assets/roof-2-640.webp 640w, assets/roof-2-1280.webp 1280w"
+                sizes="(max-width: 640px) calc(100vw - 20px), (max-width: 980px) 48vw, 270px"
+              />
+              <img
+                src="assets/roof-2-640.jpg"
+                srcset="assets/roof-2-640.jpg 640w, assets/roof-2-1280.jpg 1280w"
+                sizes="(max-width: 640px) calc(100vw - 20px), (max-width: 980px) 48vw, 270px"
+                width="640"
+                height="854"
+                alt="Закат над Москвой"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
             <div>
               <h3>Закат над Москвой</h3>
               <p>Лучшее время для теплого света, силуэтов и вида на вечерний город.</p>
             </div>
           </a>
           <a class="feature-card" href="fotosessiya-na-kryshe-moskva/">
-            <img src="assets/roof-3.jpg" alt="Фотосессия на крыше" loading="lazy" />
+            <picture>
+              <source
+                type="image/webp"
+                srcset="assets/roof-3-640.webp 640w, assets/roof-3-1280.webp 1280w"
+                sizes="(max-width: 640px) calc(100vw - 20px), (max-width: 980px) 48vw, 270px"
+              />
+              <img
+                src="assets/roof-3-640.jpg"
+                srcset="assets/roof-3-640.jpg 640w, assets/roof-3-1280.jpg 1280w"
+                sizes="(max-width: 640px) calc(100vw - 20px), (max-width: 980px) 48vw, 270px"
+                width="640"
+                height="853"
+                alt="Фотосессия на крыше"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
             <div>
               <h3>Фотосессия</h3>
               <p>Можно прийти за портретами, лавстори или контентом для соцсетей.</p>
             </div>
           </a>
           <a class="feature-card" href="svidanie-na-kryshe/">
-            <img src="assets/roof-4.jpg" alt="Необычное свидание на крыше" loading="lazy" />
+            <picture>
+              <source
+                type="image/webp"
+                srcset="assets/roof-4-640.webp 640w, assets/roof-4-1280.webp 1280w"
+                sizes="(max-width: 640px) calc(100vw - 20px), (max-width: 980px) 48vw, 270px"
+              />
+              <img
+                src="assets/roof-4-640.jpg"
+                srcset="assets/roof-4-640.jpg 640w, assets/roof-4-1280.jpg 1280w"
+                sizes="(max-width: 640px) calc(100vw - 20px), (max-width: 980px) 48vw, 270px"
+                width="640"
+                height="853"
+                alt="Необычное свидание на крыше"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
             <div>
               <h3>Необычное свидание</h3>
               <p>Камерный формат для двоих, когда хочется удивить без лишнего шума.</p>
@@ -224,10 +404,26 @@
 
         <div class="gallery-grid">
           <figure class="gallery-item gallery-large">
-            <img src="assets/roof-5.jpg" alt="Панорама Москвы с крыши" loading="lazy" />
+            <picture>
+              <source
+                type="image/webp"
+                srcset="assets/roof-5-640.webp 640w, assets/roof-5-1280.webp 1280w"
+                sizes="(max-width: 980px) 96vw, 580px"
+              />
+              <img
+                src="assets/roof-5-640.jpg"
+                srcset="assets/roof-5-640.jpg 640w, assets/roof-5-1280.jpg 1280w"
+                sizes="(max-width: 980px) 96vw, 580px"
+                width="640"
+                height="853"
+                alt="Панорама Москвы с крыши"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
           </figure>
           <figure class="gallery-item">
-            <video muted loop playsinline preload="metadata" poster="assets/hero-fallback.jpg?v=20260518">
+            <video muted loop playsinline preload="none" poster="assets/hero-fallback-768.jpg">
               <source src="assets/hero-video.mp4" type="video/mp4" />
             </video>
             <button class="video-toggle" type="button" aria-label="Воспроизвести видео">
@@ -237,16 +433,80 @@
             </button>
           </figure>
           <figure class="gallery-item">
-            <img src="assets/roof-6.jpg" alt="Городской закат с крыши" loading="lazy" />
+            <picture>
+              <source
+                type="image/webp"
+                srcset="assets/roof-6-640.webp 640w, assets/roof-6-1280.webp 1280w"
+                sizes="(max-width: 640px) 96vw, (max-width: 980px) 48vw, 285px"
+              />
+              <img
+                src="assets/roof-6-640.jpg"
+                srcset="assets/roof-6-640.jpg 640w, assets/roof-6-1280.jpg 1280w"
+                sizes="(max-width: 640px) 96vw, (max-width: 980px) 48vw, 285px"
+                width="640"
+                height="853"
+                alt="Городской закат с крыши"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
           </figure>
           <figure class="gallery-item">
-            <img src="assets/roof-2.jpg" alt="Атмосферный вид на город" loading="lazy" />
+            <picture>
+              <source
+                type="image/webp"
+                srcset="assets/roof-2-640.webp 640w, assets/roof-2-1280.webp 1280w"
+                sizes="(max-width: 640px) 96vw, (max-width: 980px) 48vw, 285px"
+              />
+              <img
+                src="assets/roof-2-640.jpg"
+                srcset="assets/roof-2-640.jpg 640w, assets/roof-2-1280.jpg 1280w"
+                sizes="(max-width: 640px) 96vw, (max-width: 980px) 48vw, 285px"
+                width="640"
+                height="854"
+                alt="Атмосферный вид на город"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
           </figure>
           <figure class="gallery-item gallery-wide">
-            <img src="assets/roof-3.jpg" alt="Московские крыши вечером" loading="lazy" />
+            <picture>
+              <source
+                type="image/webp"
+                srcset="assets/roof-3-640.webp 640w, assets/roof-3-1280.webp 1280w"
+                sizes="(max-width: 980px) 96vw, 580px"
+              />
+              <img
+                src="assets/roof-3-640.jpg"
+                srcset="assets/roof-3-640.jpg 640w, assets/roof-3-1280.jpg 1280w"
+                sizes="(max-width: 980px) 96vw, 580px"
+                width="640"
+                height="853"
+                alt="Московские крыши вечером"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
           </figure>
           <figure class="gallery-item">
-            <img src="assets/roof-4.jpg" alt="Крыша и вечерняя Москва" loading="lazy" />
+            <picture>
+              <source
+                type="image/webp"
+                srcset="assets/roof-4-640.webp 640w, assets/roof-4-1280.webp 1280w"
+                sizes="(max-width: 640px) 96vw, (max-width: 980px) 48vw, 285px"
+              />
+              <img
+                src="assets/roof-4-640.jpg"
+                srcset="assets/roof-4-640.jpg 640w, assets/roof-4-1280.jpg 1280w"
+                sizes="(max-width: 640px) 96vw, (max-width: 980px) 48vw, 285px"
+                width="640"
+                height="853"
+                alt="Крыша и вечерняя Москва"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
           </figure>
         </div>
 
@@ -457,7 +717,7 @@
           </article>
         </div>
 
-        <p class="roof-catalog-note">Фотографии показывают характер вида. Доступность конкретной локации зависит от даты, времени и погоды.</p>
+        <p class="roof-catalog-note">Фотографии показывают характер вида. Доступность конкретной локации зависит от даты, времени и погоды. О том, как проходят прогулки и какие бывают форматы, — в гиде <a class="text-link" href="kryshi-moskvy/">«Крыши Москвы»</a>.</p>
       </section>
 
       <dialog class="roof-lightbox" id="roof-lightbox" aria-labelledby="roof-lightbox-title">
@@ -660,7 +920,11 @@
           </details>
           <details>
             <summary>Сколько длится прогулка?</summary>
-            <p>Обычно от 60 до 90 минут, в зависимости от маршрута, погоды и формата.</p>
+            <p>Базовый формат — 1 час. При возможности прогулку можно продлить ещё на час за 500 рублей с человека.</p>
+          </details>
+          <details>
+            <summary>Как одеться на прогулку?</summary>
+            <p>Выбирайте удобную нескользящую обувь и одежду по погоде: вечером на высоте прохладнее, чем на улице, поэтому лучше взять тёплый слой.</p>
           </details>
           <details>
             <summary>Можно ли устроить фотосессию?</summary>
@@ -742,6 +1006,6 @@
       <span>Экскурсии по крышам Москвы</span>
     </footer>
 
-    <script src="script.js?v=20260715-catalog"></script>
+    <script src="script.js?v=20260715-seo"></script>
   </body>
 </html>
