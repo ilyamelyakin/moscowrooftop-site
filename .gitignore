@@ -10,6 +10,16 @@
 *.PSD
 *.psd
 
+# Source originals: pages reference only the resized -640/-1280/-1600 variants.
+assets/roof-1.jpg
+assets/roof-2.jpg
+assets/roof-3.jpg
+assets/roof-4.jpg
+assets/roof-5.jpg
+assets/roof-6.jpg
+assets/hero-fallback.jpg
+assets/gallery-video.mp4
+
 # Local/editor noise.
 .idea/
 .vscode/
