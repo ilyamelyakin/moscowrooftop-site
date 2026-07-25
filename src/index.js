@@ -13,17 +13,27 @@ const ALLOWED_ORIGINS = new Set([
   "http://127.0.0.1:8000",
 ]);
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
-// Цена за 1 человека по локациям (ключ = точное имя крыши из data-roof-name).
-const ROOF_PRICES = new Map([
-  ["Фили 60 этажей", 2000],
-  ["Фили", 2000],
-  ["Киевская Скатная", 2000],
-  ["Курская", 2000],
-  ["Марксистская", 2500],
-  ["Римская", 2000],
-  ["Таганская", 2000],
-  ["Таганская Скатная", 2000],
-  ["Шелепиха 9 этажей", 2000],
+// Цены за 1 человека приходят из гугл-таблицы «Список крыш Москвы» (та же,
+// что у Telegram-бота): колонки id,name,status,price_rub. Таблица открыта
+// на чтение по ссылке, поэтому воркеру не нужны ключи Google API.
+const PRICE_SHEET_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/1VrEYHh_bFuKEf0Bme468Yh-gKNtoDDbXctqeOJt9-j4/export?format=csv&gid=0";
+const PRICE_CACHE_URL = "https://moscowrooftop.ru/__cache/roof-prices";
+const PRICE_CACHE_TTL_SECONDS = 300;
+const PRICE_FETCH_TIMEOUT_MS = 4000;
+// В таблице «Марксисткая» (без «с»), на сайте — «Марксистская».
+const SHEET_NAME_ALIASES = new Map([["марксистская", "марксисткая"]]);
+// Снапшот таблицы от 2026-07-25 — используется, только если Google недоступен.
+const FALLBACK_ROOF_PRICES = new Map([
+  ["фили 60 этажей", 3000],
+  ["фили", 2500],
+  ["киевская скатная", 2300],
+  ["курская", 2300],
+  ["марксисткая", 2500],
+  ["римская", 2000],
+  ["таганская", 3000],
+  ["таганская скатная", 2500],
+  ["шелепиха 9 этажей", 2000],
 ]);
 
 function jsonResponse(payload, status = 200, extraHeaders = {}) {
@@ -163,12 +173,136 @@ function validateLead(lead) {
   return "";
 }
 
+function normalizeRoofName(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/ё/g, "е")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function parseCsvLine(line) {
+  const cells = [];
+  let cell = "";
+  let quoted = false;
+
+  for (let i = 0; i < line.length; i += 1) {
+    const char = line[i];
+    if (quoted) {
+      if (char === '"' && line[i + 1] === '"') {
+        cell += '"';
+        i += 1;
+      } else if (char === '"') {
+        quoted = false;
+      } else {
+        cell += char;
+      }
+    } else if (char === '"') {
+      quoted = true;
+    } else if (char === ",") {
+      cells.push(cell);
+      cell = "";
+    } else {
+      cell += char;
+    }
+  }
+
+  cells.push(cell);
+  return cells;
+}
+
+function parseRoofPricesCsv(csv) {
+  const lines = csv.split(/\r?\n/).filter((line) => line.trim());
+  const header = parseCsvLine(lines[0] || "").map((cell) => cell.trim().toLowerCase());
+  const nameIndex = header.indexOf("name");
+  const priceIndex = header.indexOf("price_rub");
+
+  if (nameIndex === -1 || priceIndex === -1) {
+    return {};
+  }
+
+  const prices = {};
+
+  lines.slice(1).forEach((line) => {
+    const cells = parseCsvLine(line);
+    const name = normalizeRoofName(cells[nameIndex]);
+    const price = Number.parseInt(String(cells[priceIndex] || "").replace(/[^\d]/g, ""), 10);
+    if (name && Number.isInteger(price) && price > 0) {
+      prices[name] = price;
+    }
+  });
+
+  return prices;
+}
+
+async function fetchRoofPrices() {
+  const cache = caches.default;
+  const cacheKey = new Request(PRICE_CACHE_URL);
+  const cached = await cache.match(cacheKey);
+
+  if (cached) {
+    return new Map(Object.entries(await cached.json()));
+  }
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), PRICE_FETCH_TIMEOUT_MS);
+  let response;
+
+  try {
+    response = await fetch(PRICE_SHEET_CSV_URL, {
+      signal: controller.signal,
+      headers: { Accept: "text/csv" },
+    });
+  } finally {
+    clearTimeout(timer);
+  }
+
+  if (!response.ok) {
+    throw new Error(`Sheet responded with ${response.status}`);
+  }
+
+  const prices = parseRoofPricesCsv(await response.text());
+
+  if (!Object.keys(prices).length) {
+    throw new Error("Sheet contained no prices");
+  }
+
+  await cache.put(
+    cacheKey,
+    new Response(JSON.stringify(prices), {
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": `max-age=${PRICE_CACHE_TTL_SECONDS}`,
+      },
+    })
+  );
+
+  return new Map(Object.entries(prices));
+}
+
+// Возвращает цену за 1 человека или null; никогда не роняет обработку заявки.
+async function getRoofPrice(roofName) {
+  const normalized = normalizeRoofName(roofName);
+  const lookupKey = SHEET_NAME_ALIASES.get(normalized) || normalized;
+
+  if (!lookupKey) {
+    return null;
+  }
+
+  try {
+    const prices = await fetchRoofPrices();
+    return prices.get(lookupKey) ?? FALLBACK_ROOF_PRICES.get(lookupKey) ?? null;
+  } catch {
+    return FALLBACK_ROOF_PRICES.get(lookupKey) ?? null;
+  }
+}
+
 function extractPhoneDigits(contact) {
   const digits = contact.replace(/\D/g, "");
   return digits.length >= 10 && digits.length <= 15 ? digits : "";
 }
 
-function formatLeadMessage(lead) {
+function formatLeadMessage(lead, pricePerPerson) {
   const username = lead.contact.startsWith("@") ? lead.contact : "";
   const phoneDigits = username ? "" : extractPhoneDigits(lead.contact);
   const phoneLine = phoneDigits
@@ -177,9 +311,8 @@ function formatLeadMessage(lead) {
       : phoneDigits
     : "—";
   const userLine = username ? `${lead.name} (${username})` : lead.name;
-  const price = ROOF_PRICES.get(lead.roof);
-  const priceLine = price ? `${price} ₽` : "—";
-  const totalLine = price ? `${price * lead.people} ₽` : "—";
+  const priceLine = pricePerPerson ? `${pricePerPerson} ₽` : "—";
+  const totalLine = pricePerPerson ? `${pricePerPerson * lead.people} ₽` : "—";
 
   return [
     "📥 Новая заявка с сайта",
@@ -263,6 +396,7 @@ async function handleLeadRequest(request, env, url) {
     );
   }
 
+  const pricePerPerson = await getRoofPrice(lead.roof);
   let telegramResponse;
 
   try {
@@ -273,7 +407,7 @@ async function handleLeadRequest(request, env, url) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: env.TELEGRAM_CHAT_ID,
-          text: formatLeadMessage(lead),
+          text: formatLeadMessage(lead, pricePerPerson),
           parse_mode: "HTML",
           disable_web_page_preview: true,
         }),
