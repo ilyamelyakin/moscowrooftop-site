@@ -1,4 +1,5 @@
 const LEAD_PATH = "/api/lead";
+const ROOFS_PATH = "/api/roofs";
 const MAX_BODY_BYTES = 12_000;
 // Short slug aliases that may appear in external links; keep canonical URLs unique.
 const PAGE_REDIRECTS = new Map([
@@ -18,7 +19,7 @@ const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "ut
 // на чтение по ссылке, поэтому воркеру не нужны ключи Google API.
 const PRICE_SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/1VrEYHh_bFuKEf0Bme468Yh-gKNtoDDbXctqeOJt9-j4/export?format=csv&gid=0";
-const PRICE_CACHE_URL = "https://moscowrooftop.ru/__cache/roof-prices";
+const PRICE_CACHE_URL = "https://moscowrooftop.ru/__cache/roof-sheet-v2";
 const PRICE_CACHE_TTL_SECONDS = 300;
 const PRICE_FETCH_TIMEOUT_MS = 4000;
 // В таблице «Марксисткая» (без «с»), на сайте — «Марксистская».
@@ -30,6 +31,7 @@ const FALLBACK_ROOF_PRICES = new Map([
   ["киевская скатная", 2300],
   ["курская", 2300],
   ["марксисткая", 2500],
+  ["новокузнецкая", 2500],
   ["римская", 2000],
   ["таганская", 3000],
   ["таганская скатная", 2500],
@@ -211,31 +213,41 @@ function parseCsvLine(line) {
   return cells;
 }
 
-function parseRoofPricesCsv(csv) {
+// Строка таблицы -> { price: number | null, on: boolean }.
+// Крыша скрывается только при явном status=off, иначе считается доступной.
+function parseRoofSheetCsv(csv) {
   const lines = csv.split(/\r?\n/).filter((line) => line.trim());
   const header = parseCsvLine(lines[0] || "").map((cell) => cell.trim().toLowerCase());
   const nameIndex = header.indexOf("name");
   const priceIndex = header.indexOf("price_rub");
+  const statusIndex = header.indexOf("status");
 
   if (nameIndex === -1 || priceIndex === -1) {
     return {};
   }
 
-  const prices = {};
+  const roofs = {};
 
   lines.slice(1).forEach((line) => {
     const cells = parseCsvLine(line);
     const name = normalizeRoofName(cells[nameIndex]);
-    const price = Number.parseInt(String(cells[priceIndex] || "").replace(/[^\d]/g, ""), 10);
-    if (name && Number.isInteger(price) && price > 0) {
-      prices[name] = price;
+    if (!name) {
+      return;
     }
+    const price = Number.parseInt(String(cells[priceIndex] || "").replace(/[^\d]/g, ""), 10);
+    const status = String(statusIndex === -1 ? "" : cells[statusIndex] || "")
+      .trim()
+      .toLowerCase();
+    roofs[name] = {
+      price: Number.isInteger(price) && price > 0 ? price : null,
+      on: status !== "off",
+    };
   });
 
-  return prices;
+  return roofs;
 }
 
-async function fetchRoofPrices() {
+async function fetchRoofSheet() {
   const cache = caches.default;
   const cacheKey = new Request(PRICE_CACHE_URL);
   const cached = await cache.match(cacheKey);
@@ -244,15 +256,25 @@ async function fetchRoofPrices() {
     return new Map(Object.entries(await cached.json()));
   }
 
+  // Promise.race поверх AbortController: даже если рантайм игнорирует
+  // signal (так делает локальный miniflare), ждём Google не дольше таймаута.
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), PRICE_FETCH_TIMEOUT_MS);
+  let timer;
+  const fetchPromise = fetch(PRICE_SHEET_CSV_URL, {
+    signal: controller.signal,
+    headers: { Accept: "text/csv" },
+  });
+  fetchPromise.catch(() => {});
+  const timeoutPromise = new Promise((_, reject) => {
+    timer = setTimeout(() => {
+      controller.abort();
+      reject(new Error("Sheet fetch timed out"));
+    }, PRICE_FETCH_TIMEOUT_MS);
+  });
   let response;
 
   try {
-    response = await fetch(PRICE_SHEET_CSV_URL, {
-      signal: controller.signal,
-      headers: { Accept: "text/csv" },
-    });
+    response = await Promise.race([fetchPromise, timeoutPromise]);
   } finally {
     clearTimeout(timer);
   }
@@ -261,15 +283,15 @@ async function fetchRoofPrices() {
     throw new Error(`Sheet responded with ${response.status}`);
   }
 
-  const prices = parseRoofPricesCsv(await response.text());
+  const roofs = parseRoofSheetCsv(await response.text());
 
-  if (!Object.keys(prices).length) {
-    throw new Error("Sheet contained no prices");
+  if (!Object.keys(roofs).length) {
+    throw new Error("Sheet contained no roofs");
   }
 
   await cache.put(
     cacheKey,
-    new Response(JSON.stringify(prices), {
+    new Response(JSON.stringify(roofs), {
       headers: {
         "Content-Type": "application/json",
         "Cache-Control": `max-age=${PRICE_CACHE_TTL_SECONDS}`,
@@ -277,7 +299,7 @@ async function fetchRoofPrices() {
     })
   );
 
-  return new Map(Object.entries(prices));
+  return new Map(Object.entries(roofs));
 }
 
 // Возвращает цену за 1 человека или null; никогда не роняет обработку заявки.
@@ -290,11 +312,46 @@ async function getRoofPrice(roofName) {
   }
 
   try {
-    const prices = await fetchRoofPrices();
-    return prices.get(lookupKey) ?? FALLBACK_ROOF_PRICES.get(lookupKey) ?? null;
+    const roofs = await fetchRoofSheet();
+    return roofs.get(lookupKey)?.price ?? FALLBACK_ROOF_PRICES.get(lookupKey) ?? null;
   } catch {
     return FALLBACK_ROOF_PRICES.get(lookupKey) ?? null;
   }
+}
+
+// GET /api/roofs -> { ok: true, roofs: { "<имя>": true|false } } (true = показывать).
+// При недоступной таблице отвечает 503 — клиент в этом случае ничего не скрывает.
+async function handleRoofsRequest(request) {
+  if (request.method !== "GET") {
+    return jsonResponse(
+      { ok: false, error: "Метод не поддерживается." },
+      405,
+      { Allow: "GET" }
+    );
+  }
+
+  let sheet;
+
+  try {
+    sheet = await fetchRoofSheet();
+  } catch {
+    return jsonResponse({ ok: false }, 503);
+  }
+
+  const roofs = {};
+  sheet.forEach((entry, name) => {
+    roofs[name] = entry.on;
+  });
+  // Зеркалим алиасы, чтобы клиент искал по написанию с сайта.
+  SHEET_NAME_ALIASES.forEach((sheetName, siteName) => {
+    if (roofs[sheetName] !== undefined) {
+      roofs[siteName] = roofs[sheetName];
+    }
+  });
+
+  return jsonResponse({ ok: true, roofs }, 200, {
+    "Cache-Control": `public, max-age=${PRICE_CACHE_TTL_SECONDS}`,
+  });
 }
 
 function extractPhoneDigits(contact) {
@@ -461,6 +518,10 @@ export default {
 
     if (url.pathname === LEAD_PATH) {
       return handleLeadRequest(request, env, url);
+    }
+
+    if (url.pathname === ROOFS_PATH) {
+      return handleRoofsRequest(request);
     }
 
     if (url.pathname === "/bot" || url.pathname === "/bot/") {

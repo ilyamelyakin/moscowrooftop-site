@@ -526,6 +526,10 @@ h1 {
     box-shadow 180ms ease;
 }
 
+.roof-card[hidden] {
+  display: none;
+}
+
 .roof-card:hover,
 .roof-card:focus-within {
   border-color: rgba(246, 197, 111, 0.38);

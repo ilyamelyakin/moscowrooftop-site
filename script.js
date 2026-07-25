@@ -53,6 +53,13 @@ const ROOF_GALLERIES = {
       { base: 'assets/locations/marksistskaya-high-rise-01', alt: 'Сталинская высотка и вечерний город под красным небом' },
     ],
   },
+  'novokuznetskaya': {
+    name: 'Новокузнецкая',
+    images: [
+      { base: 'assets/locations/novokuznetskaya-02', alt: 'Подсвеченная высотка на Котельнической набережной над Москва-рекой вечером' },
+      { base: 'assets/locations/novokuznetskaya-01', alt: 'Высотка на Котельнической набережной и теплоход на Москва-реке днём' },
+    ],
+  },
   'rimskaya-skyline': {
     name: 'Римская',
     images: [
@@ -99,6 +106,15 @@ const ROOF_GALLERIES = {
     ],
   },
 };
+
+// Так же нормализует имена воркер (/api/roofs) — написания должны совпадать.
+function normalizeRoofName(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/ё/g, 'е')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 function isAnalyticsHost() {
   return ANALYTICS_HOSTS.has(window.location.hostname);
@@ -635,6 +651,50 @@ function bindRoofCatalog() {
   if (getCard(restoredRoofId)) {
     applySelection(restoredRoofId, { persist: false });
   }
+
+  const clearSelection = () => {
+    selectedRoofId = '';
+    roofInput.value = '';
+    roofInput.dataset.roofId = '';
+    selectedName.textContent = '';
+    selectedPanel.hidden = true;
+    cards.forEach((item) => {
+      item.classList.remove('is-selected');
+      item.querySelector('.roof-select-button')?.setAttribute('aria-pressed', 'false');
+    });
+    try {
+      sessionStorage.removeItem(ROOF_SELECTION_KEY);
+    } catch (error) {
+      console.warn('[Catalog] Roof selection storage is unavailable', error);
+    }
+  };
+
+  // Крыши со status=off в гугл-таблице скрываются из каталога.
+  // Если статус получить не удалось, каталог остаётся полным.
+  const hideUnavailableRoofs = async () => {
+    try {
+      const response = await fetch('/api/roofs', { headers: { Accept: 'application/json' } });
+      if (!response.ok) {
+        return;
+      }
+      const data = await response.json();
+      if (!data || data.ok !== true || typeof data.roofs !== 'object' || data.roofs === null) {
+        return;
+      }
+      cards.forEach((card) => {
+        if (data.roofs[normalizeRoofName(card.dataset.roofName)] === false) {
+          card.hidden = true;
+          if (card.dataset.roofId === selectedRoofId) {
+            clearSelection();
+          }
+        }
+      });
+    } catch (error) {
+      console.warn('[Catalog] Roof availability is unavailable', error);
+    }
+  };
+
+  hideUnavailableRoofs();
 }
 
 function bindScrollDepth() {
