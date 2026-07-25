@@ -1025,6 +1025,7 @@ h1 {
 }
 
 .form-field input,
+.form-field textarea,
 .contact-methods label {
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
@@ -1032,7 +1033,8 @@ h1 {
   color: var(--text);
 }
 
-.form-field input {
+.form-field input,
+.form-field textarea {
   width: 100%;
   min-width: 0;
   min-height: 58px;
@@ -1047,7 +1049,14 @@ h1 {
     box-shadow 160ms ease;
 }
 
-.form-field input::placeholder {
+.form-field textarea {
+  min-height: 96px;
+  padding: 15px 16px;
+  resize: vertical;
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
   color: rgba(255, 248, 236, 0.38);
 }
 
@@ -1057,6 +1066,7 @@ h1 {
 }
 
 .form-field input:focus,
+.form-field textarea:focus,
 .contact-methods input:focus-visible + label,
 .form-consent input:focus-visible + .consent-check {
   border-color: var(--gold);

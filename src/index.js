@@ -13,6 +13,18 @@ const ALLOWED_ORIGINS = new Set([
   "http://127.0.0.1:8000",
 ]);
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
+// Цена за 1 человека по локациям (ключ = точное имя крыши из data-roof-name).
+const ROOF_PRICES = new Map([
+  ["Фили 60 этажей", 2000],
+  ["Фили", 2000],
+  ["Киевская Скатная", 2000],
+  ["Курская", 2000],
+  ["Марксистская", 2500],
+  ["Римская", 2000],
+  ["Таганская", 2000],
+  ["Таганская Скатная", 2000],
+  ["Шелепиха 9 этажей", 2000],
+]);
 
 function jsonResponse(payload, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(payload), {
@@ -96,6 +108,7 @@ function parseLead(payload) {
     name: cleanText(payload.name, 80),
     contactMethod: cleanText(payload.contactMethod, 12).toLowerCase(),
     contact: cleanText(payload.contact, 100),
+    comment: cleanText(payload.comment, 500),
     roof: cleanText(payload.roof, 120),
     consent: payload.consent === true,
     website: cleanText(payload.website, 100),
@@ -150,45 +163,36 @@ function validateLead(lead) {
   return "";
 }
 
-function getReferrerHost(referrer) {
-  if (!referrer) {
-    return "Прямой переход";
-  }
-
-  try {
-    return new URL(referrer).hostname || "Прямой переход";
-  } catch {
-    return "Не определён";
-  }
+function extractPhoneDigits(contact) {
+  const digits = contact.replace(/\D/g, "");
+  return digits.length >= 10 && digits.length <= 15 ? digits : "";
 }
 
 function formatLeadMessage(lead) {
-  const method = lead.contactMethod === "whatsapp" ? "WhatsApp" : "Telegram";
-  const source = lead.utm.utm_source || getReferrerHost(lead.referrer);
-  const sourceDetails = [
-    lead.utm.utm_medium && `канал: ${lead.utm.utm_medium}`,
-    lead.utm.utm_campaign && `кампания: ${lead.utm.utm_campaign}`,
-  ].filter(Boolean);
-  const sourceLine = sourceDetails.length
-    ? `${source} (${sourceDetails.join(", ")})`
-    : source;
-  const bookingDetails = [
-    lead.roof && `<b>Локация:</b> ${escapeHtml(lead.roof)}`,
-    `<b>Дата:</b> ${escapeHtml(formatDate(lead.date))}`,
-    `<b>Время:</b> ${escapeHtml(lead.time)}`,
-    `<b>Количество человек:</b> ${lead.people}`,
-    `<b>Имя:</b> ${escapeHtml(lead.name)}`,
-    `<b>Ответить в:</b> ${method}`,
-    `<b>Контакт:</b> ${escapeHtml(lead.contact)}`,
-  ].filter(Boolean);
+  const username = lead.contact.startsWith("@") ? lead.contact : "";
+  const phoneDigits = username ? "" : extractPhoneDigits(lead.contact);
+  const phoneLine = phoneDigits
+    ? lead.contactMethod === "whatsapp"
+      ? `${phoneDigits} (WhatsApp)`
+      : phoneDigits
+    : "—";
+  const userLine = username ? `${lead.name} (${username})` : lead.name;
+  const price = ROOF_PRICES.get(lead.roof);
+  const priceLine = price ? `${price} ₽` : "—";
+  const totalLine = price ? `${price * lead.people} ₽` : "—";
 
   return [
-    "<b>Новая заявка с сайта</b>",
+    "📥 Новая заявка с сайта",
     "",
-    ...bookingDetails,
-    "",
-    `<b>Источник:</b> ${escapeHtml(sourceLine)}`,
-    `<b>Страница:</b> ${escapeHtml(lead.page || "/")}`,
+    `👤 Пользователь: ${escapeHtml(userLine)}`,
+    `📍 Локация: ${escapeHtml(lead.roof || "—")}`,
+    `💰 Цена за 1 чел.: ${priceLine}`,
+    `📅 Дата: ${escapeHtml(formatDate(lead.date))}`,
+    `⏰ Время: ${escapeHtml(lead.time)}`,
+    `👥 Участников: ${lead.people}`,
+    `🧾 Итого: ${totalLine}`,
+    `📞 Телефон: ${escapeHtml(phoneLine)}`,
+    `💬 Комментарий: ${escapeHtml(lead.comment || "—")}`,
   ].join("\n");
 }
 

@@ -8,9 +8,11 @@ const PLACEHOLDER_YM_ID = 'YOUR_YM_COUNTER_ID';
 const PLACEHOLDER_GA_ID = 'G-XXXXXXXXXX';
 const ANALYTICS_HOSTS = new Set(['moscowrooftop.ru', 'www.moscowrooftop.ru']);
 const ROOF_SELECTION_KEY = 'moscow_rooftop_selected_roof';
+// Image entries may carry `w: [width640, width1280]` when the real pixel
+// widths differ from the default portrait 480/960 pair.
 const ROOF_GALLERIES = {
   'fili-city': {
-    name: 'Москва-Сити с высоты',
+    name: 'Фили 60 этажей',
     images: [
       { base: 'assets/locations/fili-moscow-city-05', alt: 'Панорама Москва-Сити и Москва-реки с большой высоты вечером' },
       { base: 'assets/locations/fili-moscow-city-01', alt: 'Башни Москва-Сити и вечерний город за ограждением высокой площадки' },
@@ -19,8 +21,25 @@ const ROOF_GALLERIES = {
       { base: 'assets/locations/fili-moscow-city-04', alt: 'Панорама делового центра Москвы после заката' },
     ],
   },
+  'fili-rooftop': {
+    name: 'Фили',
+    images: [
+      { base: 'assets/locations/fili-rooftop-01', alt: 'Вид с крыши на башни Москва-Сити, реку и жилые кварталы вечером' },
+      { base: 'assets/locations/fili-rooftop-02', alt: 'Девушка на крыше на фоне башен Москва-Сити в закатном свете', w: [640, 1280] },
+      { base: 'assets/locations/fili-rooftop-03', alt: 'Молодой человек на крыше на фоне панорамы Москва-Сити' },
+    ],
+  },
+  'kievskaya-skatnaya': {
+    name: 'Киевская Скатная',
+    images: [
+      { base: 'assets/locations/kievskaya-skatnaya-01', alt: 'Гостиница «Украина» на фоне алого закатного неба', w: [360, 720] },
+      { base: 'assets/locations/kievskaya-skatnaya-02', alt: 'Фотосессия на скатной крыше у подсвеченной башни Киевского вокзала' },
+      { base: 'assets/locations/kievskaya-skatnaya-03', alt: 'Девушка на скатной крыше на фоне гостиницы «Украина» вечером' },
+      { base: 'assets/locations/kievskaya-skatnaya-04', alt: 'Вид со скатной крыши на башни Москва-Сити на закате' },
+    ],
+  },
   'kurskaya-sunset': {
-    name: 'Закат над историческим центром',
+    name: 'Курская',
     images: [
       { base: 'assets/locations/kurskaya-center-view-03', alt: 'Оранжевый закат над высотками и крышами центра Москвы' },
       { base: 'assets/locations/kurskaya-center-view-01', alt: 'Вечерняя панорама исторического центра Москвы' },
@@ -29,24 +48,54 @@ const ROOF_GALLERIES = {
     ],
   },
   'marksistskaya-high-rise': {
-    name: 'Высотка в закатном свете',
+    name: 'Марксистская',
     images: [
       { base: 'assets/locations/marksistskaya-high-rise-01', alt: 'Сталинская высотка и вечерний город под красным небом' },
     ],
   },
   'rimskaya-skyline': {
-    name: 'Высотка и Москва-Сити',
+    name: 'Римская',
     images: [
       { base: 'assets/locations/rimskaya-city-sunset-01', alt: 'Сталинская высотка на фоне Москва-Сити в золотом свете' },
       { base: 'assets/locations/rimskaya-city-sunset-02', alt: 'Силуэт высотки и башен Москва-Сити на закате' },
+      { base: 'assets/locations/rimskaya-city-sunset-03', alt: 'Закатное солнце над городом, высотка и купола в дымке', w: [360, 720] },
+      { base: 'assets/locations/rimskaya-city-sunset-04', alt: 'Сталинская высотка и подсвеченная церковь в закатной дымке' },
+      { base: 'assets/locations/rimskaya-city-sunset-05', alt: 'Крыши домов и вечернее небо над городом после заката' },
+      { base: 'assets/locations/rimskaya-city-sunset-06', alt: 'Дневной вид с крыши: храмы, трамвай и сталинская высотка вдали' },
+      { base: 'assets/locations/rimskaya-city-sunset-07', alt: 'Фотосессия на крыше на фоне закатной панорамы Москвы' },
     ],
   },
   'taganskaya-golden-hour': {
-    name: 'Золотой час над центром',
+    name: 'Таганская',
     images: [
       { base: 'assets/locations/taganskaya-golden-hour-03', alt: 'Солнце и силуэты центра Москвы в золотом вечернем свете' },
       { base: 'assets/locations/taganskaya-golden-hour-01', alt: 'Панорама центра Москвы в тёплом вечернем свете' },
       { base: 'assets/locations/taganskaya-golden-hour-02', alt: 'Городские здания и высотка в лучах золотого часа' },
+      { base: 'assets/locations/taganskaya-golden-hour-06', alt: 'Вид с крыши на Кремль и собор Василия Блаженного в закатном небе' },
+      { base: 'assets/locations/taganskaya-golden-hour-07', alt: 'Высотка на Котельнической набережной в вечерней подсветке' },
+      { base: 'assets/locations/taganskaya-golden-hour-05', alt: 'Крыша, Москва-река и высотка на Котельнической на закате' },
+      { base: 'assets/locations/taganskaya-golden-hour-04', alt: 'Вечерняя панорама города с силуэтом сталинской высотки на горизонте' },
+      { base: 'assets/locations/taganskaya-golden-hour-08', alt: 'Стеклянный купол Дома музыки и вечерние небоскрёбы' },
+      { base: 'assets/locations/taganskaya-golden-hour-09', alt: 'Москва-река, мост и вечерние огни города с высоты' },
+      { base: 'assets/locations/taganskaya-golden-hour-10', alt: 'Закат над городом с силуэтами Москва-Сити на горизонте' },
+    ],
+  },
+  'taganskaya-skatnaya': {
+    name: 'Таганская Скатная',
+    images: [
+      { base: 'assets/locations/taganskaya-skatnaya-01', alt: 'Скатная крыша и высотка на Котельнической набережной на закате' },
+      { base: 'assets/locations/taganskaya-skatnaya-02', alt: 'Дневная фотосессия двух девушек на крыше, вдали сталинская высотка', w: [427, 853] },
+      { base: 'assets/locations/taganskaya-skatnaya-03', alt: 'Девушка позирует на скатной крыше среди старой московской застройки', w: [427, 853] },
+      { base: 'assets/locations/taganskaya-skatnaya-04', alt: 'Москва-река, набережные и вечерняя панорама центра с крыши' },
+      { base: 'assets/locations/taganskaya-skatnaya-05', alt: 'Вечерний вид на высотку у Краснохолмского моста и Москва-реку' },
+      { base: 'assets/locations/taganskaya-skatnaya-06', alt: 'Подсвеченные дома на набережной и Москва-Сити на горизонте' },
+      { base: 'assets/locations/taganskaya-skatnaya-07', alt: 'Мост через Москва-реку и вечерние огни города с крыши' },
+    ],
+  },
+  'shelepikha-9': {
+    name: 'Шелепиха 9 этажей',
+    images: [
+      { base: 'assets/locations/shelepikha-9-01', alt: 'Ночные башни Москва-Сити в огнях и силуэт человека на крыше', w: [464, 928] },
     ],
   },
 };
@@ -463,11 +512,13 @@ function bindRoofCatalog() {
       return;
     }
 
+    const [width640, width1280] = image.w || [480, 960];
+
     lightboxTitle.textContent = gallery.name;
-    lightboxSource.srcset = `${image.base}-640.webp 480w, ${image.base}-1280.webp 960w`;
+    lightboxSource.srcset = `${image.base}-640.webp ${width640}w, ${image.base}-1280.webp ${width1280}w`;
     lightboxSource.sizes = '(max-width: 640px) calc(100vw - 110px), 760px';
     lightboxImage.src = `${image.base}-1280.jpg`;
-    lightboxImage.srcset = `${image.base}-640.jpg 480w, ${image.base}-1280.jpg 960w`;
+    lightboxImage.srcset = `${image.base}-640.jpg ${width640}w, ${image.base}-1280.jpg ${width1280}w`;
     lightboxImage.sizes = '(max-width: 640px) calc(100vw - 110px), 760px';
     lightboxImage.alt = image.alt;
     lightboxCounter.textContent = `${activeImageIndex + 1} из ${gallery.images.length}`;
@@ -820,6 +871,7 @@ function bindLeadForm() {
       name: String(formData.get('name') || '').trim(),
       contactMethod: String(formData.get('contactMethod') || ''),
       contact: String(formData.get('contact') || '').trim(),
+      comment: String(formData.get('comment') || '').trim(),
       roof: String(formData.get('roof') || '').trim(),
       consent: formData.get('consent') === 'on',
       website: String(formData.get('website') || ''),
