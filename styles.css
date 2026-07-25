@@ -301,8 +301,7 @@ h1 {
 
 .btn-icon path,
 .btn-icon rect,
-.btn-icon circle,
-.video-toggle path {
+.btn-icon circle {
   fill: currentColor;
 }
 
@@ -867,35 +866,6 @@ h1 {
 
 .gallery-wide {
   grid-column: span 2;
-}
-
-.video-toggle {
-  position: absolute;
-  right: 18px;
-  bottom: 18px;
-  display: grid;
-  width: 52px;
-  height: 52px;
-  place-items: center;
-  border: 1px solid rgba(255, 248, 236, 0.3);
-  border-radius: 50%;
-  background: rgba(10, 8, 7, 0.58);
-  color: var(--text);
-  cursor: pointer;
-  backdrop-filter: blur(12px);
-  transition:
-    transform 180ms ease,
-    background 180ms ease;
-}
-
-.video-toggle:hover {
-  background: rgba(246, 197, 111, 0.2);
-  transform: scale(1.04);
-}
-
-.video-toggle svg {
-  width: 22px;
-  height: 22px;
 }
 
 .booking-panel {

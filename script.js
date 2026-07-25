@@ -236,7 +236,11 @@ function trackEvent(eventName, params = {}) {
 
   trackYMGoal(eventName, eventParams);
   trackGAEvent(eventName, eventParams);
-  console.log('[Analytics]', eventName, eventParams);
+
+  // Отладочный лог только вне продакшена, чтобы не шуметь в консоли сайта.
+  if (!isAnalyticsHost()) {
+    console.log('[Analytics]', eventName, eventParams);
+  }
 }
 
 function normalizeStartSegment(value, maxLength = 30) {
@@ -734,46 +738,6 @@ function bindScrollDepth() {
   checkScrollDepth();
 }
 
-function bindVideoControls() {
-  document.querySelectorAll('.gallery-item video').forEach((video) => {
-    const toggle = video.parentElement?.querySelector('.video-toggle');
-    const poster = video.getAttribute('poster');
-
-    if (poster) {
-      video.style.backgroundImage = `url("${poster}")`;
-      video.style.backgroundPosition = 'center';
-      video.style.backgroundSize = 'cover';
-    }
-
-    video.addEventListener('error', () => {
-      if (toggle) {
-        toggle.hidden = true;
-      }
-    });
-
-    if (!toggle) {
-      return;
-    }
-
-    toggle.addEventListener('click', () => {
-      if (video.paused) {
-        video
-          .play()
-          .then(() => {
-            toggle.setAttribute('aria-label', 'Остановить видео');
-            toggle.classList.add('is-playing');
-          })
-          .catch(() => {});
-        return;
-      }
-
-      video.pause();
-      toggle.setAttribute('aria-label', 'Воспроизвести видео');
-      toggle.classList.remove('is-playing');
-    });
-  });
-}
-
 function getMoscowDateValue() {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Europe/Moscow',
@@ -1072,7 +1036,6 @@ function initSite() {
   bindGalleryView();
   bindRoofCatalog();
   bindScrollDepth();
-  bindVideoControls();
   bindLeadForm();
   bindFAQ();
 }
