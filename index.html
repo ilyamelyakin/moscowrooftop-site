@@ -46,7 +46,7 @@
       imagesrcset="assets/hero-fallback-768.webp 768w, assets/hero-fallback-1280.webp 1280w, assets/hero-fallback-1920.webp 1920w"
       imagesizes="100vw"
     />
-    <link rel="stylesheet" href="styles.css?v=20260715-seo" />
+    <link rel="stylesheet" href="styles.css?v=20260725-r2" />
 
     <script type="application/ld+json">
       {
@@ -99,13 +99,18 @@
             "@id": "https://moscowrooftop.ru/#catalog-list",
             "name": "Каталог крыш Москвы",
             "url": "https://moscowrooftop.ru/#catalog",
-            "numberOfItems": 5,
+            "numberOfItems": 10,
             "itemListElement": [
-              { "@type": "ListItem", "position": 1, "name": "Москва-Сити с высоты — Фили" },
-              { "@type": "ListItem", "position": 2, "name": "Закат над историческим центром — Курская" },
-              { "@type": "ListItem", "position": 3, "name": "Высотка в закатном свете — Марксистская" },
-              { "@type": "ListItem", "position": 4, "name": "Высотка и Москва-Сити — Римская" },
-              { "@type": "ListItem", "position": 5, "name": "Золотой час над центром — Таганская" }
+              { "@type": "ListItem", "position": 1, "name": "Фили 60 этажей" },
+              { "@type": "ListItem", "position": 2, "name": "Фили" },
+              { "@type": "ListItem", "position": 3, "name": "Киевская Скатная" },
+              { "@type": "ListItem", "position": 4, "name": "Курская" },
+              { "@type": "ListItem", "position": 5, "name": "Марксистская" },
+              { "@type": "ListItem", "position": 6, "name": "Новокузнецкая" },
+              { "@type": "ListItem", "position": 7, "name": "Римская" },
+              { "@type": "ListItem", "position": 8, "name": "Таганская" },
+              { "@type": "ListItem", "position": 9, "name": "Таганская Скатная" },
+              { "@type": "ListItem", "position": 10, "name": "Шелепиха 9 этажей" }
             ]
           },
           {
@@ -424,14 +429,23 @@
             </picture>
           </figure>
           <figure class="gallery-item">
-            <video muted loop playsinline preload="none" poster="assets/hero-fallback-768.jpg">
-              <source src="assets/hero-video.mp4" type="video/mp4" />
-            </video>
-            <button class="video-toggle" type="button" aria-label="Воспроизвести видео">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M8 5v14l11-7L8 5Z" />
-              </svg>
-            </button>
+            <picture>
+              <source
+                type="image/webp"
+                srcset="assets/locations/taganskaya-golden-hour-06-640.webp 480w, assets/locations/taganskaya-golden-hour-06-1280.webp 960w"
+                sizes="(max-width: 640px) 96vw, (max-width: 980px) 48vw, 285px"
+              />
+              <img
+                src="assets/locations/taganskaya-golden-hour-06-640.jpg"
+                srcset="assets/locations/taganskaya-golden-hour-06-640.jpg 480w, assets/locations/taganskaya-golden-hour-06-1280.jpg 960w"
+                sizes="(max-width: 640px) 96vw, (max-width: 980px) 48vw, 285px"
+                width="480"
+                height="640"
+                alt="Вид с крыши на Кремль и собор Василия Блаженного на закате"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
           </figure>
           <figure class="gallery-item">
             <picture>
@@ -1188,6 +1202,6 @@
       <span>Экскурсии по крышам Москвы</span>
     </footer>
 
-    <script src="script.js?v=20260715-seo"></script>
+    <script src="script.js?v=20260725-r2"></script>
   </body>
 </html>
