@@ -1478,7 +1478,7 @@ h1 {
   border-radius: 12px;
   background:
     linear-gradient(120deg, rgba(255, 158, 79, 0.22), rgba(255, 111, 97, 0.1) 42%, rgba(147, 197, 253, 0.1)),
-    url("assets/roof-6-1280.jpg") center / cover no-repeat;
+    url("assets/hero-sunset-1280.jpg") center / cover no-repeat;
   box-shadow: var(--shadow);
   isolation: isolate;
   overflow: hidden;
