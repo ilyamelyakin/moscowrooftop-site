@@ -1000,6 +1000,7 @@ h1 {
 
 .form-field input,
 .form-field textarea,
+.form-field select,
 .contact-methods label {
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
@@ -1008,7 +1009,8 @@ h1 {
 }
 
 .form-field input,
-.form-field textarea {
+.form-field textarea,
+.form-field select {
   width: 100%;
   min-width: 0;
   min-height: 58px;
@@ -1023,6 +1025,26 @@ h1 {
     box-shadow 160ms ease;
 }
 
+.form-field select {
+  padding-right: 46px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="%23fff8ec" stroke-opacity="0.6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 14px;
+  cursor: pointer;
+}
+
+/* Пока время не выбрано, показываем текст-подсказку приглушённым. */
+.form-field select:invalid {
+  color: rgba(255, 248, 236, 0.38);
+}
+
+.form-field select option,
+.form-field select optgroup {
+  color: var(--text);
+  background: var(--bg-soft);
+}
+
 .form-field textarea {
   min-height: 96px;
   padding: 15px 16px;
@@ -1035,12 +1057,13 @@ h1 {
 }
 
 .form-field input[type="date"],
-.form-field input[type="time"] {
+.form-field select {
   color-scheme: dark;
 }
 
 .form-field input:focus,
 .form-field textarea:focus,
+.form-field select:focus,
 .contact-methods input:focus-visible + label,
 .form-consent input:focus-visible + .consent-check {
   border-color: var(--gold);
@@ -1048,6 +1071,7 @@ h1 {
 }
 
 .form-field input[aria-invalid="true"],
+.form-field select[aria-invalid="true"],
 .form-consent input[aria-invalid="true"] + .consent-check {
   border-color: var(--rose);
   box-shadow: 0 0 0 3px rgba(255, 111, 97, 0.12);
