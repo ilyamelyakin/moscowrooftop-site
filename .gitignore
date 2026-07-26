@@ -34,3 +34,6 @@ ops/
 
 # Source photo folders (originals); site uses processed assets/locations/*.
 Локации/
+
+# Исходники фото в корне не коммитим.
+/IMG_*.jpg
