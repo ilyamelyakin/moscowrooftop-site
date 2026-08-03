@@ -46,7 +46,7 @@
       imagesrcset="assets/hero-sunset-768.webp 768w, assets/hero-sunset-1280.webp 1280w, assets/hero-sunset-1920.webp 1920w"
       imagesizes="100vw"
     />
-    <link rel="stylesheet" href="styles.css?v=20260725-r5" />
+    <link rel="stylesheet" href="styles.css?v=20260727-r6" />
 
     <script type="application/ld+json">
       {
@@ -966,21 +966,21 @@
             </a>
           </p>
 
-          <div class="selected-roof" id="selected-roof" role="status" aria-live="polite" hidden>
-            <div>
-              <span>Выбранная локация</span>
-              <strong id="selected-roof-name"></strong>
-            </div>
-            <a href="#catalog">Изменить выбор</a>
-          </div>
-
           <div class="lead-form-shell">
             <form class="lead-form" id="lead-form" novalidate>
-              <input id="lead-roof" name="roof" type="hidden" value="" />
               <div class="form-honeypot" aria-hidden="true">
                 <label for="lead-website">Сайт</label>
                 <input id="lead-website" name="website" type="text" tabindex="-1" autocomplete="off" />
               </div>
+
+              <label class="form-field" for="lead-roof">
+                <span>Крыша</span>
+                <select id="lead-roof" name="roof" aria-describedby="lead-roof-hint lead-roof-error" required>
+                  <option value="" selected disabled>Выберите крышу из каталога</option>
+                </select>
+                <small id="lead-roof-hint">Фотографии всех крыш — в <a class="text-link" href="#catalog">каталоге выше</a></small>
+                <small class="field-error" id="lead-roof-error"></small>
+              </label>
 
               <div class="lead-form-grid">
                 <label class="form-field" for="lead-date">
@@ -1225,6 +1225,6 @@
       <span>Экскурсии по крышам Москвы</span>
     </footer>
 
-    <script src="script.js?v=20260725-r5"></script>
+    <script src="script.js?v=20260727-r6"></script>
   </body>
 </html>

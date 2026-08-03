@@ -168,6 +168,10 @@ function validateLead(lead) {
       : "Укажите @username в Telegram или номер телефона.";
   }
 
+  if (lead.roof.length < 2) {
+    return "Выберите крышу из каталога.";
+  }
+
   if (!lead.consent) {
     return "Подтвердите согласие на обработку данных.";
   }

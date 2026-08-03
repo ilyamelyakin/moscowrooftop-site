@@ -458,9 +458,16 @@ function bindRoofCatalog() {
   }
 
   const cards = [...catalog.querySelectorAll('.roof-card[data-roof-id]')];
-  const selectedPanel = document.getElementById('selected-roof');
-  const selectedName = document.getElementById('selected-roof-name');
   const booking = document.getElementById('booking');
+
+  // Список крыш в форме собирается из карточек каталога — один источник имён.
+  cards.forEach((card) => {
+    const option = document.createElement('option');
+    option.value = card.dataset.roofName || '';
+    option.textContent = card.dataset.roofName || '';
+    option.dataset.roofId = card.dataset.roofId || '';
+    roofInput.append(option);
+  });
   const dialog = document.getElementById('roof-lightbox');
   const lightboxTitle = document.getElementById('roof-lightbox-title');
   const lightboxSource = document.getElementById('roof-lightbox-source');
@@ -503,8 +510,6 @@ function bindRoofCatalog() {
     selectedRoofId = roofId;
     roofInput.value = card.dataset.roofName || ROOF_GALLERIES[roofId]?.name || roofId;
     roofInput.dataset.roofId = roofId;
-    selectedName.textContent = roofInput.value;
-    selectedPanel.hidden = false;
 
     cards.forEach((item) => {
       const isSelected = item === card;
@@ -602,6 +607,17 @@ function bindRoofCatalog() {
     button.addEventListener('click', () => openLightbox(button.dataset.roofId || ''));
   });
 
+  // Выбор крыши прямо в форме подсвечивает карточку и запоминается.
+  roofInput.addEventListener('change', () => {
+    const option = roofInput.selectedOptions[0];
+    const roofId = option?.dataset.roofId || '';
+
+    if (getCard(roofId)) {
+      applySelection(roofId);
+      trackEvent('roof_booking_click', { roof_id: roofId, location: 'form_select' });
+    }
+  });
+
   closeButton?.addEventListener('click', closeLightbox);
   previousButton?.addEventListener('click', () => changeLightboxImage(-1));
   nextButton?.addEventListener('click', () => changeLightboxImage(1));
@@ -660,8 +676,6 @@ function bindRoofCatalog() {
     selectedRoofId = '';
     roofInput.value = '';
     roofInput.dataset.roofId = '';
-    selectedName.textContent = '';
-    selectedPanel.hidden = true;
     cards.forEach((item) => {
       item.classList.remove('is-selected');
       item.querySelector('.roof-select-button')?.setAttribute('aria-pressed', 'false');
@@ -688,6 +702,9 @@ function bindRoofCatalog() {
       cards.forEach((card) => {
         if (data.roofs[normalizeRoofName(card.dataset.roofName)] === false) {
           card.hidden = true;
+          [...roofInput.options]
+            .find((option) => option.dataset.roofId === card.dataset.roofId)
+            ?.remove();
           if (card.dataset.roofId === selectedRoofId) {
             clearSelection();
           }
@@ -784,6 +801,7 @@ function bindLeadForm() {
   const successPanel = document.getElementById('lead-success');
   const newLeadButton = document.getElementById('new-lead-button');
   const fieldErrors = {
+    roof: document.getElementById('lead-roof-error'),
     date: document.getElementById('lead-date-error'),
     time: document.getElementById('lead-time-error'),
     people: document.getElementById('lead-people-error'),
@@ -903,6 +921,11 @@ function bindLeadForm() {
       referrer: document.referrer,
       utm: getStoredUTMParams(),
     };
+
+    if (!lead.roof) {
+      setError(form.elements.roof, 'Выберите крышу из каталога.');
+      return;
+    }
 
     if (!lead.date || lead.date < dateInput.min) {
       setError(dateInput, 'Выберите сегодняшнюю или будущую дату.');
