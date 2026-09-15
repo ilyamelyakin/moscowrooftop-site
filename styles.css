@@ -365,9 +365,10 @@ h1 {
 }
 
 .trust-grid .trust-title {
-  margin: 16px 0 0;
-  font-size: 1rem;
-  font-weight: 700;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+  font-weight: 620;
   line-height: 1.28;
 }
 
@@ -378,6 +379,83 @@ h1 {
   border-radius: 50%;
   background: var(--gold);
   box-shadow: 0 0 28px rgba(246, 197, 111, 0.85);
+}
+
+/* Дополнительные разделы не помещаются в шапку — они только в мобильном меню. */
+.nav-extra {
+  display: none;
+}
+
+/* Бургер: виден только там, где разделы не помещаются в шапку. */
+.nav-toggle {
+  position: relative;
+  z-index: 1;
+  display: none;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid rgba(255, 248, 236, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  cursor: pointer;
+  place-items: center;
+}
+
+.nav-toggle span {
+  position: relative;
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: background 160ms ease;
+}
+
+.nav-toggle span::before,
+.nav-toggle span::after {
+  position: absolute;
+  left: 0;
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  content: "";
+  transition: transform 180ms ease;
+}
+
+.nav-toggle span::before {
+  top: -6px;
+}
+
+.nav-toggle span::after {
+  top: 6px;
+}
+
+.site-header.is-nav-open .nav-toggle span {
+  background: transparent;
+}
+
+.site-header.is-nav-open .nav-toggle span::before {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.site-header.is-nav-open .nav-toggle span::after {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+.nav-toggle:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.trust-value {
+  margin-bottom: 6px;
+  color: var(--gold);
+  font-size: clamp(1.25rem, 2.4vw, 1.6rem);
+  font-weight: 760;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
 }
 
 .section,
@@ -1743,8 +1821,48 @@ h1 {
     --container: min(100vw - 24px, 720px);
   }
 
+  /* На узких экранах разделы прячутся в выпадающее меню под шапкой. */
+  .nav-toggle {
+    display: grid;
+  }
+
   .header-nav {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    left: 0;
     display: none;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 8px;
+    border: 1px solid rgba(255, 248, 236, 0.13);
+    border-radius: 18px;
+    background: rgba(12, 10, 9, 0.96);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+    gap: 2px;
+    backdrop-filter: blur(22px);
+  }
+
+  .site-header.is-nav-open .header-nav {
+    display: flex;
+  }
+
+  .nav-extra {
+    display: block;
+  }
+
+  .header-nav a {
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    border-radius: 12px;
+    font-weight: 700;
+  }
+
+  .header-nav a:hover,
+  .header-nav a:focus-visible {
+    background: rgba(255, 255, 255, 0.07);
   }
 
   .hero {

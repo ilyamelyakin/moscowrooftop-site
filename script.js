@@ -687,6 +687,18 @@ function bindRoofCatalog() {
     }
   };
 
+  // Счётчик в блоке условий не должен обещать больше крыш, чем реально показано.
+  const updateRoofCount = () => {
+    const counter = document.getElementById('trust-roof-count');
+    if (!counter) {
+      return;
+    }
+
+    const count = cards.filter((card) => !card.hidden).length;
+    const noun = count % 10 === 1 && count % 100 !== 11 ? 'крыша' : 'крыш';
+    counter.textContent = `${count} ${noun}`;
+  };
+
   // Крыши со status=off в гугл-таблице скрываются из каталога.
   // Если статус получить не удалось, каталог остаётся полным.
   const hideUnavailableRoofs = async () => {
@@ -712,10 +724,48 @@ function bindRoofCatalog() {
       });
     } catch (error) {
       console.warn('[Catalog] Roof availability is unavailable', error);
+    } finally {
+      updateRoofCount();
     }
   };
 
+  updateRoofCount();
   hideUnavailableRoofs();
+}
+
+function bindMobileNav() {
+  const header = document.querySelector('.site-header');
+  const toggle = header?.querySelector('.nav-toggle');
+  const nav = header?.querySelector('.header-nav');
+
+  if (!header || !toggle || !nav) {
+    return;
+  }
+
+  const setOpen = (isOpen) => {
+    header.classList.toggle('is-nav-open', isOpen);
+    toggle.setAttribute('aria-expanded', String(isOpen));
+    toggle.setAttribute('aria-label', isOpen ? 'Закрыть меню разделов' : 'Открыть меню разделов');
+  };
+
+  toggle.addEventListener('click', () => setOpen(!header.classList.contains('is-nav-open')));
+  nav.addEventListener('click', (event) => {
+    if (event.target.closest('a')) {
+      setOpen(false);
+    }
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!header.contains(event.target)) {
+      setOpen(false);
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      setOpen(false);
+    }
+  });
 }
 
 function bindScrollDepth() {
@@ -1055,6 +1105,7 @@ function initSite() {
   initYandexMetrika();
   initGoogleAnalytics();
   updateTelegramLinks();
+  bindMobileNav();
   bindTrackedLinks();
   bindGalleryView();
   bindRoofCatalog();

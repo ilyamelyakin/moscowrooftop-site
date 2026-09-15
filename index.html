@@ -46,7 +46,7 @@
       imagesrcset="assets/hero-sunset-768.webp 768w, assets/hero-sunset-1280.webp 1280w, assets/hero-sunset-1920.webp 1920w"
       imagesizes="100vw"
     />
-    <link rel="stylesheet" href="styles.css?v=20260727-r6" />
+    <link rel="stylesheet" href="styles.css?v=20260915-r7" />
 
     <script type="application/ld+json">
       {
@@ -193,11 +193,17 @@
         <span class="brand-mark">MR</span>
         <span>moscowrooftop.ru</span>
       </a>
-      <nav class="header-nav" aria-label="Разделы сайта">
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Открыть меню разделов">
+        <span aria-hidden="true"></span>
+      </button>
+      <nav class="header-nav" id="site-nav" aria-label="Разделы сайта">
         <a href="#catalog">Каталог крыш</a>
+        <a class="nav-extra" href="kryshi-moskvy/">Крыши Москвы</a>
         <a href="ekskursii-po-krysham-moskvy/">Экскурсии</a>
         <a href="svidanie-na-kryshe/">Свидание</a>
         <a href="fotosessiya-na-kryshe-moskva/">Фотосессия</a>
+        <a class="nav-extra" href="zakaty-na-kryshah-moskvy/">Закаты</a>
+        <a class="nav-extra" href="faq/">FAQ</a>
       </nav>
       <a
         class="header-cta track-link"
@@ -273,27 +279,27 @@
         </aside>
       </section>
 
-      <section class="trust" aria-label="Преимущества">
+      <section class="trust" aria-label="Условия прогулки">
         <div class="trust-grid">
           <article>
-            <span class="trust-dot"></span>
-            <p class="trust-title">Живые виды на Москву</p>
+            <p class="trust-value">от 2000 ₽</p>
+            <p class="trust-title">за человека</p>
           </article>
           <article>
-            <span class="trust-dot"></span>
-            <p class="trust-title">Атмосферные закаты</p>
+            <p class="trust-value">1 час</p>
+            <p class="trust-title">базовая прогулка</p>
           </article>
           <article>
-            <span class="trust-dot"></span>
-            <p class="trust-title">Подходит для свиданий</p>
+            <p class="trust-value">+500 ₽</p>
+            <p class="trust-title">час продления</p>
           </article>
           <article>
-            <span class="trust-dot"></span>
-            <p class="trust-title">Можно сделать фотосессию</p>
+            <p class="trust-value" id="trust-roof-count">8 крыш</p>
+            <p class="trust-title">в центре Москвы</p>
           </article>
           <article>
-            <span class="trust-dot"></span>
-            <p class="trust-title">Запись на сайте или в Telegram</p>
+            <p class="trust-value">Telegram</p>
+            <p class="trust-title">или заявка на сайте</p>
           </article>
         </div>
       </section>
@@ -319,7 +325,7 @@
                 sizes="(max-width: 640px) calc(100vw - 20px), (max-width: 980px) 48vw, 270px"
                 width="640"
                 height="853"
-                alt="Вид с московской крыши"
+                alt="Экскурсия по крышам Москвы: панорама города с высоты"
                 loading="lazy"
                 decoding="async"
               />
@@ -342,7 +348,7 @@
                 sizes="(max-width: 640px) calc(100vw - 20px), (max-width: 980px) 48vw, 270px"
                 width="640"
                 height="854"
-                alt="Закат над Москвой"
+                alt="Закат на крыше в Москве: оранжевое небо над центром города"
                 loading="lazy"
                 decoding="async"
               />
@@ -365,7 +371,7 @@
                 sizes="(max-width: 640px) calc(100vw - 20px), (max-width: 980px) 48vw, 270px"
                 width="640"
                 height="853"
-                alt="Фотосессия на крыше"
+                alt="Фотосессия на крыше в Москве на фоне городской панорамы"
                 loading="lazy"
                 decoding="async"
               />
@@ -388,7 +394,7 @@
                 sizes="(max-width: 640px) calc(100vw - 20px), (max-width: 980px) 48vw, 270px"
                 width="640"
                 height="853"
-                alt="Необычное свидание на крыше"
+                alt="Свидание на крыше в Москве вечером с видом на город"
                 loading="lazy"
                 decoding="async"
               />
@@ -399,6 +405,34 @@
             </div>
           </a>
         </div>
+      </section>
+
+      <section class="section" id="how-it-works" aria-labelledby="how-it-works-title">
+        <div class="section-heading">
+          <p class="eyebrow">Как это устроено</p>
+          <h2 id="how-it-works-title">Как проходит прогулка по крыше</h2>
+          <p>Ничего сложного: вы приходите к назначенному времени, дальше всё берём на себя.</p>
+        </div>
+
+        <div class="steps">
+          <article class="step-card">
+            <span aria-hidden="true">1</span>
+            <h3>Встречаемся у дома</h3>
+            <p>Точный адрес и точку встречи присылаем после подтверждения записи — вам остаётся прийти к назначенному времени.</p>
+          </article>
+          <article class="step-card">
+            <span aria-hidden="true">2</span>
+            <h3>Поднимаемся вместе</h3>
+            <p>Заходим и поднимаемся с сопровождающим. Наверху — короткий инструктаж: где можно ходить, где стоять и как вести себя на площадке.</p>
+          </article>
+          <article class="step-card">
+            <span aria-hidden="true">3</span>
+            <h3>Час над городом</h3>
+            <p>Смотрите на Москву, фотографируете, встречаете закат. Никто не торопит: если площадка свободна, прогулку можно продлить на час за 500 ₽ с человека.</p>
+          </article>
+        </div>
+
+        <p class="roof-catalog-note">Что взять с собой: удобную нескользящую обувь и тёплый слой — вечером на высоте прохладнее, чем на улице. Если погода мешает подъёму, мы связываемся заранее и предлагаем перенос. Подробности — в гиде <a class="text-link" href="kak-popast-na-kryshu-v-moskve/">«Как попасть на крышу в Москве»</a>.</p>
       </section>
 
       <section class="gallery-section" id="gallery" aria-label="Галерея крыш Москвы">
@@ -422,7 +456,7 @@
                 sizes="(max-width: 980px) 96vw, 580px"
                 width="640"
                 height="853"
-                alt="Панорама Москвы с крыши"
+                alt="Малиновый закат над Москвой и башни Москва-Сити на горизонте — вид с крыши"
                 loading="lazy"
                 decoding="async"
               />
@@ -460,7 +494,7 @@
                 sizes="(max-width: 640px) 96vw, (max-width: 980px) 48vw, 285px"
                 width="640"
                 height="853"
-                alt="Городской закат с крыши"
+                alt="Гостиница «Украина» и небоскрёбы Москва-Сити в закатном свете с крыши в Москве"
                 loading="lazy"
                 decoding="async"
               />
@@ -479,7 +513,7 @@
                 sizes="(max-width: 640px) 96vw, (max-width: 980px) 48vw, 285px"
                 width="640"
                 height="854"
-                alt="Атмосферный вид на город"
+                alt="Сталинская высотка на Котельнической набережной в розовом свете заката"
                 loading="lazy"
                 decoding="async"
               />
@@ -498,7 +532,7 @@
                 sizes="(max-width: 980px) 96vw, 580px"
                 width="640"
                 height="853"
-                alt="Московские крыши вечером"
+                alt="Зимняя панорама центра Москвы: заснеженные крыши, Москва-Сити и здание МИД на закате"
                 loading="lazy"
                 decoding="async"
               />
@@ -517,7 +551,7 @@
                 sizes="(max-width: 640px) 96vw, (max-width: 980px) 48vw, 285px"
                 width="640"
                 height="853"
-                alt="Крыша и вечерняя Москва"
+                alt="Закатное солнце над центром Москвы: купола храма, сталинская высотка и Москва-Сити"
                 loading="lazy"
                 decoding="async"
               />
@@ -1222,9 +1256,10 @@
       <a class="track-link" href="https://www.tiktok.com/@ilya.melyakin/" target="_blank" rel="noopener" data-goal="tiktok_click">
         TikTok
       </a>
+      <a href="politika-konfidencialnosti/">Обработка данных</a>
       <span>Экскурсии по крышам Москвы</span>
     </footer>
 
-    <script src="script.js?v=20260727-r6"></script>
+    <script src="script.js?v=20260915-r7"></script>
   </body>
 </html>
