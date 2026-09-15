@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Прогулки по крышам Москвы от 2000 ₽ | Moscow Rooftop</title>
+    <title>Крыши Москвы: прогулки и экскурсии с сопровождением, от 2000 ₽</title>
     <meta
       name="description"
       content="Прогулки и подъёмы на крыши Москвы: экскурсии, свидания и фотосессии с видами на город. Цена от 2000 руб., длительность 1 час, онлайн-запись или Telegram."
@@ -46,7 +46,7 @@
       imagesrcset="assets/hero-sunset-768.webp 768w, assets/hero-sunset-1280.webp 1280w, assets/hero-sunset-1920.webp 1920w"
       imagesizes="100vw"
     />
-    <link rel="stylesheet" href="styles.css?v=20260915-r7" />
+    <link rel="stylesheet" href="styles.css?v=20260915-r8" />
 
     <script type="application/ld+json">
       {
@@ -73,9 +73,16 @@
               "@type": "City",
               "name": "Москва"
             },
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://moscowrooftop.ru/assets/favicon-512.png",
+              "width": 512,
+              "height": 512
+            },
             "sameAs": [
               "https://www.instagram.com/ilya.melyakin/",
-              "https://www.tiktok.com/@ilya.melyakin/"
+              "https://www.tiktok.com/@ilya.melyakin/",
+              "https://t.me/MoscowRoofTopBot"
             ],
             "makesOffer": {
               "@type": "Offer",
@@ -99,7 +106,6 @@
             "@id": "https://moscowrooftop.ru/#catalog-list",
             "name": "Каталог крыш Москвы",
             "url": "https://moscowrooftop.ru/#catalog",
-            "numberOfItems": 10,
             "itemListElement": [
               { "@type": "ListItem", "position": 1, "name": "Фили 60 этажей" },
               { "@type": "ListItem", "position": 2, "name": "Фили" },
@@ -117,6 +123,14 @@
             "@type": "FAQPage",
             "@id": "https://moscowrooftop.ru/#faq",
             "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Сколько стоит прогулка по крыше?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Ориентир — от 2000 рублей с человека за час. Если площадка свободна, прогулку можно продлить ещё на час за 500 рублей с человека. Цена конкретной крыши зависит от локации: актуальный вариант показывает Telegram-бот, окончательную сумму подтверждаем при записи."
+                }
+              },
               {
                 "@type": "Question",
                 "name": "Это безопасно?",
@@ -255,19 +269,11 @@
             </a>
             <a
               class="btn btn-secondary track-link"
-              href="https://www.instagram.com/ilya.melyakin/"
-              target="_blank"
-              rel="noopener"
-              data-goal="instagram_click"
+              href="#catalog"
+              data-goal="catalog_scroll"
+              data-location="hero"
             >
-              <span class="btn-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <rect x="4" y="4" width="16" height="16" rx="5" />
-                  <circle cx="12" cy="12" r="3.5" />
-                  <circle cx="17.2" cy="6.8" r="1" />
-                </svg>
-              </span>
-              Посмотреть Instagram
+              Смотреть крыши и фото
             </a>
           </div>
         </div>
@@ -559,7 +565,24 @@
           </figure>
         </div>
 
-        <div class="gallery-actions">
+        <div class="gallery-actions hero-actions">
+          <a class="btn btn-primary" href="#catalog">Выбрать крышу в каталоге</a>
+          <a
+            class="btn btn-secondary track-link"
+            href="https://www.instagram.com/ilya.melyakin/"
+            target="_blank"
+            rel="noopener"
+            data-goal="instagram_click"
+          >
+            <span class="btn-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <rect x="4" y="4" width="16" height="16" rx="5" />
+                <circle cx="12" cy="12" r="3.5" />
+                <circle cx="17.2" cy="6.8" r="1" />
+              </svg>
+            </span>
+            Ещё кадры в Instagram
+          </a>
           <a
             class="btn btn-secondary track-link"
             href="https://t.me/MoscowRoofTopBot"
@@ -953,11 +976,15 @@
             <figure>
               <picture>
                 <source id="roof-lightbox-source" type="image/webp" />
-                <img id="roof-lightbox-image" src="assets/locations/fili-moscow-city-05-1280.jpg" width="960" height="1280" alt="" />
+                <!-- Заглушка 1x1: реальный кадр подставляет script.js при открытии. -->
+                <img id="roof-lightbox-image" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" width="960" height="1280" alt="" decoding="async" />
               </picture>
               <figcaption id="roof-lightbox-counter">1 из 1</figcaption>
             </figure>
             <button class="roof-lightbox-control roof-lightbox-next" type="button" aria-label="Следующая фотография" title="Следующая">→</button>
+          </div>
+          <div class="roof-lightbox-actions">
+            <button class="btn btn-primary roof-lightbox-select" type="button">Выбрать эту крышу</button>
           </div>
         </div>
       </dialog>
@@ -1156,7 +1183,7 @@
           <a href="ekskursii-po-krysham-moskvy/">Для туристов</a>
           <a href="svidanie-na-kryshe/">Для свидания</a>
           <a href="fotosessiya-na-kryshe-moskva/">Для фотосессии</a>
-          <a href="fotosessiya-na-kryshe-moskva/">Для контента в Instagram / TikTok</a>
+          <a href="zakaty-na-kryshah-moskvy/">Для закатных кадров</a>
         </div>
       </section>
 
@@ -1167,6 +1194,10 @@
         </div>
 
         <div class="faq-list">
+          <details>
+            <summary>Сколько стоит прогулка по крыше?</summary>
+            <p>Ориентир — от 2000 рублей с человека за час. Если площадка свободна, прогулку можно продлить ещё на час за 500 рублей с человека. Цена конкретной крыши зависит от локации: актуальный вариант показывает Telegram-бот, окончательную сумму подтверждаем при записи.</p>
+          </details>
           <details>
             <summary>Это безопасно?</summary>
             <p>Да. Мы выбираем проверенные маршруты и заранее объясняем, как вести себя на площадке.</p>
@@ -1260,6 +1291,6 @@
       <span>Экскурсии по крышам Москвы</span>
     </footer>
 
-    <script src="script.js?v=20260915-r7"></script>
+    <script src="script.js?v=20260915-r8"></script>
   </body>
 </html>

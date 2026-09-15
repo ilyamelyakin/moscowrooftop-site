@@ -618,6 +618,19 @@ function bindRoofCatalog() {
     }
   });
 
+  // Из просмотра фото можно записаться сразу, не возвращаясь к карточке.
+  dialog?.querySelector('.roof-lightbox-select')?.addEventListener('click', () => {
+    const roofId = activeRoofId;
+
+    if (!getCard(roofId)) {
+      return;
+    }
+
+    closeLightbox();
+    applySelection(roofId, { scroll: true });
+    trackEvent('roof_booking_click', { roof_id: roofId, location: 'lightbox' });
+  });
+
   closeButton?.addEventListener('click', closeLightbox);
   previousButton?.addEventListener('click', () => changeLightboxImage(-1));
   nextButton?.addEventListener('click', () => changeLightboxImage(1));

@@ -897,6 +897,12 @@ h1 {
   display: none;
 }
 
+.roof-lightbox-actions {
+  display: flex;
+  justify-content: center;
+  padding: 0 16px 18px;
+}
+
 .roof-lightbox-stage {
   display: grid;
   min-height: 0;
@@ -1557,6 +1563,10 @@ h1 {
   background:
     linear-gradient(120deg, rgba(255, 158, 79, 0.22), rgba(255, 111, 97, 0.1) 42%, rgba(147, 197, 253, 0.1)),
     url("assets/hero-sunset-1280.jpg") center / cover no-repeat;
+  /* Блок перекрыт затемнением, поэтому хватает 768-webp — он уже в кэше после hero. */
+  background:
+    linear-gradient(120deg, rgba(255, 158, 79, 0.22), rgba(255, 111, 97, 0.1) 42%, rgba(147, 197, 253, 0.1)),
+    image-set(url("assets/hero-sunset-768.webp") type("image/webp")) center / cover no-repeat;
   box-shadow: var(--shadow);
   isolation: isolate;
   overflow: hidden;
