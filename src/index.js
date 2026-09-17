@@ -343,17 +343,24 @@ async function handleRoofsRequest(request) {
   }
 
   const roofs = {};
+  const prices = {};
   sheet.forEach((entry, name) => {
     roofs[name] = entry.on;
+    if (entry.price) {
+      prices[name] = entry.price;
+    }
   });
   // Зеркалим алиасы, чтобы клиент искал по написанию с сайта.
   SHEET_NAME_ALIASES.forEach((sheetName, siteName) => {
     if (roofs[sheetName] !== undefined) {
       roofs[siteName] = roofs[sheetName];
     }
+    if (prices[sheetName] !== undefined) {
+      prices[siteName] = prices[sheetName];
+    }
   });
 
-  return jsonResponse({ ok: true, roofs }, 200, {
+  return jsonResponse({ ok: true, roofs, prices }, 200, {
     "Cache-Control": `public, max-age=${PRICE_CACHE_TTL_SECONDS}`,
   });
 }

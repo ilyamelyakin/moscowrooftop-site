@@ -680,8 +680,13 @@ function bindRoofCatalog() {
     trackCatalogView();
   }
 
+  // Ссылка со страницы крыши вида /?roof=<id> сразу подставляет её в форму.
+  const requestedRoofId = new URLSearchParams(window.location.search).get('roof') || '';
   const restoredRoofId = restoreSelection();
-  if (getCard(restoredRoofId)) {
+
+  if (getCard(requestedRoofId)) {
+    applySelection(requestedRoofId);
+  } else if (getCard(restoredRoofId)) {
     applySelection(restoredRoofId, { persist: false });
   }
 
@@ -779,6 +784,42 @@ function bindMobileNav() {
       setOpen(false);
     }
   });
+}
+
+// Страница отдельной крыши: цена и доступность берутся из той же таблицы,
+// что и каталог, чтобы в HTML не было устаревших цифр.
+async function bindRoofPage() {
+  const page = document.querySelector('[data-roof-page]');
+
+  if (!page) {
+    return;
+  }
+
+  const roofName = normalizeRoofName(page.dataset.roofName);
+
+  try {
+    const response = await fetch('/api/roofs', { headers: { Accept: 'application/json' } });
+    if (!response.ok) {
+      return;
+    }
+    const data = await response.json();
+    if (!data || data.ok !== true) {
+      return;
+    }
+
+    const price = data.prices?.[roofName];
+    if (Number.isFinite(price)) {
+      page.querySelectorAll('[data-roof-price]').forEach((node) => {
+        node.textContent = `${price} \u20bd`;
+      });
+    }
+
+    if (data.roofs?.[roofName] === false) {
+      page.querySelector('.roof-unavailable')?.removeAttribute('hidden');
+    }
+  } catch (error) {
+    console.warn('[Roof page] Roof data is unavailable', error);
+  }
 }
 
 function bindScrollDepth() {
@@ -1122,6 +1163,7 @@ function initSite() {
   bindTrackedLinks();
   bindGalleryView();
   bindRoofCatalog();
+  bindRoofPage();
   bindScrollDepth();
   bindLeadForm();
   bindFAQ();
