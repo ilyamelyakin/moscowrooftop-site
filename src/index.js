@@ -3,6 +3,8 @@ const ROOFS_PATH = "/api/roofs";
 const MAX_BODY_BYTES = 12_000;
 // Short slug aliases that may appear in external links; keep canonical URLs unique.
 const PAGE_REDIRECTS = new Map([
+  // Раздел /kryshi/ — только контейнер для страниц крыш, своей страницы у него нет.
+  ["/kryshi", "/#catalog"],
   ["/ekskursii-po-krysham", "/ekskursii-po-krysham-moskvy/"],
   ["/fotosessiya-na-kryshe", "/fotosessiya-na-kryshe-moskva/"],
   ["/zakaty-na-kryshah", "/zakaty-na-kryshah-moskvy/"],
