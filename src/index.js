@@ -547,8 +547,8 @@ export default {
         : url.pathname;
     const redirectTarget = PAGE_REDIRECTS.get(normalizedPath);
     if (redirectTarget) {
-      url.pathname = redirectTarget;
-      return Response.redirect(url.toString(), 301);
+      // Через url.pathname нельзя: якорь в цели превратился бы в %23.
+      return Response.redirect(new URL(redirectTarget, url.origin).toString(), 301);
     }
 
     const pathSegment = url.pathname.split("/").pop();
