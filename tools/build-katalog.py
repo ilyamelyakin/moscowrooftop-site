@@ -42,6 +42,12 @@ ROOF_SIZES = "(max-width: 980px) calc(100vw - 32px), 560px"
 # вертикального кадра ширину 720: на DPR 2 впритык, на DPR 3 остаётся 2x,
 # которого на фотографии не отличить. Файл -1280 в ленту больше не отдаём.
 FEED_LADDER = (640, 960)
+# Ниже этой ширины ступень 960 перестаёт закрывать телефон: слот 358 CSS-px при
+# DPR 2 просит 716 device-px. У кадра 4:5 ступень 960 даёт 720 и попадает точно,
+# а у узкого 9:16 (720x1280) — всего 540, это уже видимая мягкость. Таким кадрам
+# добавляем верхнюю ступень обратно. Порог 680, а не 716: у 928x1280 ступень 960
+# даёт 696, и недобор в 3 % не стоит лишних 50 КБ.
+FEED_MIN_WIDTH = 680
 # На странице крыши слот шире (560 CSS-px на десктопе), там верхняя ступень
 # нужна: при DPR 2 в неё уходит 1120 device-px.
 ROOF_LADDER = (640, 960, 1280)
@@ -128,9 +134,18 @@ def srcset(base: str, width: int, ladder: tuple[int, ...], ext: str) -> str:
     return ", ".join(f"{base}-{step}.{ext} {round(width * step / 1280)}w" for step in ladder)
 
 
-def picture(photo: dict, sizes: str, *, eager: bool, prefix: str, ladder: tuple[int, ...] = FEED_LADDER) -> str:
+def feed_ladder_for(width: int) -> tuple[int, ...]:
+    """Лесенка ленты с оглядкой на пропорции кадра (см. FEED_MIN_WIDTH)."""
+    if round(width * FEED_LADDER[-1] / 1280) < FEED_MIN_WIDTH:
+        return FEED_LADDER + (1280,)
+    return FEED_LADDER
+
+
+def picture(photo: dict, sizes: str, *, eager: bool, prefix: str, ladder: tuple[int, ...] | None = None) -> str:
     base = f"{prefix}{photo['base']}"
     w, h = photo["w"], photo["h"]
+    if ladder is None:
+        ladder = feed_ladder_for(w)
     # У отложенных кадров srcset лежит в data-*: подставляет IntersectionObserver,
     # потому что в горизонтальной ленте браузерный lazy срабатывает непредсказуемо.
     attr = "srcset" if eager else "data-srcset"
