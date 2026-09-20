@@ -167,13 +167,13 @@ def picture(photo: dict, sizes: str, *, eager: bool, prefix: str, ladder: tuple[
     return f"<picture>{sources}{img}</picture>"
 
 
-def render_card(roof: dict, price: int | None, first_card: bool, on: bool | None = None) -> str:
+def render_card(roof: dict, price: int | None, first_card: bool, on: bool | None = None, prefix: str = "../assets/locations/", order: int = 0) -> str:
     photos = roof["photos"]
     shown = photos[:FEED_SLIDES]
     total = len(photos)
     slides = "".join(
         f'<div class="cat-slide" role="group" aria-label="Фото {i + 1} из {total}">'
-        + picture(photo, FEED_SIZES, eager=(i == 0 and first_card), prefix="../assets/locations/")
+        + picture(photo, FEED_SIZES, eager=(i == 0 and first_card), prefix=prefix)
         + "</div>"
         for i, photo in enumerate(shown)
     )
@@ -218,7 +218,7 @@ def render_card(roof: dict, price: int | None, first_card: bool, on: bool | None
         )
         card_class = "cat-card" if on else "cat-card is-off"
         off_note = '<p class="cat-off-note" hidden>' if on else '<p class="cat-off-note">'
-    return f"""        <article class="{card_class}" data-roof-id="{roof['id']}" data-roof-name="{esc(roof['sheetName'])}" data-slug="{roof['slug']}">
+    return f"""        <article class="{card_class}" data-roof-id="{roof['id']}" data-order="{order}" data-roof-name="{esc(roof['sheetName'])}" data-slug="{roof['slug']}">
           <div class="cat-media">
             <div class="cat-rail" {rail_attrs}>{slides}</div>
             {badge}
@@ -243,10 +243,10 @@ def render_card(roof: dict, price: int | None, first_card: bool, on: bool | None
 """
 
 
-def render_roof_page(roof: dict, price: int | None, template: str, styles: str, script: str, on: bool | None = None) -> str:
+def render_roof_page(roof: dict, price: int | None, template: str, styles: str, script: str, on: bool | None = None, prefix: str = "../../assets/locations/", assets_preconnect: str = "") -> str:
     shots = "\n".join(
         '          <figure class="roof-shot">'
-        + picture(photo, ROOF_SIZES, eager=(i == 0), prefix="../../assets/locations/", ladder=ROOF_LADDER)
+        + picture(photo, ROOF_SIZES, eager=(i == 0), prefix=prefix, ladder=ROOF_LADDER)
         + "</figure>"
         for i, photo in enumerate(roof["photos"])
     )
@@ -265,6 +265,7 @@ def render_roof_page(roof: dict, price: int | None, template: str, styles: str, 
         off_hidden = " hidden" if on else ""
     return (
         template.replace("/*STYLES*/", styles)
+        .replace("{{ASSETS_PRECONNECT}}", assets_preconnect)
         .replace("{{BADGE}}", badge)
         .replace("{{ROOF_CLASS}}", roof_class)
         .replace("{{OFF_NOTE_HIDDEN}}", off_hidden)
@@ -278,7 +279,7 @@ def render_roof_page(roof: dict, price: int | None, template: str, styles: str, 
         .replace("{{PRICE}}", price_text(price))
         .replace("{{DESC_PLAIN}}", esc(roof["desc"]))
         .replace("{{DESC}}", esc(roof["desc"]))
-        .replace("{{FIRST_SHOT}}", f"../../assets/locations/{roof['photos'][0]['base']}")
+        .replace("{{FIRST_SHOT}}", f"{prefix}{roof['photos'][0]['base']}")
         .replace("{{BOT_URL}}", BOT_URL)
     )
 
@@ -287,7 +288,30 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--offline", action="store_true", help="не ходить в живой API за ценами")
     parser.add_argument("--prices-json", help="файл с ответом /api/roofs")
+    parser.add_argument(
+        "--assets-base",
+        help=(
+            "откуда брать кадры вместо ../assets/locations/. Нужен, когда картинки "
+            "уезжают на отдельный origin: --assets-base https://assets.moscowrooftop.ru/locations/ . "
+            "Заканчивается слэшем; в страницы добавится preconnect к этому хосту."
+        ),
+    )
     args = parser.parse_args()
+
+    # Префикс кадров. По умолчанию — относительные пути внутри сайта, как было.
+    # С --assets-base один и тот же абсолютный URL и в ленте, и на странице крыши:
+    # у абсолютного адреса нет «на уровень выше», поэтому глубина роли не играет.
+    if args.assets_base:
+        base = args.assets_base if args.assets_base.endswith("/") else args.assets_base + "/"
+        feed_prefix = roof_prefix = base
+        origin = "/".join(base.split("/")[:3])
+        assets_preconnect = (
+            f'<link rel="preconnect" href="{origin}" crossorigin />'
+            f'<link rel="dns-prefetch" href="{origin}" />'
+        )
+    else:
+        feed_prefix, roof_prefix = "../assets/locations/", "../../assets/locations/"
+        assets_preconnect = ""
 
     data = json.loads((TOOLS / "katalog-data.json").read_text(encoding="utf-8"))
     roofs = data["roofs"]
@@ -310,10 +334,13 @@ def main() -> int:
         alias = aliases.get(key)
         if alias and alias in statuses:
             return statuses[alias]
-        # Имени нет в таблице — та же трактовка, что у клиента: обещать крышу
-        # нельзя. Но это почти всегда опечатка в названии, поэтому кричим.
+        # Имени нет в таблице — почти всегда опечатка в названии или новая
+        # крыша, которую ещё не завели. Ошибаться здесь можно только в плюс:
+        # «Пока недоступна» — это серая карточка, и человек просто уйдёт, а
+        # лишнее «В расписании» живой ответ поправит через секунду. Поэтому
+        # считаем доступной и кричим в сборке.
         unknown.append(name)
-        return False
+        return True
 
     states = [(roof, status_for(roof["sheetName"])) for roof in roofs]
     live = [roof for roof, on in states if on is not False]
@@ -326,12 +353,20 @@ def main() -> int:
     # --- лента ------------------------------------------------------------
     # Доступные и недоступные раскладываем по лентам уже здесь: раньше это
     # делал JS после ответа API, и карточки на глазах прыгали вниз.
+    # data-order — место крыши в katalog-data.json. По нему клиент вернёт
+    # карточку на исходную позицию, если живой ответ разойдётся со снапшотом.
+    order_of = {roof["id"]: i for i, roof in enumerate(roofs)}
     cards = "".join(
-        render_card(roof, price_for(roof["sheetName"]), index == 0, state_of[roof["id"]])
+        render_card(
+            roof, price_for(roof["sheetName"]), index == 0, state_of[roof["id"]], feed_prefix, order_of[roof["id"]]
+        )
         for index, roof in enumerate(live)
     )
     cards_off = "".join(
-        render_card(roof, price_for(roof["sheetName"]), False, state_of[roof["id"]]) for roof in off
+        render_card(
+            roof, price_for(roof["sheetName"]), False, state_of[roof["id"]], feed_prefix, order_of[roof["id"]]
+        )
+        for roof in off
     )
     if statuses is None:
         status_text = ""
@@ -348,13 +383,14 @@ def main() -> int:
         .replace("<!--CARDS-->", cards)
         .replace("<!--CARDS_OFF-->", cards_off)
         .replace("{{STATUS_TEXT}}", status_text)
+        .replace("{{ASSETS_PRECONNECT}}", assets_preconnect)
         .replace("{{OFF_HIDDEN}}", "" if off else " hidden")
 
         .replace("<!--ALIASES_JSON-->", json.dumps(aliases, ensure_ascii=False, separators=(",", ":")))
         .replace("{{BOT_URL}}", BOT_URL)
         .replace("{{YANDEX_DISK_URL}}", YANDEX_DISK_URL)
         .replace("{{GOOGLE_DRIVE_URL}}", GOOGLE_DRIVE_URL)
-        .replace("{{FIRST_COVER}}", f"../assets/locations/{roofs[0]['photos'][0]['base']}")
+        .replace("{{FIRST_COVER}}", f"{feed_prefix}{roofs[0]['photos'][0]['base']}")
         .replace("{{ROOF_COUNT}}", str(len(roofs)))
     )
     # Данные галерей нужны только лайтбоксу на десктопе.
@@ -364,7 +400,7 @@ def main() -> int:
             {
                 roof["id"]: {
                     "name": roof["title"],
-                    "images": [{"b": f"../assets/locations/{p['base']}", "a": p["alt"]} for p in roof["photos"]],
+                    "images": [{"b": f"{feed_prefix}{p['base']}", "a": p["alt"]} for p in roof["photos"]],
                 }
                 for roof in roofs
             },
@@ -380,7 +416,8 @@ def main() -> int:
     roof_template = (TOOLS / "katalog-roof-template.html").read_text(encoding="utf-8")
     for roof in roofs:
         page = render_roof_page(
-            roof, price_for(roof["sheetName"]), roof_template, styles, script, state_of[roof["id"]]
+            roof, price_for(roof["sheetName"]), roof_template, styles, script, state_of[roof["id"]],
+            roof_prefix, assets_preconnect,
         )
         out = ROOT / "katalog" / roof["slug"] / "index.html"
         out.parent.mkdir(parents=True, exist_ok=True)

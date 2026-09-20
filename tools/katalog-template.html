@@ -20,7 +20,7 @@
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=20260725-m" />
     <!-- Ранний коннект к telegram.org: SDK грузится с defer и на российских
          мобильных сетях рукопожатие к нему занимает заметную часть времени. -->
-    <link rel="preconnect" href="https://telegram.org" crossorigin />
+    {{ASSETS_PRECONNECT}}<link rel="preconnect" href="https://telegram.org" crossorigin />
     <link rel="dns-prefetch" href="https://telegram.org" />
     <!-- rel=preload на обложку убран сознательно: формат кадра выбирает
          <picture> (avif -> webp -> jpg), а preload умеет тянуть только один

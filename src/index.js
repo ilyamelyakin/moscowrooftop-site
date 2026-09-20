@@ -27,8 +27,17 @@ const PRICE_CACHE_URL = "https://moscowrooftop.ru/__cache/roof-sheet-v3";
 const PRICE_CACHE_TTL_SECONDS = 300;
 // Сколько держим устаревший ответ как запасной. Раньше запись просто протухала,
 // и первый посетитель каждые пять минут ждал Google Sheets — замерено 3.8 с.
-const PRICE_CACHE_MAX_AGE_SECONDS = 3600;
+// Сутки, а не час: свежесть решает поле at внутри записи, а max-age — только
+// «сколько edge вообще её хранит». Если Google недоступен дольше часа, лучше
+// отдать вчерашние цены, чем 503.
+const PRICE_CACHE_MAX_AGE_SECONDS = 86400;
+// Два разных срока. Холодный кеш: человек ждёт ответа, дольше держать нельзя.
+// Фоновое обновление: не ждёт никто, а замеры похода в таблицу дают разброс
+// 1.6–10.0 с (Google отвечает 307-редиректом на googleusercontent.com). С общим
+// четырёхсекундным сроком каждое третье обновление не успевало бы, кеш бы не
+// наполнялся — и следующий посетитель снова попадал на холодный путь.
 const PRICE_FETCH_TIMEOUT_MS = 4000;
+const PRICE_REFRESH_TIMEOUT_MS = 15000;
 // В таблице «Марксисткая» (без «с»), на сайте — «Марксистская».
 const SHEET_NAME_ALIASES = new Map([["марксистская", "марксисткая"]]);
 // Снапшот таблицы от 2026-07-25 — используется, только если Google недоступен.
@@ -304,7 +313,7 @@ let roofRefreshInFlight = null;
 
 function refreshRoofSheet() {
   if (!roofRefreshInFlight) {
-    roofRefreshInFlight = fetchRoofSheetFresh()
+    roofRefreshInFlight = fetchRoofSheetFresh(PRICE_REFRESH_TIMEOUT_MS)
       .catch(() => null)
       .finally(() => {
         roofRefreshInFlight = null;
@@ -329,7 +338,7 @@ async function fetchRoofSheet(ctx) {
   return new Map(Object.entries(await fetchRoofSheetFresh()));
 }
 
-async function fetchRoofSheetFresh() {
+async function fetchRoofSheetFresh(timeoutMs = PRICE_FETCH_TIMEOUT_MS) {
   // Promise.race поверх AbortController: даже если рантайм игнорирует
   // signal (так делает локальный miniflare), ждём Google не дольше таймаута.
   const controller = new AbortController();
@@ -343,7 +352,7 @@ async function fetchRoofSheetFresh() {
     timer = setTimeout(() => {
       controller.abort();
       reject(new Error("Sheet fetch timed out"));
-    }, PRICE_FETCH_TIMEOUT_MS);
+    }, timeoutMs);
   });
   let response;
 

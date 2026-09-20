@@ -542,6 +542,21 @@
           try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data })); } catch (e) {}
         }
 
+        // Карточка возвращается на своё место, а не в хвост: data-order — это
+        // позиция крыши в katalog-data.json, и порядок ленты задаёт владелец
+        // папками в «Локации». appendChild сделал бы «вернулась = последняя».
+        function insertByOrder(feed, card) {
+          var order = Number(card.dataset.order || 0);
+          var siblings = feed.children;
+          for (var i = 0; i < siblings.length; i += 1) {
+            if (siblings[i] !== card && Number(siblings[i].dataset.order || 0) > order) {
+              feed.insertBefore(card, siblings[i]);
+              return;
+            }
+          }
+          feed.appendChild(card);
+        }
+
         function applyRoofData(data) {
           if (!data || !data.roofs) return;
           var liveFeed = document.getElementById('cat-feed');      // на странице крыши их нет
@@ -582,7 +597,7 @@
             // лишний appendChild — это лишний сдвиг вёрстки под пальцем.
             if (target && card.parentNode !== target) moved.push({ card: card, target: target });
           });
-          moved.forEach(function (m) { m.target.appendChild(m.card); });
+          moved.forEach(function (m) { insertByOrder(m.target, m.card); });
           if (offFeed && divider) {
             var hasOff = offFeed.children.length > 0;
             offFeed.hidden = !hasOff;
