@@ -298,7 +298,7 @@ def render_card(roof: dict, price: int | None, first_card: bool, on: bool | None
 """
 
 
-def render_roof_page(roof: dict, price: int | None, template: str, styles: str, script: str, on: bool | None = None, prefix: str = "../../assets/locations/", assets_preconnect: str = "") -> str:
+def render_roof_page(roof: dict, price: int | None, template: str, styles: str, script: str, on: bool | None = None, prefix: str = "../../assets/locations/", assets_preconnect: str = "", api_url: str = "/api/roofs") -> str:
     shots = "\n".join(
         '          <figure class="roof-shot">'
         + picture(photo, ROOF_SIZES, eager=(i == 0), prefix=prefix, ladder=ROOF_LADDER)
@@ -335,6 +335,7 @@ def render_roof_page(roof: dict, price: int | None, template: str, styles: str, 
         .replace("{{DESC_PLAIN}}", esc(roof["desc"]))
         .replace("{{DESC}}", esc(roof["desc"]))
         .replace("{{BOT_URL}}", BOT_URL)
+        .replace("{{API_URL}}", api_url)
     )
 
 
@@ -342,6 +343,15 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--offline", action="store_true", help="не ходить в живой API за ценами")
     parser.add_argument("--prices-json", help="файл с ответом /api/roofs")
+    parser.add_argument(
+        "--api-url",
+        default="/api/roofs",
+        help=(
+            "откуда клиент обновляет статусы. Пустая строка — не обновлять вовсе: "
+            "так собирают каталог для хостинга без нашего воркера, статусы там "
+            "берутся из разметки, куда их кладёт эта же сборка."
+        ),
+    )
     parser.add_argument(
         "--assets-base",
         help=(
@@ -457,6 +467,7 @@ def main() -> int:
 
         .replace("<!--ALIASES_JSON-->", json_for_script(aliases))
         .replace("{{BOT_URL}}", BOT_URL)
+        .replace("{{API_URL}}", args.api_url)
         .replace("{{YANDEX_DISK_URL}}", YANDEX_DISK_URL)
         .replace("{{GOOGLE_DRIVE_URL}}", GOOGLE_DRIVE_URL)
         .replace("{{ROOF_COUNT}}", str(len(roofs)))
@@ -483,7 +494,7 @@ def main() -> int:
     for roof in roofs:
         page = render_roof_page(
             roof, price_for(roof["sheetName"]), roof_template, styles, script, state_of[roof["id"]],
-            roof_prefix, assets_preconnect,
+            roof_prefix, assets_preconnect, args.api_url,
         )
         out = ROOT / "katalog" / roof["slug"] / "index.html"
         out.parent.mkdir(parents=True, exist_ok=True)

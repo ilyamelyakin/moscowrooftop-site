@@ -1,6 +1,11 @@
       (function () {
         'use strict';
         var BOT_URL = '{{BOT_URL}}';
+        // Пусто — значит статусы берутся только из разметки (их кладёт туда
+        // сборщик) и живого обновления не будет. Так собирают каталог, когда он
+        // лежит на хостинге без нашего API: дёргать заведомо недостижимый
+        // адрес и ждать таймаут на каждом открытии незачем.
+        var API_URL = '{{API_URL}}';
         var API_TIMEOUT = 4000;
         var CACHE_KEY = 'mr_roofs_cache';
         var CACHE_TTL = 300000; // ровно TTL воркера
@@ -323,11 +328,12 @@
         }
 
         function loadRoofs() {
+          if (!API_URL) return;   // статусы уже в разметке, обновлять нечем
           var cached = readCache();
           if (cached) { applyData(cached); return; }
           var controller = 'AbortController' in window ? new AbortController() : null;
           var timer = controller ? setTimeout(function () { controller.abort(); }, API_TIMEOUT) : null;
-          fetch('/api/roofs', { headers: { Accept: 'application/json' }, signal: controller && controller.signal })
+          fetch(API_URL, { headers: { Accept: 'application/json' }, signal: controller && controller.signal })
             .then(function (response) { return response.ok ? response.json() : Promise.reject(new Error(response.status)); })
             .then(function (data) {
               if (timer) clearTimeout(timer);
