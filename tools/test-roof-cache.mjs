@@ -40,7 +40,7 @@ globalThis.fetch = async (url, opts) => {
   return new Response(CSV, { status: 200 });
 };
 const M = await import(mod);
-const KEY = 'https://moscowrooftop.ru/__cache/roof-sheet-v3';
+const KEY = 'https://roof-sheet.internal/cache/v3';
 const seed = async (ageMs, roofs) => { store.set(KEY, { body: JSON.stringify({ at: Date.now() - ageMs, roofs: roofs ?? {'таганская':{price:3000,on:true}} }), headers: {'Cache-Control':'max-age=86400'} }); };
 const ok = (c) => c ? 'ОК' : '*** ОШИБКА ***';
 let waited = [];
@@ -87,6 +87,20 @@ const r4 = await M.fetchRoofSheet(ctx);
 let rejected = false;
 await Promise.all(waited.map(p => p.catch(() => { rejected = true; })));
 console.log(`  крыш: ${r4.size}, промис отклонился: ${rejected} — ${ok(r4.size === 1 && !rejected)}`);
+
+console.log('H. запись в кеш зависла — слот обязан освободиться, следующий запрос идёт в Google');
+store.clear(); mode = 'ok'; googleCalls = 0; waited = [];
+let hangPut = true;
+const putOrig = globalThis.caches.default.put;
+globalThis.caches.default.put = async (req, res) => { if (hangPut) return new Promise(() => {}); return putOrig(req, res); };
+await seed(400_000);
+await M.fetchRoofSheet(ctx);                       // стартует фоновое обновление, put зависает
+const callsAfterFirst = googleCalls;
+await new Promise(r => setTimeout(r, 16500));      // ждём дольше PRICE_REFRESH_TIMEOUT_MS + 1000
+await seed(400_000);
+await M.fetchRoofSheet(ctx);
+console.log(`  походов в Google: первый ${callsAfterFirst}, после освобождения слота ${googleCalls} — ${ok(googleCalls > callsAfterFirst)}`);
+hangPut = false; globalThis.caches.default.put = putOrig;
 
 console.log('G. без ctx обновление не стартует впустую');
 store.clear(); await seed(400_000); mode = 'ok'; googleCalls = 0;

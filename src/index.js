@@ -21,7 +21,10 @@ const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "ut
 // на чтение по ссылке, поэтому воркеру не нужны ключи Google API.
 const PRICE_SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/1VrEYHh_bFuKEf0Bme468Yh-gKNtoDDbXctqeOJt9-j4/export?format=csv&gid=0";
-const PRICE_CACHE_URL = "https://moscowrooftop.ru/__cache/roof-sheet-v3";
+// Ключ намеренно вне адресного пространства сайта: caches.default — это тот же
+// кеш зоны, что и CDN-кеш, и держать служебную запись на публичном origin
+// незачем. Cache API не требует, чтобы URL ключа принадлежал зоне.
+const PRICE_CACHE_URL = "https://roof-sheet.internal/cache/v3";
 // Сколько ответ считается свежим. По истечении срока он всё равно отдаётся
 // сразу, а обновление уходит в фон (stale-while-revalidate).
 const PRICE_CACHE_TTL_SECONDS = 300;
@@ -319,13 +322,29 @@ async function writeRoofCache(roofs) {
 // путь (и тогда надо ответить 503).
 let roofRefreshInFlight = null;
 
+// Ждёт промис не дольше срока; по истечении отдаёт fallback, не трогая сам
+// промис. Нужен там, где зависший вызов не должен утаскивать за собой всё
+// остальное.
+function withDeadline(promise, ms, fallback) {
+  let timer;
+  const deadline = new Promise((resolve) => {
+    timer = setTimeout(() => resolve(fallback), ms);
+  });
+  return Promise.race([promise, deadline]).finally(() => clearTimeout(timer));
+}
+
 function refreshRoofSheet(timeoutMs = PRICE_REFRESH_TIMEOUT_MS) {
   if (!roofRefreshInFlight) {
-    roofRefreshInFlight = fetchRoofSheetFresh(timeoutMs)
-      .catch(() => null)
-      .finally(() => {
-        roofRefreshInFlight = null;
-      });
+    const attempt = fetchRoofSheetFresh(timeoutMs).catch(() => null);
+    // Слот освобождаем по собственному сроку, а не по тому, осела ли попытка.
+    // Таймаутом накрыт поход в таблицу, но не запись в кеш: если зависнет
+    // caches.default.put, промис не осядет никогда, и один застрявший вызов
+    // заблокировал бы все будущие обновления этого изолята — а с суточным
+    // max-age посетители молча получали бы вчерашние цены.
+    withDeadline(attempt, timeoutMs + 1000, null).then(() => {
+      if (roofRefreshInFlight === attempt) roofRefreshInFlight = null;
+    });
+    roofRefreshInFlight = attempt;
   }
   return roofRefreshInFlight;
 }
@@ -350,7 +369,9 @@ async function fetchRoofSheet(ctx) {
   }
   // Холодный кеш — тоже через дедупликацию: иначе десять одновременных
   // запросов дали бы десять походов в Google по четыре секунды каждый.
-  const fresh = await refreshRoofSheet(PRICE_FETCH_TIMEOUT_MS);
+  // Ждём общий промис со своим сроком: попытку мог начать фоновый вызов с
+  // пятнадцатью секундами, а посетитель столько ждать не должен.
+  const fresh = await withDeadline(refreshRoofSheet(PRICE_FETCH_TIMEOUT_MS), PRICE_FETCH_TIMEOUT_MS + 500, null);
   if (!fresh) throw new Error("Sheet unavailable");
   return new Map(Object.entries(fresh));
 }

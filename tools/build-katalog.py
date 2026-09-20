@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import html
 import json
+import math
 import re
 import sys
 import urllib.request
@@ -67,6 +68,25 @@ def esc(text: str) -> str:
     return html.escape(str(text), quote=True)
 
 
+def json_for_script(value) -> str:
+    """JSON, который безопасно класть внутрь <script type="application/json">.
+
+    json.dumps экранирует кавычки, но не «<», поэтому подстрока «</script» в
+    названии крыши или в alt закрыла бы элемент раньше времени и порвала
+    страницу. Таблицу правят руками, так что это вопрос времени. \u003c —
+    валидный JSON-эскейп, JSON.parse читает его как обычный «<».
+    """
+    return json.dumps(value, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
+
+
+def plural(n: int, one: str, few: str, many: str) -> str:
+    if n % 10 == 1 and n % 100 != 11:
+        return one
+    if 2 <= n % 10 <= 4 and not 12 <= n % 100 <= 14:
+        return few
+    return many
+
+
 def price_text(value: int | None) -> str:
     if not value:
         return "Цена по запросу"
@@ -85,10 +105,25 @@ def read_aliases() -> dict[str, str]:
     return {normalize(a): normalize(b) for a, b in re.findall(r'\["([^"]+)",\s*"([^"]+)"\]', block)}
 
 
+def truthy(value) -> bool:
+    """bool("false") — это True, а в снапшоте статус вполне может приехать
+    строкой. Разбираем честно."""
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() not in ("", "0", "false", "no", "нет", "off")
+
+
 def unpack(data: dict) -> tuple[dict[str, int], dict[str, bool] | None]:
-    prices = {normalize(k): int(v) for k, v in (data.get("prices") or {}).items() if v}
+    prices = {}
+    for k, v in (data.get("prices") or {}).items():
+        try:
+            price = int(str(v).replace(" ", "").replace("\u00a0", ""))
+        except (TypeError, ValueError):
+            continue
+        if price > 0:
+            prices[normalize(k)] = price
     roofs = data.get("roofs")
-    statuses = {normalize(k): bool(v) for k, v in roofs.items()} if roofs else None
+    statuses = {normalize(k): truthy(v) for k, v in roofs.items()} if roofs else None
     return prices, statuses
 
 
@@ -104,10 +139,16 @@ def fetch_sheet(offline: bool, prices_json: str | None) -> tuple[dict[str, int],
     только клиент, как раньше.
     """
     if prices_json:
-        data = json.loads(Path(prices_json).read_text(encoding="utf-8"))
+        try:
+            data = json.loads(Path(prices_json).read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:  # noqa: BLE001 — сборка не должна падать трейсбеком
+            print(f"  ! не читается {prices_json} ({exc})", file=sys.stderr)
+            data = {}
         if data.get("prices"):
             prices, statuses = unpack(data)
             return prices, statuses, "json"
+        if data:
+            print(f"  ! в {prices_json} нет ключа prices — беру цены дальше по цепочке", file=sys.stderr)
     if not offline:
         try:
             req = urllib.request.Request(API_URL, headers={"Accept": "application/json"})
@@ -123,6 +164,13 @@ def fetch_sheet(offline: bool, prices_json: str | None) -> tuple[dict[str, int],
     return {normalize(n): int(p) for n, p in re.findall(r'\["([^"]+)",\s*(\d+)\]', block)}, None, "fallback"
 
 
+def step_width(width: int, step: int) -> int:
+    """Ширина файла на ступени. Округление половины вверх, как у sharp:
+    встроенный round() в Python округляет к чётному и на кадре 853x1280 давал
+    426 вместо реальных 427."""
+    return math.floor(width * step / 1280 + 0.5)
+
+
 def srcset(base: str, width: int, ladder: tuple[int, ...], ext: str) -> str:
     """Дескрипторы w — реальная ширина файла на каждой ступени.
 
@@ -131,12 +179,19 @@ def srcset(base: str, width: int, ladder: tuple[int, ...], ext: str) -> str:
     пропорции. Для кадра 960x1280 ступень 960 даёт ширину 720, ступень 640 —
     480. Расхождение с sharp проверено на всех 58 кадрах.
     """
-    return ", ".join(f"{base}-{step}.{ext} {round(width * step / 1280)}w" for step in ladder)
+    return ", ".join(f"{base}-{step}.{ext} {step_width(width, step)}w" for step in ladder)
 
 
-def feed_ladder_for(width: int) -> tuple[int, ...]:
-    """Лесенка ленты с оглядкой на пропорции кадра (см. FEED_MIN_WIDTH)."""
-    if round(width * FEED_LADDER[-1] / 1280) < FEED_MIN_WIDTH:
+def feed_ladder_for(width: int, height: int) -> tuple[int, ...]:
+    """Лесенка ленты с оглядкой на пропорции кадра (см. FEED_MIN_WIDTH).
+
+    Слот в ленте — 4:5, а картинка вписана по object-fit: cover, поэтому кадр
+    шире слота отрисовывается крупнее, чем сам слот: отрендеренная ширина =
+    слот * max(1, (5/4) * w/h). Для альбомного 1280x960 это множитель 1.67, и
+    без поправки единственный такой кадр оказался бы мягче, чем был до правок.
+    """
+    cover = max(1.0, (5 / 4) * width / height)
+    if step_width(width, FEED_LADDER[-1]) < FEED_MIN_WIDTH * cover:
         return FEED_LADDER + (1280,)
     return FEED_LADDER
 
@@ -145,7 +200,7 @@ def picture(photo: dict, sizes: str, *, eager: bool, prefix: str, ladder: tuple[
     base = f"{prefix}{photo['base']}"
     w, h = photo["w"], photo["h"]
     if ladder is None:
-        ladder = feed_ladder_for(w)
+        ladder = feed_ladder_for(w, h)
     # У отложенных кадров srcset лежит в data-*: подставляет IntersectionObserver,
     # потому что в горизонтальной ленте браузерный lazy срабатывает непредсказуемо.
     attr = "srcset" if eager else "data-srcset"
@@ -279,7 +334,6 @@ def render_roof_page(roof: dict, price: int | None, template: str, styles: str, 
         .replace("{{PRICE}}", price_text(price))
         .replace("{{DESC_PLAIN}}", esc(roof["desc"]))
         .replace("{{DESC}}", esc(roof["desc"]))
-        .replace("{{FIRST_SHOT}}", f"{prefix}{roof['photos'][0]['base']}")
         .replace("{{BOT_URL}}", BOT_URL)
     )
 
@@ -304,10 +358,14 @@ def main() -> int:
     if args.assets_base:
         base = args.assets_base if args.assets_base.endswith("/") else args.assets_base + "/"
         feed_prefix = roof_prefix = base
-        origin = "/".join(base.split("/")[:3])
+        # crossorigin здесь вреден: кадры грузятся обычными <img>/<source>,
+        # то есть без CORS, а браузер держит для анонимных и обычных запросов
+        # РАЗНЫЕ соединения — прогретое осталось бы неиспользованным.
+        origin = "/".join(base.split("/")[:3]) if re.match(r"^(https?:)?//", base) else ""
         assets_preconnect = (
-            f'<link rel="preconnect" href="{origin}" crossorigin />'
-            f'<link rel="dns-prefetch" href="{origin}" />'
+            f'<link rel="preconnect" href="{origin}" />\n    <link rel="dns-prefetch" href="{origin}" />\n    '
+            if origin
+            else ""
         )
     else:
         feed_prefix, roof_prefix = "../assets/locations/", "../../assets/locations/"
@@ -362,20 +420,31 @@ def main() -> int:
         )
         for index, roof in enumerate(live)
     )
+    # Если доступных крыш нет вовсе, первый кадр всё равно должен грузиться
+    # сразу: иначе на первом экране не остаётся ни одного eager-кадра и всё
+    # ждёт выполнения скрипта.
     cards_off = "".join(
         render_card(
-            roof, price_for(roof["sheetName"]), False, state_of[roof["id"]], feed_prefix, order_of[roof["id"]]
+            roof,
+            price_for(roof["sheetName"]),
+            not live and index == 0,
+            state_of[roof["id"]],
+            feed_prefix,
+            order_of[roof["id"]],
         )
-        for roof in off
+        for index, roof in enumerate(off)
     )
     if statuses is None:
         status_text = ""
     elif not off:
-        status_text = f"Все <b>{len(live)}</b> крыш в расписании"
+        status_text = f"Все <b>{len(live)}</b> {plural(len(live), 'крыша', 'крыши', 'крыш')} в расписании"
     elif not live:
         status_text = "Сегодня все крыши заняты — напишите в бота, подберём дату"
     else:
-        status_text = f"Сейчас в расписании <b>{len(live)}</b> из {len(roofs)} крыш"
+        status_text = (
+            f"Сейчас в расписании <b>{len(live)}</b> из {len(roofs)} "
+            f"{plural(len(roofs), 'крыши', 'крыш', 'крыш')}"
+        )
     feed = (TOOLS / "katalog-template.html").read_text(encoding="utf-8")
     feed = (
         feed.replace("/*STYLES*/", styles)
@@ -386,26 +455,23 @@ def main() -> int:
         .replace("{{ASSETS_PRECONNECT}}", assets_preconnect)
         .replace("{{OFF_HIDDEN}}", "" if off else " hidden")
 
-        .replace("<!--ALIASES_JSON-->", json.dumps(aliases, ensure_ascii=False, separators=(",", ":")))
+        .replace("<!--ALIASES_JSON-->", json_for_script(aliases))
         .replace("{{BOT_URL}}", BOT_URL)
         .replace("{{YANDEX_DISK_URL}}", YANDEX_DISK_URL)
         .replace("{{GOOGLE_DRIVE_URL}}", GOOGLE_DRIVE_URL)
-        .replace("{{FIRST_COVER}}", f"{feed_prefix}{roofs[0]['photos'][0]['base']}")
         .replace("{{ROOF_COUNT}}", str(len(roofs)))
     )
     # Данные галерей нужны только лайтбоксу на десктопе.
     feed = feed.replace(
         "<!--GALLERY_JSON-->",
-        json.dumps(
+        json_for_script(
             {
                 roof["id"]: {
                     "name": roof["title"],
                     "images": [{"b": f"{feed_prefix}{p['base']}", "a": p["alt"]} for p in roof["photos"]],
                 }
                 for roof in roofs
-            },
-            ensure_ascii=False,
-            separators=(",", ":"),
+            }
         ),
     )
     feed_path = ROOT / "katalog" / "index.html"
@@ -428,12 +494,15 @@ def main() -> int:
         print(f"  ! без цены остались: {', '.join(missing)}", file=sys.stderr)
     if unknown:
         print(
-            f"  ! нет в таблице (считаю недоступными): {', '.join(unknown)}"
+            f"  ! нет в таблице (считаю доступными, поправит живой /api/roofs): {', '.join(unknown)}"
             "\n    проверьте написание или SHEET_NAME_ALIASES в src/index.js",
             file=sys.stderr,
         )
     total_photos = sum(len(r["photos"]) for r in roofs)
-    status_note = "нет (офлайн)" if statuses is None else f"{len(live)} в расписании, {len(off)} нет"
+    if statuses is not None:
+        status_note = f"{len(live)} в расписании, {len(off)} нет"
+    else:
+        status_note = "нет (офлайн-сборка)" if args.offline else "нет (в ответе не было ключа roofs)"
     print(
         f"✓ /katalog/ — {len(roofs)} крыш, {total_photos} кадров, цены: {price_source}, "
         f"статусы: {status_note}, {feed_path.stat().st_size / 1024:.1f} КБ"

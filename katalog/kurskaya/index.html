@@ -371,6 +371,7 @@
 
         // --- Галерея: нативный скролл со snap, JS только считает кадры ---
         function revealImage(img) {
+          if (!img.dataset.src) return;   // уже раскрыт: иначе src стал бы "undefined"
           // Источников теперь два — avif и webp, — и подставить надо оба.
           // С querySelector срабатывал только первый, а второй оставался без
           // srcset: браузер без поддержки avif пропускал пустой <source> и
@@ -568,8 +569,12 @@
             known[key] = true;
             if (aliases[key]) known[aliases[key]] = true; // та же крыша под именем из таблицы
             // Нет ключа в таблице — крышу убрали или переименовали: обещать её нельзя.
-            var isOn = data.roofs[key] === true;
-            var price = data.prices && data.prices[key];
+            // Запасной ключ — как в сборщике (status_for/price_for). Воркер
+            // сейчас зеркалит алиасы сам, но клиент не должен на это
+            // полагаться: снимут зеркалирование — и крыша молча погаснет.
+            var alt = aliases[key];
+            var isOn = data.roofs[key] === true || (!!alt && data.roofs[alt] === true);
+            var price = (data.prices && data.prices[key]) || (alt && data.prices && data.prices[alt]);
             var priceNode = card.querySelector('[data-roof-price]');
             if (priceNode && price) priceNode.textContent = formatPrice(price);
             if (!(key in data.roofs)) {
@@ -618,6 +623,11 @@
             if (key.length > 40 || !/^[а-яёa-z0-9 \-]+$/i.test(key)) return;
             extras.push({ name: key.charAt(0).toUpperCase() + key.slice(1), price: data.prices && data.prices[key] });
           });
+          var moreBox = document.getElementById('cat-more');
+          // В обе стороны: applyRoofData зовут дважды, и если во втором ответе
+          // таких крыш не осталось, заголовок «Есть и другие крыши» висел бы
+          // над пустотой.
+          if (moreBox) moreBox.hidden = !extras.length;
           if (extras.length) {
             var host = moreHost;
             extras.slice(0, 12).forEach(function (extra) {
@@ -631,13 +641,23 @@
               row.appendChild(price);
               host.appendChild(row);
             });
-            document.getElementById('cat-more').hidden = false;
+          }
+        }
+
+        // Ошибка внутри applyRoofData не должна проваливаться в catch у
+        // loadRoofs и выдаваться за «сеть не ответила»: поломка разметки
+        // выглядела бы как обычный сбой и не оставляла следа в консоли.
+        function applyData(data) {
+          try {
+            applyRoofData(data);
+          } catch (e) {
+            if (window.console) console.error('[Каталог] не смог применить статусы:', e);
           }
         }
 
         function loadRoofs() {
           var cached = readCache();
-          if (cached) { applyRoofData(cached); return; }
+          if (cached) { applyData(cached); return; }
           var controller = 'AbortController' in window ? new AbortController() : null;
           var timer = controller ? setTimeout(function () { controller.abort(); }, API_TIMEOUT) : null;
           fetch('/api/roofs', { headers: { Accept: 'application/json' }, signal: controller && controller.signal })
@@ -646,7 +666,7 @@
               if (timer) clearTimeout(timer);
               if (!data || !data.ok) throw new Error('bad payload');
               writeCache(data);
-              applyRoofData(data);
+              applyData(data);
             })
             .catch(function () {
               if (timer) clearTimeout(timer);
@@ -667,7 +687,12 @@
           if (!link) return;
           var tg = window.Telegram && window.Telegram.WebApp;
           if (!isInTelegram(tg)) return; // обычный браузер — работает штатная ссылка ?start=book_…
-          var card = link.closest('.cat-card');
+          // На странице крыши .cat-card нет вовсе: имя лежит на <main
+          // data-roof-name>. С .cat-card closest возвращал null, и следующая
+          // строка бросала TypeError — sendData не вызывался, и возврат в
+          // бота падал на запасную ссылку вместо штатного канала.
+          var card = link.closest('[data-roof-name]');
+          if (!card) return;
           safely(function () {
             if (tg.HapticFeedback && tg.HapticFeedback.impactOccurred) tg.HapticFeedback.impactOccurred('light');
           });
