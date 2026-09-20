@@ -11,14 +11,8 @@
     <meta name="theme-color" content="#0b0a09" />
     <link rel="icon" href="/assets/favicon.svg?v=20260725-m" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=20260725-m" />
-    <link
-      rel="preload"
-      as="image"
-      type="image/webp"
-      href="../../assets/locations/kurskaya-center-view-03-640.webp"
-      imagesrcset="../../assets/locations/kurskaya-center-view-03-640.webp 480w, ../../assets/locations/kurskaya-center-view-03-1280.webp 960w"
-      imagesizes="(max-width: 980px) calc(100vw - 32px), 560px"
-    />
+    <link rel="preconnect" href="https://telegram.org" crossorigin />
+    <link rel="dns-prefetch" href="https://telegram.org" />
     <script>
       (function () {
         var isMiniApp = /[#&?]tgWebApp/.test(location.href);
@@ -230,6 +224,7 @@
         background: #0b0a09; color: var(--text);
       }
       dialog.cat-lightbox::backdrop { background: rgba(5, 4, 3, 0.88); }
+      .cat-lightbox picture { display: contents; }
       .cat-lightbox img { max-height: 82vh; object-fit: contain; }
       .cat-lightbox-bar {
         display: flex; align-items: center; justify-content: space-between; gap: 12px;
@@ -296,7 +291,7 @@
         <p class="cat-logo"><span>MR</span>Moscow Rooftop</p>
       </header>
 
-      <main data-roof-name="Курская" data-slug="kurskaya">
+      <main class="is-off" data-roof-name="Курская" data-slug="kurskaya">
         <div class="roof-top">
           <a class="roof-back" href="../">← Все крыши</a>
           <div class="roof-title-row">
@@ -307,17 +302,17 @@
           </div>
           <p class="roof-lead">Закат над историческим центром: высотки, купола и городские крыши в мягком вечернем свете.</p>
           <div class="roof-meta">
-            <span class="cat-badge" hidden></span>
+            <span class="cat-badge is-off">Пока недоступна</span>
             <ul class="cat-tags"><li>Прогулка</li><li>Закат</li><li>Фотосессия</li></ul>
           </div>
-          <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
+          <p class="cat-off-note">Пока недоступна — спросите в боте про ближайшие даты</p>
         </div>
 
         <div class="roof-shots">
-          <figure class="roof-shot"><picture><source type="image/webp" srcset="../../assets/locations/kurskaya-center-view-03-640.webp 480w, ../../assets/locations/kurskaya-center-view-03-1280.webp 960w" sizes="(max-width: 980px) calc(100vw - 32px), 560px" /><img src="../../assets/locations/kurskaya-center-view-03-640.jpg" srcset="../../assets/locations/kurskaya-center-view-03-640.jpg 480w, ../../assets/locations/kurskaya-center-view-03-1280.jpg 960w" sizes="(max-width: 980px) calc(100vw - 32px), 560px" width="960" height="1280" alt="Оранжевый закат над высотками и крышами центра Москвы" loading="eager" fetchpriority="high" /></picture></figure>
-          <figure class="roof-shot"><picture><source type="image/webp" data-srcset="../../assets/locations/kurskaya-center-view-02-640.webp 480w, ../../assets/locations/kurskaya-center-view-02-1280.webp 960w" sizes="(max-width: 980px) calc(100vw - 32px), 560px" /><img data-src="../../assets/locations/kurskaya-center-view-02-640.jpg" data-srcset="../../assets/locations/kurskaya-center-view-02-640.jpg 480w, ../../assets/locations/kurskaya-center-view-02-1280.jpg 960w" sizes="(max-width: 980px) calc(100vw - 32px), 560px" width="960" height="1280" alt="Подсвеченная сталинская высотка в вечернем городе" loading="lazy" decoding="async" /></picture></figure>
-          <figure class="roof-shot"><picture><source type="image/webp" data-srcset="../../assets/locations/kurskaya-center-view-01-640.webp 480w, ../../assets/locations/kurskaya-center-view-01-1280.webp 960w" sizes="(max-width: 980px) calc(100vw - 32px), 560px" /><img data-src="../../assets/locations/kurskaya-center-view-01-640.jpg" data-srcset="../../assets/locations/kurskaya-center-view-01-640.jpg 480w, ../../assets/locations/kurskaya-center-view-01-1280.jpg 960w" sizes="(max-width: 980px) calc(100vw - 32px), 560px" width="960" height="1280" alt="Вечерняя панорама исторического центра Москвы" loading="lazy" decoding="async" /></picture></figure>
-          <figure class="roof-shot"><picture><source type="image/webp" data-srcset="../../assets/locations/kurskaya-center-view-04-640.webp 480w, ../../assets/locations/kurskaya-center-view-04-1280.webp 960w" sizes="(max-width: 980px) calc(100vw - 32px), 560px" /><img data-src="../../assets/locations/kurskaya-center-view-04-640.jpg" data-srcset="../../assets/locations/kurskaya-center-view-04-640.jpg 480w, ../../assets/locations/kurskaya-center-view-04-1280.jpg 960w" sizes="(max-width: 980px) calc(100vw - 32px), 560px" width="960" height="1280" alt="Купола, городские крыши и Москва-Сити вдалеке" loading="lazy" decoding="async" /></picture></figure>
+          <figure class="roof-shot"><picture><source type="image/avif" srcset="../../assets/locations/kurskaya-center-view-03-640.avif 480w, ../../assets/locations/kurskaya-center-view-03-960.avif 720w, ../../assets/locations/kurskaya-center-view-03-1280.avif 960w" sizes="(max-width: 980px) calc(100vw - 32px), 560px" /><source type="image/webp" srcset="../../assets/locations/kurskaya-center-view-03-640.webp 480w, ../../assets/locations/kurskaya-center-view-03-960.webp 720w, ../../assets/locations/kurskaya-center-view-03-1280.webp 960w" sizes="(max-width: 980px) calc(100vw - 32px), 560px" /><img src="../../assets/locations/kurskaya-center-view-03-640.jpg" srcset="../../assets/locations/kurskaya-center-view-03-640.jpg 480w, ../../assets/locations/kurskaya-center-view-03-1280.jpg 960w" sizes="(max-width: 980px) calc(100vw - 32px), 560px" width="960" height="1280" alt="Оранжевый закат над высотками и крышами центра Москвы" loading="eager" fetchpriority="high" /></picture></figure>
+          <figure class="roof-shot"><picture><source type="image/avif" data-srcset="../../assets/locations/kurskaya-center-view-02-640.avif 480w, ../../assets/locations/kurskaya-center-view-02-960.avif 720w, ../../assets/locations/kurskaya-center-view-02-1280.avif 960w" sizes="(max-width: 980px) calc(100vw - 32px), 560px" /><source type="image/webp" data-srcset="../../assets/locations/kurskaya-center-view-02-640.webp 480w, ../../assets/locations/kurskaya-center-view-02-960.webp 720w, ../../assets/locations/kurskaya-center-view-02-1280.webp 960w" sizes="(max-width: 980px) calc(100vw - 32px), 560px" /><img data-src="../../assets/locations/kurskaya-center-view-02-640.jpg" data-srcset="../../assets/locations/kurskaya-center-view-02-640.jpg 480w, ../../assets/locations/kurskaya-center-view-02-1280.jpg 960w" sizes="(max-width: 980px) calc(100vw - 32px), 560px" width="960" height="1280" alt="Подсвеченная сталинская высотка в вечернем городе" loading="lazy" decoding="async" /></picture></figure>
+          <figure class="roof-shot"><picture><source type="image/avif" data-srcset="../../assets/locations/kurskaya-center-view-01-640.avif 480w, ../../assets/locations/kurskaya-center-view-01-960.avif 720w, ../../assets/locations/kurskaya-center-view-01-1280.avif 960w" sizes="(max-width: 980px) calc(100vw - 32px), 560px" /><source type="image/webp" data-srcset="../../assets/locations/kurskaya-center-view-01-640.webp 480w, ../../assets/locations/kurskaya-center-view-01-960.webp 720w, ../../assets/locations/kurskaya-center-view-01-1280.webp 960w" sizes="(max-width: 980px) calc(100vw - 32px), 560px" /><img data-src="../../assets/locations/kurskaya-center-view-01-640.jpg" data-srcset="../../assets/locations/kurskaya-center-view-01-640.jpg 480w, ../../assets/locations/kurskaya-center-view-01-1280.jpg 960w" sizes="(max-width: 980px) calc(100vw - 32px), 560px" width="960" height="1280" alt="Вечерняя панорама исторического центра Москвы" loading="lazy" decoding="async" /></picture></figure>
+          <figure class="roof-shot"><picture><source type="image/avif" data-srcset="../../assets/locations/kurskaya-center-view-04-640.avif 480w, ../../assets/locations/kurskaya-center-view-04-960.avif 720w, ../../assets/locations/kurskaya-center-view-04-1280.avif 960w" sizes="(max-width: 980px) calc(100vw - 32px), 560px" /><source type="image/webp" data-srcset="../../assets/locations/kurskaya-center-view-04-640.webp 480w, ../../assets/locations/kurskaya-center-view-04-960.webp 720w, ../../assets/locations/kurskaya-center-view-04-1280.webp 960w" sizes="(max-width: 980px) calc(100vw - 32px), 560px" /><img data-src="../../assets/locations/kurskaya-center-view-04-640.jpg" data-srcset="../../assets/locations/kurskaya-center-view-04-640.jpg 480w, ../../assets/locations/kurskaya-center-view-04-1280.jpg 960w" sizes="(max-width: 980px) calc(100vw - 32px), 560px" width="960" height="1280" alt="Купола, городские крыши и Москва-Сити вдалеке" loading="lazy" decoding="async" /></picture></figure>
         </div>
 
         <div class="roof-cta">
@@ -347,6 +342,9 @@
         // И лента каталога, и страница крыши: всё, у чего есть имя крыши.
         var cards = [].slice.call(document.querySelectorAll('[data-roof-name]'));
         var statusNode = document.getElementById('cat-status');
+        // Бейджи, нарисованные сборщиком, приходят уже без hidden. По ним и
+        // понимаем, есть ли что терять, если /api/roofs не ответит.
+        var hasBakedStatuses = !!document.querySelector('.cat-badge:not([hidden])');
         // Написание сайта -> написание таблицы (SHEET_NAME_ALIASES воркера).
         var aliases = {};
         try { aliases = JSON.parse(document.getElementById('cat-aliases').textContent || '{}'); } catch (e) {}
@@ -373,8 +371,15 @@
 
         // --- Галерея: нативный скролл со snap, JS только считает кадры ---
         function revealImage(img) {
-          var source = img.parentNode ? img.parentNode.querySelector('source[data-srcset]') : null;
-          if (source) { source.srcset = source.dataset.srcset; delete source.dataset.srcset; }
+          // Источников теперь два — avif и webp, — и подставить надо оба.
+          // С querySelector срабатывал только первый, а второй оставался без
+          // srcset: браузер без поддержки avif пропускал пустой <source> и
+          // скатывался на запасной jpg, то есть на самый тяжёлый вариант.
+          var sources = img.parentNode ? img.parentNode.querySelectorAll('source[data-srcset]') : [];
+          [].forEach.call(sources, function (source) {
+            source.srcset = source.dataset.srcset;
+            delete source.dataset.srcset;
+          });
           img.addEventListener('load', function () {
             // Догрузка кадра не должна утаскивать ленту вбок (см. keepAtStart).
             var rail = img.closest ? img.closest('.cat-rail') : null;
@@ -467,17 +472,35 @@
           var galleries = {};
           try { galleries = JSON.parse(document.getElementById('cat-galleries').textContent || '{}'); } catch (e) {}
           var lbImg = document.getElementById('cat-lightbox-img');
+          var lbAvif = document.getElementById('cat-lb-avif');
+          var lbWebp = document.getElementById('cat-lb-webp');
           var lbCounter = document.getElementById('cat-lb-counter');
           var active = { id: null, index: 0 };
           function renderLightbox() {
             var gallery = galleries[active.id];
             if (!gallery) return;
             var image = gallery.images[active.index];
+            // Формат выбирает браузер сам: jpg на 1280 весит в среднем 148 КБ,
+            // avif — 64 КБ. Раньше лайтбокс всегда тянул самый тяжёлый файл.
+            if (lbAvif) lbAvif.srcset = image.b + '-1280.avif';
+            if (lbWebp) lbWebp.srcset = image.b + '-1280.webp';
             lbImg.src = image.b + '-1280.jpg';
             lbImg.alt = image.a;
             lbCounter.textContent = active.index + 1 + ' / ' + gallery.images.length;
             var nextImage = gallery.images[active.index + 1];
-            if (nextImage) new Image().src = nextImage.b + '-1280.jpg';
+            if (!nextImage) return;
+            // Соседний кадр греем только после того, как приехал текущий, и в
+            // том же формате: currentSrc показывает, что браузер реально выбрал.
+            // Иначе на медленном канале предзагрузка отбирала канал у картинки,
+            // которую человек смотрит прямо сейчас.
+            var warm = function () {
+              var chosen = lbImg.currentSrc || lbImg.src;
+              var dot = chosen.lastIndexOf('.');
+              var ext = dot === -1 ? '.jpg' : chosen.slice(dot);
+              new Image().src = nextImage.b + '-1280' + ext;
+            };
+            if (lbImg.complete) warm();
+            else lbImg.addEventListener('load', warm, { once: true });
           }
           function move(delta) {
             var gallery = galleries[active.id];
@@ -519,10 +542,12 @@
 
         function applyRoofData(data) {
           if (!data || !data.roofs) return;
-          var offFeed = document.getElementById('cat-feed-off');   // на странице крыши их нет
+          var liveFeed = document.getElementById('cat-feed');      // на странице крыши их нет
+          var offFeed = document.getElementById('cat-feed-off');
           var divider = document.getElementById('cat-divider');
           var known = {};
           var available = 0;
+          var moved = [];
           cards.forEach(function (card) {
             var key = normalizeRoofName(card.dataset.roofName);
             known[key] = true;
@@ -543,14 +568,24 @@
               badge.hidden = false;
             }
             if (isOn) available += 1;
-            else {
-              card.classList.add('is-off');
-              var offNote = card.querySelector('.cat-off-note');
-              if (offNote) offNote.hidden = false;
-              if (offFeed) offFeed.appendChild(card);
-            }
+            // Всё ниже — в обе стороны: статусы уже нарисованы при сборке, и
+            // живой ответ должен уметь не только спрятать крышу, но и вернуть
+            // её обратно. Раньше is-off только добавлялся, и крыша, снова
+            // ставшая доступной, оставалась серой до перезагрузки.
+            card.classList.toggle('is-off', !isOn);
+            var offNote = card.querySelector('.cat-off-note');
+            if (offNote) offNote.hidden = isOn;
+            var target = isOn ? liveFeed : offFeed;
+            // Трогаем DOM, только если карточка и правда не в той ленте:
+            // лишний appendChild — это лишний сдвиг вёрстки под пальцем.
+            if (target && card.parentNode !== target) moved.push({ card: card, target: target });
           });
-          if (offFeed && offFeed.children.length) { offFeed.hidden = false; divider.hidden = false; }
+          moved.forEach(function (m) { m.target.appendChild(m.card); });
+          if (offFeed && divider) {
+            var hasOff = offFeed.children.length > 0;
+            offFeed.hidden = !hasOff;
+            divider.hidden = !hasOff;
+          }
 
           if (statusNode) {
             if (available === cards.length) statusNode.innerHTML = 'Все <b>' + cards.length + '</b> крыш в расписании';
@@ -562,6 +597,7 @@
           var extras = [];
           var moreHost = document.getElementById('cat-more-rows');
           if (!moreHost) return; // страница одной крыши: блока «другие крыши» нет
+          moreHost.textContent = ''; // applyRoofData зовут дважды: снапшот, потом живой ответ
           Object.keys(data.roofs).forEach(function (key) {
             if (known[key] || data.roofs[key] !== true) return;
             if (key.length > 40 || !/^[а-яёa-z0-9 \-]+$/i.test(key)) return;
@@ -599,8 +635,14 @@
             })
             .catch(function () {
               if (timer) clearTimeout(timer);
-              // Ничего не прячем и не ломаем: цены-снапшот уже в HTML, запись работает.
-              if (statusNode) statusNode.textContent = 'Статусы не обновились — уточним при записи';
+              // Ничего не прячем и не ломаем: цены и статусы-снапшот уже в HTML,
+              // запись работает. Если статусы запечены при сборке — молчим:
+              // затирать верную строку тревожным сообщением хуже, чем оставить
+              // её как есть, а на медленном мобильном канале этот запрос не
+              // доходит регулярно.
+              if (statusNode && !hasBakedStatuses) {
+                statusNode.textContent = 'Статусы не обновились — уточним при записи';
+              }
             });
         }
 

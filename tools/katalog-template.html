@@ -18,14 +18,15 @@
     <link rel="icon" href="/assets/favicon.svg?v=20260725-m" type="image/svg+xml" />
     <link rel="icon" href="/assets/favicon.ico?v=20260725-m" sizes="any" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=20260725-m" />
-    <link
-      rel="preload"
-      as="image"
-      type="image/webp"
-      href="{{FIRST_COVER}}-640.webp"
-      imagesrcset="{{FIRST_COVER}}-640.webp 480w, {{FIRST_COVER}}-1280.webp 960w"
-      imagesizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px"
-    />
+    <!-- Ранний коннект к telegram.org: SDK грузится с defer и на российских
+         мобильных сетях рукопожатие к нему занимает заметную часть времени. -->
+    <link rel="preconnect" href="https://telegram.org" crossorigin />
+    <link rel="dns-prefetch" href="https://telegram.org" />
+    <!-- rel=preload на обложку убран сознательно: формат кадра выбирает
+         <picture> (avif -> webp -> jpg), а preload умеет тянуть только один
+         вариант и на части браузеров качал бы второй файл впустую. Первый
+         кадр и так стоит в начале <body> обычным <img loading="eager">,
+         preload-сканер находит его до выполнения скриптов. -->
     <script>
       // Режим Mini App определяем до первой отрисовки и без SDK: Telegram дописывает
       // к адресу #tgWebAppData=…, а sessionStorage держит флаг, когда хеш уже убран.
@@ -56,15 +57,17 @@
         <div class="cat-head">
           <h1>Крыши Москвы</h1>
           <p class="cat-note">{{ROOF_COUNT}} крыш · цена за человека · час на площадке</p>
-          <p class="cat-status" id="cat-status" aria-live="polite"></p>
+          <p class="cat-status" id="cat-status" aria-live="polite">{{STATUS_TEXT}}</p>
         </div>
 
         <div class="cat-feed" id="cat-feed">
 <!--CARDS-->
         </div>
 
-        <h2 class="cat-divider" id="cat-divider" hidden>Сейчас недоступны</h2>
-        <div class="cat-feed" id="cat-feed-off" hidden></div>
+        <h2 class="cat-divider" id="cat-divider"{{OFF_HIDDEN}}>Сейчас недоступны</h2>
+        <div class="cat-feed" id="cat-feed-off"{{OFF_HIDDEN}}>
+<!--CARDS_OFF-->
+        </div>
 
         <section class="cat-more" id="cat-more" hidden>
           <h2>Есть и другие крыши</h2>
@@ -87,7 +90,11 @@
     <div class="cat-sticky"><a id="cat-main-cta" href="{{BOT_URL}}">Записаться в боте</a></div>
 
     <dialog class="cat-lightbox" id="cat-lightbox">
-      <img id="cat-lightbox-img" alt="" width="1280" height="960" />
+      <picture>
+        <source id="cat-lb-avif" type="image/avif" />
+        <source id="cat-lb-webp" type="image/webp" />
+        <img id="cat-lightbox-img" alt="" width="1280" height="960" />
+      </picture>
       <div class="cat-lightbox-bar">
         <button type="button" id="cat-lb-prev">‹ Назад</button>
         <span id="cat-lb-counter"></span>

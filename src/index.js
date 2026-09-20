@@ -21,8 +21,13 @@ const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "ut
 // на чтение по ссылке, поэтому воркеру не нужны ключи Google API.
 const PRICE_SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/1VrEYHh_bFuKEf0Bme468Yh-gKNtoDDbXctqeOJt9-j4/export?format=csv&gid=0";
-const PRICE_CACHE_URL = "https://moscowrooftop.ru/__cache/roof-sheet-v2";
+const PRICE_CACHE_URL = "https://moscowrooftop.ru/__cache/roof-sheet-v3";
+// Сколько ответ считается свежим. По истечении срока он всё равно отдаётся
+// сразу, а обновление уходит в фон (stale-while-revalidate).
 const PRICE_CACHE_TTL_SECONDS = 300;
+// Сколько держим устаревший ответ как запасной. Раньше запись просто протухала,
+// и первый посетитель каждые пять минут ждал Google Sheets — замерено 3.8 с.
+const PRICE_CACHE_MAX_AGE_SECONDS = 3600;
 const PRICE_FETCH_TIMEOUT_MS = 4000;
 // В таблице «Марксисткая» (без «с»), на сайте — «Марксистская».
 const SHEET_NAME_ALIASES = new Map([["марксистская", "марксисткая"]]);
@@ -266,15 +271,65 @@ function parseRoofSheetCsv(csv) {
   return roofs;
 }
 
-async function fetchRoofSheet() {
-  const cache = caches.default;
-  const cacheKey = new Request(PRICE_CACHE_URL);
-  const cached = await cache.match(cacheKey);
-
-  if (cached) {
-    return new Map(Object.entries(await cached.json()));
+// Читает запись кеша вместе с её возрастом. Формат — { at, roofs }: срок
+// жизни считаем сами, потому что Cache-Control удаляет запись в тот же миг,
+// когда она перестаёт быть свежей, а нам устаревшая ещё пригодится.
+async function readRoofCache() {
+  const cached = await caches.default.match(new Request(PRICE_CACHE_URL));
+  if (!cached) return null;
+  try {
+    const payload = await cached.json();
+    if (!payload || typeof payload !== "object" || !payload.roofs) return null;
+    return payload;
+  } catch {
+    return null;
   }
+}
 
+async function writeRoofCache(roofs) {
+  await caches.default.put(
+    new Request(PRICE_CACHE_URL),
+    new Response(JSON.stringify({ at: Date.now(), roofs }), {
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": `max-age=${PRICE_CACHE_MAX_AGE_SECONDS}`,
+      },
+    })
+  );
+}
+
+// Одно обновление на изолят: без этого каждый запрос, попавший на устаревшую
+// запись, дёргал бы Google отдельно.
+let roofRefreshInFlight = null;
+
+function refreshRoofSheet() {
+  if (!roofRefreshInFlight) {
+    roofRefreshInFlight = fetchRoofSheetFresh()
+      .catch(() => null)
+      .finally(() => {
+        roofRefreshInFlight = null;
+      });
+  }
+  return roofRefreshInFlight;
+}
+
+// Отдаёт таблицу, не заставляя посетителя ждать Google: пока в кеше есть хоть
+// что-то, ответ мгновенный, а обновление живёт в ctx.waitUntil уже после того,
+// как ответ ушёл. Блокируемся только на холодном кеше.
+async function fetchRoofSheet(ctx) {
+  const cached = await readRoofCache();
+  if (cached) {
+    const ageSeconds = (Date.now() - (cached.at || 0)) / 1000;
+    if (ageSeconds > PRICE_CACHE_TTL_SECONDS) {
+      const refresh = refreshRoofSheet();
+      if (ctx && typeof ctx.waitUntil === "function") ctx.waitUntil(refresh);
+    }
+    return new Map(Object.entries(cached.roofs));
+  }
+  return new Map(Object.entries(await fetchRoofSheetFresh()));
+}
+
+async function fetchRoofSheetFresh() {
   // Promise.race поверх AbortController: даже если рантайм игнорирует
   // signal (так делает локальный miniflare), ждём Google не дольше таймаута.
   const controller = new AbortController();
@@ -308,21 +363,13 @@ async function fetchRoofSheet() {
     throw new Error("Sheet contained no roofs");
   }
 
-  await cache.put(
-    cacheKey,
-    new Response(JSON.stringify(roofs), {
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": `max-age=${PRICE_CACHE_TTL_SECONDS}`,
-      },
-    })
-  );
+  await writeRoofCache(roofs);
 
-  return new Map(Object.entries(roofs));
+  return roofs;
 }
 
 // Возвращает цену за 1 человека или null; никогда не роняет обработку заявки.
-async function getRoofPrice(roofName) {
+async function getRoofPrice(roofName, ctx) {
   const normalized = normalizeRoofName(roofName);
   const lookupKey = SHEET_NAME_ALIASES.get(normalized) || normalized;
 
@@ -331,7 +378,7 @@ async function getRoofPrice(roofName) {
   }
 
   try {
-    const roofs = await fetchRoofSheet();
+    const roofs = await fetchRoofSheet(ctx);
     return roofs.get(lookupKey)?.price ?? FALLBACK_ROOF_PRICES.get(lookupKey) ?? null;
   } catch {
     return FALLBACK_ROOF_PRICES.get(lookupKey) ?? null;
@@ -340,7 +387,7 @@ async function getRoofPrice(roofName) {
 
 // GET /api/roofs -> { ok: true, roofs: { "<имя>": true|false } } (true = показывать).
 // При недоступной таблице отвечает 503 — клиент в этом случае ничего не скрывает.
-async function handleRoofsRequest(request) {
+async function handleRoofsRequest(request, ctx) {
   if (request.method !== "GET") {
     return jsonResponse(
       { ok: false, error: "Метод не поддерживается." },
@@ -352,7 +399,7 @@ async function handleRoofsRequest(request) {
   let sheet;
 
   try {
-    sheet = await fetchRoofSheet();
+    sheet = await fetchRoofSheet(ctx);
   } catch {
     return jsonResponse({ ok: false }, 503);
   }
@@ -426,7 +473,7 @@ function isAllowedOrigin(request, url) {
   return false;
 }
 
-async function handleLeadRequest(request, env, url) {
+async function handleLeadRequest(request, env, url, ctx) {
   if (request.method !== "POST") {
     return jsonResponse(
       { ok: false, error: "Метод не поддерживается." },
@@ -479,7 +526,7 @@ async function handleLeadRequest(request, env, url) {
     );
   }
 
-  const pricePerPerson = await getRoofPrice(lead.roof);
+  const pricePerPerson = await getRoofPrice(lead.roof, ctx);
   let telegramResponse;
 
   try {
@@ -514,7 +561,7 @@ async function handleLeadRequest(request, env, url) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const forwardedProto = request.headers.get("x-forwarded-proto");
     const cfVisitor = request.headers.get("cf-visitor") || "";
@@ -543,11 +590,11 @@ export default {
     }
 
     if (url.pathname === LEAD_PATH) {
-      return handleLeadRequest(request, env, url);
+      return handleLeadRequest(request, env, url, ctx);
     }
 
     if (url.pathname === ROOFS_PATH) {
-      return handleRoofsRequest(request);
+      return handleRoofsRequest(request, ctx);
     }
 
     if (url.pathname === "/bot" || url.pathname === "/bot/") {

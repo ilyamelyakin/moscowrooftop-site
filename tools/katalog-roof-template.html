@@ -11,14 +11,8 @@
     <meta name="theme-color" content="#0b0a09" />
     <link rel="icon" href="/assets/favicon.svg?v=20260725-m" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=20260725-m" />
-    <link
-      rel="preload"
-      as="image"
-      type="image/webp"
-      href="{{FIRST_SHOT}}-640.webp"
-      imagesrcset="{{FIRST_SHOT}}-640.webp 480w, {{FIRST_SHOT}}-1280.webp 960w"
-      imagesizes="(max-width: 980px) calc(100vw - 32px), 560px"
-    />
+    <link rel="preconnect" href="https://telegram.org" crossorigin />
+    <link rel="dns-prefetch" href="https://telegram.org" />
     <script>
       (function () {
         var isMiniApp = /[#&?]tgWebApp/.test(location.href);
@@ -41,7 +35,7 @@
         <p class="cat-logo"><span>MR</span>Moscow Rooftop</p>
       </header>
 
-      <main data-roof-name="{{ROOF_NAME}}" data-slug="{{SLUG}}">
+      <main class="{{ROOF_CLASS}}" data-roof-name="{{ROOF_NAME}}" data-slug="{{SLUG}}">
         <div class="roof-top">
           <a class="roof-back" href="../">← Все крыши</a>
           <div class="roof-title-row">
@@ -52,10 +46,10 @@
           </div>
           <p class="roof-lead">{{DESC}}</p>
           <div class="roof-meta">
-            <span class="cat-badge" hidden></span>
+            {{BADGE}}
             <ul class="cat-tags">{{TAGS}}</ul>
           </div>
-          <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
+          <p class="cat-off-note"{{OFF_NOTE_HIDDEN}}>Пока недоступна — спросите в боте про ближайшие даты</p>
         </div>
 
         <div class="roof-shots">

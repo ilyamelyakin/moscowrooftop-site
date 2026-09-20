@@ -34,6 +34,24 @@ FEED_SLIDES = 6          # больше кадров в ленте не держ
 FEED_SIZES = "(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px"
 ROOF_SIZES = "(max-width: 980px) calc(100vw - 32px), 560px"
 
+# Ступени длинной стороны, которые предлагаем браузеру.
+#
+# В ленте слот под фото — 358 CSS-px на телефоне и 360 на десктопе, то есть
+# 716 device-px при DPR 2 и 1074 при DPR 3. Выбор был из «480w, 960w», и оба
+# случая уводили в 960w — файл -1280, в среднем 114 КБ. Ступень 960 даёт у
+# вертикального кадра ширину 720: на DPR 2 впритык, на DPR 3 остаётся 2x,
+# которого на фотографии не отличить. Файл -1280 в ленту больше не отдаём.
+FEED_LADDER = (640, 960)
+# На странице крыши слот шире (560 CSS-px на десктопе), там верхняя ступень
+# нужна: при DPR 2 в неё уходит 1120 device-px.
+ROOF_LADDER = (640, 960, 1280)
+# Запасная лесенка для браузеров без webp и avif. Ровно те файлы, что лежали
+# в assets/locations раньше: в 960 jpg не делаем, такие браузеры давно
+# статистическая погрешность, и лесенка им нужна лишь номинально.
+JPG_LADDER = (640, 1280)
+# Форматы по убыванию выгоды. Порядок важен: браузер берёт первый подходящий.
+MODERN_FORMATS = ("avif", "webp")
+
 
 def normalize(name: str) -> str:
     return re.sub(r"\s+", " ", str(name or "").replace("ё", "е").strip().lower())
@@ -61,48 +79,80 @@ def read_aliases() -> dict[str, str]:
     return {normalize(a): normalize(b) for a, b in re.findall(r'\["([^"]+)",\s*"([^"]+)"\]', block)}
 
 
-def fetch_prices(offline: bool, prices_json: str | None) -> tuple[dict[str, int], str]:
+def unpack(data: dict) -> tuple[dict[str, int], dict[str, bool] | None]:
+    prices = {normalize(k): int(v) for k, v in (data.get("prices") or {}).items() if v}
+    roofs = data.get("roofs")
+    statuses = {normalize(k): bool(v) for k, v in roofs.items()} if roofs else None
+    return prices, statuses
+
+
+def fetch_sheet(offline: bool, prices_json: str | None) -> tuple[dict[str, int], dict[str, bool] | None, str]:
+    """Цены и статусы крыш на момент сборки.
+
+    Статусы запекаются в HTML, чтобы бейджи «В расписании» были видны сразу, без
+    ожидания /api/roofs: на медленном мобильном канале этот запрос мог не
+    дойти вовсе, и тогда человек не видел статусов ни одной крыши. Живой ответ
+    потом поправит расхождения, если они появились.
+
+    statuses = None означает «не знаем» (офлайн-сборка): бейджи тогда рисует
+    только клиент, как раньше.
+    """
     if prices_json:
         data = json.loads(Path(prices_json).read_text(encoding="utf-8"))
         if data.get("prices"):
-            return {normalize(k): int(v) for k, v in data["prices"].items() if v}, "json"
+            prices, statuses = unpack(data)
+            return prices, statuses, "json"
     if not offline:
         try:
             req = urllib.request.Request(API_URL, headers={"Accept": "application/json"})
             with urllib.request.urlopen(req, timeout=15) as resp:
                 data = json.load(resp)
             if data.get("ok") and data.get("prices"):
-                return {normalize(k): int(v) for k, v in data["prices"].items() if v}, "api"
+                prices, statuses = unpack(data)
+                return prices, statuses, "api"
         except Exception as exc:  # noqa: BLE001 — офлайн-сборка не должна падать
             print(f"  ! живой API недоступен ({exc}), беру снапшот из src/index.js", file=sys.stderr)
     worker = (ROOT / "src" / "index.js").read_text(encoding="utf-8")
     block = worker[worker.index("FALLBACK_ROOF_PRICES") : worker.index("]);", worker.index("FALLBACK_ROOF_PRICES"))]
-    return {normalize(n): int(p) for n, p in re.findall(r'\["([^"]+)",\s*(\d+)\]', block)}, "fallback"
+    return {normalize(n): int(p) for n, p in re.findall(r'\["([^"]+)",\s*(\d+)\]', block)}, None, "fallback"
 
 
-def picture(photo: dict, sizes: str, *, eager: bool, prefix: str) -> str:
+def srcset(base: str, width: int, ladder: tuple[int, ...], ext: str) -> str:
+    """Дескрипторы w — реальная ширина файла на каждой ступени.
+
+    Ширину считаем от -1280: convert-photos.js вписывает кадр в квадрат со
+    стороной «ступень», поэтому короткая сторона уменьшается в той же
+    пропорции. Для кадра 960x1280 ступень 960 даёт ширину 720, ступень 640 —
+    480. Расхождение с sharp проверено на всех 58 кадрах.
+    """
+    return ", ".join(f"{base}-{step}.{ext} {round(width * step / 1280)}w" for step in ladder)
+
+
+def picture(photo: dict, sizes: str, *, eager: bool, prefix: str, ladder: tuple[int, ...] = FEED_LADDER) -> str:
     base = f"{prefix}{photo['base']}"
     w, h = photo["w"], photo["h"]
-    # Дескрипторы srcset — как в index.html: половина и полная ширина файла.
-    w0, w1 = round(w / 2), w
+    # У отложенных кадров srcset лежит в data-*: подставляет IntersectionObserver,
+    # потому что в горизонтальной ленте браузерный lazy срабатывает непредсказуемо.
+    attr = "srcset" if eager else "data-srcset"
+    sources = "".join(
+        f'<source type="image/{fmt}" {attr}="{srcset(base, w, ladder, fmt)}" sizes="{sizes}" />'
+        for fmt in MODERN_FORMATS
+    )
+    jpg = srcset(base, w, JPG_LADDER, "jpg")
     if eager:
-        source = f'<source type="image/webp" srcset="{base}-640.webp {w0}w, {base}-1280.webp {w1}w" sizes="{sizes}" />'
         img = (
-            f'<img src="{base}-640.jpg" srcset="{base}-640.jpg {w0}w, {base}-1280.jpg {w1}w" sizes="{sizes}" '
+            f'<img src="{base}-640.jpg" srcset="{jpg}" sizes="{sizes}" '
             f'width="{w}" height="{h}" alt="{esc(photo["alt"])}" loading="eager" fetchpriority="high" />'
         )
     else:
-        # Подставляет IntersectionObserver: в горизонтальной ленте браузерный
-        # lazy срабатывает непредсказуемо.
-        source = f'<source type="image/webp" data-srcset="{base}-640.webp {w0}w, {base}-1280.webp {w1}w" sizes="{sizes}" />'
         img = (
-            f'<img data-src="{base}-640.jpg" data-srcset="{base}-640.jpg {w0}w, {base}-1280.jpg {w1}w" sizes="{sizes}" '
+            f'<img data-src="{base}-640.jpg" data-srcset="{jpg}" sizes="{sizes}" '
             f'width="{w}" height="{h}" alt="{esc(photo["alt"])}" loading="lazy" decoding="async" />'
         )
-    return f"<picture>{source}{img}</picture>"
+    return f"<picture>{sources}{img}</picture>"
 
 
-def render_card(roof: dict, price: int | None, first_card: bool) -> str:
+def render_card(roof: dict, price: int | None, first_card: bool, on: bool | None = None) -> str:
     photos = roof["photos"]
     shown = photos[:FEED_SLIDES]
     total = len(photos)
@@ -138,10 +188,25 @@ def render_card(roof: dict, price: int | None, first_card: bool) -> str:
         '<button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>'
     )
     tags = "".join(f"<li>{esc(t)}</li>" for t in roof["tags"])
-    return f"""        <article class="cat-card" data-roof-id="{roof['id']}" data-roof-name="{esc(roof['sheetName'])}" data-slug="{roof['slug']}">
+    # Бейдж и класс is-off — в разметке, а не в JS: иначе на медленном канале
+    # человек до ответа /api/roofs не видел статусов вовсе, а когда ответ
+    # приходил, карточки прыгали между лентами. Живой ответ теперь только
+    # правит расхождения.
+    if on is None:
+        badge = '<span class="cat-badge" hidden></span>'
+        card_class = "cat-card"
+        off_note = '<p class="cat-off-note" hidden>'
+    else:
+        badge = (
+            f'<span class="cat-badge{"" if on else " is-off"}">'
+            f'{"В расписании" if on else "Пока недоступна"}</span>'
+        )
+        card_class = "cat-card" if on else "cat-card is-off"
+        off_note = '<p class="cat-off-note" hidden>' if on else '<p class="cat-off-note">'
+    return f"""        <article class="{card_class}" data-roof-id="{roof['id']}" data-roof-name="{esc(roof['sheetName'])}" data-slug="{roof['slug']}">
           <div class="cat-media">
             <div class="cat-rail" {rail_attrs}>{slides}</div>
-            <span class="cat-badge" hidden></span>
+            {badge}
             {counter}
             {dots}
             {arrows}
@@ -157,22 +222,37 @@ def render_card(roof: dict, price: int | None, first_card: bool) -> str:
               <a class="cat-book" href="{BOT_URL}?start=book_{payload_for(roof['slug'])}">Записаться в боте</a>
               <a class="cat-secondary" href="{roof['slug']}/">Все фото</a>
             </div>
-            <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
+            {off_note}Пока недоступна — спросите в боте про ближайшие даты</p>
           </div>
         </article>
 """
 
 
-def render_roof_page(roof: dict, price: int | None, template: str, styles: str, script: str) -> str:
+def render_roof_page(roof: dict, price: int | None, template: str, styles: str, script: str, on: bool | None = None) -> str:
     shots = "\n".join(
         '          <figure class="roof-shot">'
-        + picture(photo, ROOF_SIZES, eager=(i == 0), prefix="../../assets/locations/")
+        + picture(photo, ROOF_SIZES, eager=(i == 0), prefix="../../assets/locations/", ladder=ROOF_LADDER)
         + "</figure>"
         for i, photo in enumerate(roof["photos"])
     )
     tags = "".join(f"<li>{esc(t)}</li>" for t in roof["tags"])
+    # Как и в ленте: статус в разметке, а не после ответа /api/roofs.
+    if on is None:
+        badge = '<span class="cat-badge" hidden></span>'
+        roof_class = ""
+        off_hidden = " hidden"
+    else:
+        badge = (
+            f'<span class="cat-badge{"" if on else " is-off"}">'
+            f'{"В расписании" if on else "Пока недоступна"}</span>'
+        )
+        roof_class = "" if on else "is-off"
+        off_hidden = " hidden" if on else ""
     return (
         template.replace("/*STYLES*/", styles)
+        .replace("{{BADGE}}", badge)
+        .replace("{{ROOF_CLASS}}", roof_class)
+        .replace("{{OFF_NOTE_HIDDEN}}", off_hidden)
         .replace("/*SCRIPT*/", script)
         .replace("{{SHOTS}}", shots)
         .replace("{{TAGS}}", tags)
@@ -197,22 +277,64 @@ def main() -> int:
     data = json.loads((TOOLS / "katalog-data.json").read_text(encoding="utf-8"))
     roofs = data["roofs"]
     aliases = read_aliases()
-    prices, price_source = fetch_prices(args.offline, args.prices_json)
+    prices, statuses, price_source = fetch_sheet(args.offline, args.prices_json)
 
     def price_for(name: str) -> int | None:
         key = normalize(name)
         return prices.get(key) or prices.get(aliases.get(key, ""))
 
+    unknown: list[str] = []
+
+    def status_for(name: str) -> bool | None:
+        """None — статусов нет вовсе (офлайн-сборка), бейджи дорисует клиент."""
+        if statuses is None:
+            return None
+        key = normalize(name)
+        if key in statuses:
+            return statuses[key]
+        alias = aliases.get(key)
+        if alias and alias in statuses:
+            return statuses[alias]
+        # Имени нет в таблице — та же трактовка, что у клиента: обещать крышу
+        # нельзя. Но это почти всегда опечатка в названии, поэтому кричим.
+        unknown.append(name)
+        return False
+
+    states = [(roof, status_for(roof["sheetName"])) for roof in roofs]
+    live = [roof for roof, on in states if on is not False]
+    off = [roof for roof, on in states if on is False]
+    state_of = {roof["id"]: on for roof, on in states}
+
     styles = (TOOLS / "katalog-shared.css").read_text(encoding="utf-8")
     script = (TOOLS / "katalog-shared.js").read_text(encoding="utf-8")
 
     # --- лента ------------------------------------------------------------
-    cards = "".join(render_card(roof, price_for(roof["sheetName"]), index == 0) for index, roof in enumerate(roofs))
+    # Доступные и недоступные раскладываем по лентам уже здесь: раньше это
+    # делал JS после ответа API, и карточки на глазах прыгали вниз.
+    cards = "".join(
+        render_card(roof, price_for(roof["sheetName"]), index == 0, state_of[roof["id"]])
+        for index, roof in enumerate(live)
+    )
+    cards_off = "".join(
+        render_card(roof, price_for(roof["sheetName"]), False, state_of[roof["id"]]) for roof in off
+    )
+    if statuses is None:
+        status_text = ""
+    elif not off:
+        status_text = f"Все <b>{len(live)}</b> крыш в расписании"
+    elif not live:
+        status_text = "Сегодня все крыши заняты — напишите в бота, подберём дату"
+    else:
+        status_text = f"Сейчас в расписании <b>{len(live)}</b> из {len(roofs)} крыш"
     feed = (TOOLS / "katalog-template.html").read_text(encoding="utf-8")
     feed = (
         feed.replace("/*STYLES*/", styles)
         .replace("/*SCRIPT*/", script)
         .replace("<!--CARDS-->", cards)
+        .replace("<!--CARDS_OFF-->", cards_off)
+        .replace("{{STATUS_TEXT}}", status_text)
+        .replace("{{OFF_HIDDEN}}", "" if off else " hidden")
+
         .replace("<!--ALIASES_JSON-->", json.dumps(aliases, ensure_ascii=False, separators=(",", ":")))
         .replace("{{BOT_URL}}", BOT_URL)
         .replace("{{YANDEX_DISK_URL}}", YANDEX_DISK_URL)
@@ -242,7 +364,9 @@ def main() -> int:
     # --- страницы крыш ----------------------------------------------------
     roof_template = (TOOLS / "katalog-roof-template.html").read_text(encoding="utf-8")
     for roof in roofs:
-        page = render_roof_page(roof, price_for(roof["sheetName"]), roof_template, styles, script)
+        page = render_roof_page(
+            roof, price_for(roof["sheetName"]), roof_template, styles, script, state_of[roof["id"]]
+        )
         out = ROOT / "katalog" / roof["slug"] / "index.html"
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(page, encoding="utf-8")
@@ -250,8 +374,18 @@ def main() -> int:
     missing = [r["title"] for r in roofs if price_for(r["sheetName"]) is None]
     if missing:
         print(f"  ! без цены остались: {', '.join(missing)}", file=sys.stderr)
+    if unknown:
+        print(
+            f"  ! нет в таблице (считаю недоступными): {', '.join(unknown)}"
+            "\n    проверьте написание или SHEET_NAME_ALIASES в src/index.js",
+            file=sys.stderr,
+        )
     total_photos = sum(len(r["photos"]) for r in roofs)
-    print(f"✓ /katalog/ — {len(roofs)} крыш, {total_photos} кадров, цены: {price_source}, {feed_path.stat().st_size / 1024:.1f} КБ")
+    status_note = "нет (офлайн)" if statuses is None else f"{len(live)} в расписании, {len(off)} нет"
+    print(
+        f"✓ /katalog/ — {len(roofs)} крыш, {total_photos} кадров, цены: {price_source}, "
+        f"статусы: {status_note}, {feed_path.stat().st_size / 1024:.1f} КБ"
+    )
     print(f"✓ /katalog/<slug>/ — {len(roofs)} страниц крыш")
     return 0
 

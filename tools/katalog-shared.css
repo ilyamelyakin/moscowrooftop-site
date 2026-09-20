@@ -196,6 +196,7 @@
         background: #0b0a09; color: var(--text);
       }
       dialog.cat-lightbox::backdrop { background: rgba(5, 4, 3, 0.88); }
+      .cat-lightbox picture { display: contents; }
       .cat-lightbox img { max-height: 82vh; object-fit: contain; }
       .cat-lightbox-bar {
         display: flex; align-items: center; justify-content: space-between; gap: 12px;
