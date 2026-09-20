@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Каталог крыш Москвы: фото и цены | Moscow Rooftop</title>
+    <meta name="description" content="Каталог крыш Москвы: фотографии каждой локации, цена за человека и что доступно сейчас. Запись — в Telegram-боте." />
+    <!-- Страница-спутник Telegram-бота: почти дословно повторяет секцию каталога на главной, поэтому из индекса исключена. -->
+    <meta name="robots" content="noindex, follow" />
+    <link rel="canonical" href="https://moscowrooftop.ru/" />
+    <meta name="theme-color" content="#0b0a09" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Moscow Rooftop" />
+    <meta property="og:title" content="Каталог крыш Москвы: фото и цены" />
+    <meta property="og:description" content="Фотографии крыш, цена за человека и актуальная доступность. Запись — в Telegram-боте." />
+    <meta property="og:image" content="https://moscowrooftop.ru/assets/og-cover.jpg" />
+    <meta property="og:locale" content="ru_RU" />
+    <link rel="icon" href="/assets/favicon.svg?v=20260725-m" type="image/svg+xml" />
+    <link rel="icon" href="/assets/favicon.ico?v=20260725-m" sizes="any" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=20260725-m" />
+    <link
+      rel="preload"
+      as="image"
+      type="image/webp"
+      href="../assets/locations/marksistskaya-high-rise-04-640.webp"
+      imagesrcset="../assets/locations/marksistskaya-high-rise-04-640.webp 480w, ../assets/locations/marksistskaya-high-rise-04-1280.webp 960w"
+      imagesizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px"
+    />
+    <script>
+      // Режим Mini App определяем до первой отрисовки и без SDK: Telegram дописывает
+      // к адресу #tgWebAppData=…, а sessionStorage держит флаг, когда хеш уже убран.
+      (function () {
+        var isMiniApp = /[#&?]tgWebApp/.test(location.href);
+        try {
+          if (!isMiniApp) isMiniApp = sessionStorage.getItem('mr_miniapp') === '1';
+        } catch (e) {}
+        // Класс — раньше хранилища: в приватном режиме setItem бросает, и режим терялся целиком.
+        if (isMiniApp) document.documentElement.className += ' is-miniapp';
+        try {
+          if (isMiniApp) sessionStorage.setItem('mr_miniapp', '1');
+        } catch (e) {}
+      })();
+    </script>
+    <style>
+      :root {
+        --bg: #0b0a09;
+        --panel: rgba(255, 255, 255, 0.075);
+        --text: #fff8ec;
+        --muted: rgba(255, 248, 236, 0.72);
+        --soft: rgba(255, 248, 236, 0.52);
+        --line: rgba(255, 248, 236, 0.14);
+        --gold: #f6c56f;
+        --amber: #ff9e4f;
+        --rose: #ff6f61;
+        --radius: 8px;
+      }
+      * { box-sizing: border-box; }
+      /* Свои display: grid/inline-flex перебивают браузерный [hidden] — возвращаем приоритет атрибуту. */
+      [hidden] { display: none !important; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        padding: 0 0 96px;
+        background:
+          radial-gradient(circle at 20% 0%, rgba(255, 158, 79, 0.16), transparent 32rem),
+          radial-gradient(circle at 95% 8%, rgba(147, 197, 253, 0.11), transparent 26rem),
+          var(--bg);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      img { display: block; width: 100%; height: 100%; object-fit: cover; }
+      a { color: inherit; text-decoration: none; }
+      button { font: inherit; color: inherit; }
+
+      .wrap { width: min(1160px, calc(100vw - 32px)); margin: 0 auto; }
+
+      /* Шапка и подвал — только вне Telegram: в Mini App своя шапка от клиента. */
+      .cat-header {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        padding: 18px 0 6px;
+      }
+      .cat-logo { display: flex; align-items: center; gap: 10px; margin: 0; font-weight: 800; letter-spacing: 0.02em; }
+      .cat-logo span {
+        display: grid; place-items: center; width: 38px; height: 38px;
+        border: 1px solid var(--line); border-radius: 50%;
+        background: var(--panel); font-size: 0.78rem; color: var(--gold);
+      }
+      .is-miniapp .cat-header, .is-miniapp .cat-footer { display: none; }
+
+      .cat-head { padding: 22px 0 6px; }
+      .cat-head h1 {
+        margin: 0 0 8px; font-size: clamp(1.9rem, 6vw, 2.6rem); line-height: 1.08;
+        letter-spacing: -0.02em; font-weight: 860;
+      }
+      .cat-note { margin: 0; color: var(--muted); font-size: 0.95rem; }
+      .cat-status {
+        margin: 10px 0 0; min-height: 1.4em; color: var(--soft); font-size: 0.88rem;
+      }
+      .cat-status b { color: var(--gold); font-weight: 700; }
+
+      .cat-feed {
+        display: grid; grid-template-columns: 1fr; gap: 14px; margin: 18px 0 0;
+      }
+      .cat-card {
+        display: flex; flex-direction: column; overflow: hidden; min-width: 0;
+        border: 1px solid var(--line); border-radius: var(--radius);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.04));
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.26);
+      }
+      .cat-card:nth-child(n + 3) { content-visibility: auto; contain-intrinsic-size: auto 560px; }
+
+      .cat-media { position: relative; min-height: 0; aspect-ratio: 4 / 5; background: #15110e; }
+      .cat-rail {
+        display: flex; height: 100%; min-height: 0; overflow-x: auto; scroll-snap-type: x mandatory;
+        overscroll-behavior-x: contain; overflow-anchor: none; scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+      .cat-rail::-webkit-scrollbar { display: none; }
+      .cat-rail:focus-visible { outline: 2px solid var(--gold); outline-offset: -3px; }
+      .cat-slide { position: relative; flex: 0 0 100%; min-width: 0; height: 100%; scroll-snap-align: start; scroll-snap-stop: always; }
+      .cat-slide picture { display: block; height: 100%; }
+      .cat-slide-more {
+        display: grid; place-items: center; padding: 20px; text-align: center;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+        color: var(--muted); font-size: 0.95rem; line-height: 1.7;
+      }
+      .cat-slide-more b { color: var(--gold); }
+
+      .cat-badge {
+        position: absolute; top: 12px; left: 12px; z-index: 2;
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px;
+        background: rgba(11, 10, 9, 0.62); backdrop-filter: blur(8px);
+        font-size: 0.78rem; font-weight: 700; letter-spacing: 0.01em;
+      }
+      .cat-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
+      .cat-badge.is-off { color: var(--soft); }
+      .cat-badge.is-off::before { background: var(--soft); }
+
+      .cat-counter {
+        position: absolute; right: 12px; bottom: 12px; z-index: 2;
+        padding: 6px 11px; border: 1px solid var(--line); border-radius: 999px;
+        background: rgba(11, 10, 9, 0.62); backdrop-filter: blur(8px);
+        font-size: 0.75rem; font-variant-numeric: tabular-nums; color: var(--muted);
+      }
+      .cat-dots {
+        position: absolute; left: 0; right: 0; bottom: 12px; z-index: 2;
+        display: flex; justify-content: center; gap: 6px; pointer-events: none;
+      }
+      .cat-dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: rgba(255, 248, 236, 0.38); transition: background 180ms ease, width 180ms ease;
+      }
+      .cat-dot.is-active { width: 18px; border-radius: 999px; background: var(--gold); }
+
+      .cat-arrow {
+        position: absolute; top: 50%; z-index: 2; display: none;
+        width: 40px; height: 40px; margin-top: -20px; padding: 0;
+        border: 1px solid var(--line); border-radius: 50%;
+        background: rgba(11, 10, 9, 0.66); backdrop-filter: blur(8px);
+        font-size: 1.3rem; line-height: 1; cursor: pointer; opacity: 0; transition: opacity 160ms ease;
+      }
+      .cat-arrow-prev { left: 10px; }
+      .cat-arrow-next { right: 10px; }
+
+      .cat-body { display: flex; flex-direction: column; padding: 16px 16px 18px; }
+      .cat-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+      .cat-top h3 { margin: 0; font-size: clamp(1.25rem, 4.6vw, 1.5rem); font-weight: 820; letter-spacing: -0.01em; }
+      .cat-price-wrap { margin: 0; text-align: right; white-space: nowrap; }
+      .cat-price {
+        display: block; color: var(--gold); font-size: 1.08rem; font-weight: 820;
+        font-variant-numeric: tabular-nums;
+      }
+      .cat-unit { display: block; margin-top: 2px; color: var(--soft); font-size: 0.72rem; }
+      .cat-desc {
+        display: -webkit-box; overflow: hidden; margin: 10px 0 0;
+        -webkit-box-orient: vertical; -webkit-line-clamp: 3;
+        color: var(--muted); font-size: 0.94rem; line-height: 1.5;
+      }
+      .cat-tags { display: flex; flex-wrap: wrap; gap: 7px; margin: 14px 0 0; padding: 0; list-style: none; }
+      .cat-tags li {
+        padding: 6px 10px; border: 1px solid rgba(255, 248, 236, 0.13); border-radius: 999px;
+        background: rgba(255, 255, 255, 0.04); color: var(--muted); font-size: 0.78rem;
+      }
+      .cat-actions { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+      .cat-book {
+        display: inline-flex; flex: 1 1 auto; min-height: 52px; align-items: center; justify-content: center;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--gold), var(--amber) 56%, var(--rose));
+        color: #18100a; font-size: 0.98rem; font-weight: 820;
+        box-shadow: 0 10px 28px rgba(255, 158, 79, 0.22);
+      }
+      .cat-secondary {
+        display: inline-flex; min-height: 52px; align-items: center; padding: 0 16px;
+        border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: 0.92rem; font-weight: 600;
+      }
+      .cat-off-note { margin: 14px 0 0; color: var(--soft); font-size: 0.86rem; line-height: 1.45; }
+
+      /* Выключенная в таблице крыша: приглушаем только фото — цена остаётся информацией. */
+      .cat-card.is-off .cat-media { filter: grayscale(0.45) opacity(0.72); }
+      .cat-card.is-off .cat-actions { display: none; }
+      .cat-card.is-off .cat-off-note { display: block; }
+
+      .cat-divider {
+        margin: 34px 0 0; font-size: 1.05rem; font-weight: 760; letter-spacing: 0.01em; color: var(--muted);
+      }
+      .cat-more { margin: 26px 0 0; }
+      .cat-more h2 { margin: 0 0 12px; font-size: 1.05rem; font-weight: 760; color: var(--muted); }
+      .cat-more-row {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius);
+        background: var(--panel); margin-bottom: 8px;
+      }
+      .cat-more-row b { font-weight: 760; }
+      .cat-more-row span { color: var(--gold); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+      .cat-footnote { margin: 28px 0 0; color: var(--soft); font-size: 0.86rem; line-height: 1.6; }
+      .cat-archive { margin: 14px 0 0; color: var(--soft); font-size: 0.86rem; line-height: 1.8; }
+      .cat-archive a { color: var(--muted); border-bottom: 1px solid var(--line); }
+      .cat-footer { margin: 30px 0 0; padding-top: 18px; border-top: 1px solid var(--line); color: var(--soft); font-size: 0.84rem; }
+
+      /* Возврат в бота вне Telegram; внутри Mini App его заменяет системная MainButton. */
+      .cat-sticky {
+        position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+        padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+        background: linear-gradient(180deg, rgba(11, 10, 9, 0), rgba(11, 10, 9, 0.92) 42%);
+      }
+      .cat-sticky a {
+        display: flex; min-height: 54px; align-items: center; justify-content: center; gap: 8px;
+        width: min(1160px, calc(100vw - 32px)); margin: 0 auto; border-radius: 999px;
+        background: linear-gradient(135deg, var(--gold), var(--amber) 56%, var(--rose));
+        color: #18100a; font-weight: 820; box-shadow: 0 14px 40px rgba(0, 0, 0, 0.34);
+      }
+      /* Свою липкую кнопку прячем, только когда системная MainButton реально показана. */
+      .is-miniapp.has-main-button .cat-sticky { display: none; }
+
+      dialog.cat-lightbox {
+        width: min(96vw, 1100px); padding: 0; border: 1px solid var(--line); border-radius: var(--radius);
+        background: #0b0a09; color: var(--text);
+      }
+      dialog.cat-lightbox::backdrop { background: rgba(5, 4, 3, 0.88); }
+      .cat-lightbox img { max-height: 82vh; object-fit: contain; }
+      .cat-lightbox-bar {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        padding: 12px 14px; border-top: 1px solid var(--line); font-size: 0.88rem; color: var(--muted);
+      }
+      .cat-lightbox-bar button {
+        min-height: 40px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px;
+        background: var(--panel); cursor: pointer;
+      }
+
+      @media (min-width: 641px) {
+        .cat-feed { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+      }
+      @media (min-width: 981px) {
+        .cat-feed { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .cat-head { padding-top: 34px; }
+      }
+      @media (hover: hover) and (pointer: fine) {
+        .cat-arrow { display: block; }
+        .cat-media:hover .cat-arrow, .cat-arrow:focus-visible { opacity: 1; }
+        .cat-book:hover { box-shadow: 0 18px 52px rgba(255, 158, 79, 0.32); }
+        .cat-secondary:hover { border-color: rgba(255, 248, 236, 0.32); color: var(--text); }
+        .cat-slide picture { cursor: zoom-in; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+      }
+
+      /* ===== Страница одной крыши: галерея во всю ширину, без обрезки ===== */
+      .roof-top { padding: 18px 0 4px; }
+      .roof-back {
+        display: inline-flex; align-items: center; gap: 8px; min-height: 40px;
+        color: var(--muted); font-size: 0.92rem;
+      }
+      .roof-title-row {
+        display: flex; align-items: baseline; justify-content: space-between; gap: 14px; margin-top: 10px;
+      }
+      .roof-title-row h1 {
+        margin: 0; font-size: clamp(1.7rem, 6.5vw, 2.3rem); font-weight: 860; letter-spacing: -0.02em;
+      }
+      .roof-lead { margin: 10px 0 0; color: var(--muted); font-size: 0.98rem; line-height: 1.55; }
+      .roof-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 14px 0 0; }
+      /* Бейдж в ленте лежит поверх фото; здесь он обычный элемент строки. */
+      .roof-meta .cat-badge { position: static; }
+      .roof-meta .cat-tags { margin: 0; }
+      .roof-shots { display: grid; gap: 10px; margin: 18px 0 0; }
+      .roof-shot {
+        overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: #15110e;
+      }
+      /* Кадр показываем целиком: это галерея, а не витрина — обрезать нечестно. */
+      .roof-shot img { width: 100%; height: auto; object-fit: contain; }
+      .roof-cta { margin: 22px 0 0; }
+      .roof-cta .cat-book { width: 100%; }
+      .roof-note { margin: 16px 0 0; color: var(--soft); font-size: 0.86rem; line-height: 1.6; }
+      @media (min-width: 981px) {
+        .roof-shots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="cat-header">
+        <!-- Ссылок на сайт здесь нет: человек пришёл из бота и должен вернуться в бота. -->
+        <p class="cat-logo"><span>MR</span>Moscow Rooftop</p>
+      </header>
+
+      <main>
+        <div class="cat-head">
+          <h1>Крыши Москвы</h1>
+          <p class="cat-note">11 крыш · цена за человека · час на площадке</p>
+          <p class="cat-status" id="cat-status" aria-live="polite"></p>
+        </div>
+
+        <div class="cat-feed" id="cat-feed">
+        <article class="cat-card" data-roof-id="marksistskaya-high-rise" data-roof-name="Марксистская" data-slug="marksistskaya">
+          <div class="cat-media">
+            <div class="cat-rail" role="group" aria-roledescription="галерея" aria-label="Фотографии: Марксистская" tabindex="0"><div class="cat-slide" role="group" aria-label="Фото 1 из 9"><picture><source type="image/webp" srcset="../assets/locations/marksistskaya-high-rise-04-640.webp 480w, ../assets/locations/marksistskaya-high-rise-04-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img src="../assets/locations/marksistskaya-high-rise-04-640.jpg" srcset="../assets/locations/marksistskaya-high-rise-04-640.jpg 480w, ../assets/locations/marksistskaya-high-rise-04-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Силуэт высотки на Котельнической набережной против закатного солнца" loading="eager" fetchpriority="high" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 2 из 9"><picture><source type="image/webp" data-srcset="../assets/locations/marksistskaya-high-rise-03-640.webp 480w, ../assets/locations/marksistskaya-high-rise-03-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/marksistskaya-high-rise-03-640.jpg" data-srcset="../assets/locations/marksistskaya-high-rise-03-640.jpg 480w, ../assets/locations/marksistskaya-high-rise-03-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Башня со шпилем и строительный кран на фоне рассветного неба" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 3 из 9"><picture><source type="image/webp" data-srcset="../assets/locations/marksistskaya-high-rise-02-640.webp 480w, ../assets/locations/marksistskaya-high-rise-02-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/marksistskaya-high-rise-02-640.jpg" data-srcset="../assets/locations/marksistskaya-high-rise-02-640.jpg 480w, ../assets/locations/marksistskaya-high-rise-02-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Купол храма и сталинская высотка в золотой дымке над крышами центра" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 4 из 9"><picture><source type="image/webp" data-srcset="../assets/locations/marksistskaya-high-rise-08-640.webp 480w, ../assets/locations/marksistskaya-high-rise-08-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/marksistskaya-high-rise-08-640.jpg" data-srcset="../assets/locations/marksistskaya-high-rise-08-640.jpg 480w, ../assets/locations/marksistskaya-high-rise-08-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Останкинская телебашня и городские крыши в розовых сумерках" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 5 из 9"><picture><source type="image/webp" data-srcset="../assets/locations/marksistskaya-high-rise-01-640.webp 480w, ../assets/locations/marksistskaya-high-rise-01-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/marksistskaya-high-rise-01-640.jpg" data-srcset="../assets/locations/marksistskaya-high-rise-01-640.jpg 480w, ../assets/locations/marksistskaya-high-rise-01-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Сталинская высотка и вечерний город под красным небом" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 6 из 9"><picture><source type="image/webp" data-srcset="../assets/locations/marksistskaya-high-rise-09-640.webp 480w, ../assets/locations/marksistskaya-high-rise-09-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/marksistskaya-high-rise-09-640.jpg" data-srcset="../assets/locations/marksistskaya-high-rise-09-640.jpg 480w, ../assets/locations/marksistskaya-high-rise-09-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Башни Москва-Сити в дымке и золотой купол храма над жилыми домами" loading="lazy" decoding="async" /></picture></div><a class="cat-slide cat-slide-more" href="marksistskaya/"><span>Ещё 3 кадра<br /><b>Смотреть все →</b></span></a></div>
+            <span class="cat-badge" hidden></span>
+            <span class="cat-counter" data-total="9" aria-hidden="true">1 / 9</span>
+            
+            <button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button><button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>
+          </div>
+          <div class="cat-body">
+            <div class="cat-top">
+              <h3>Марксистская</h3>
+              <p class="cat-price-wrap"><strong class="cat-price" data-roof-price>2 500 ₽</strong><span class="cat-unit">за человека</span></p>
+            </div>
+            <p class="cat-desc">Выразительный силуэт сталинской высотки и огни вечернего центра.</p>
+            <ul class="cat-tags"><li>Свидание</li><li>Закат</li><li>Фото</li></ul>
+            <div class="cat-actions">
+              <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_marksistskaya">Записаться в боте</a>
+              <a class="cat-secondary" href="marksistskaya/">Все фото</a>
+            </div>
+            <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
+          </div>
+        </article>
+        <article class="cat-card" data-roof-id="taganskaya-golden-hour" data-roof-name="Таганская" data-slug="taganskaya">
+          <div class="cat-media">
+            <div class="cat-rail" role="group" aria-roledescription="галерея" aria-label="Фотографии: Таганская" tabindex="0"><div class="cat-slide" role="group" aria-label="Фото 1 из 10"><picture><source type="image/webp" data-srcset="../assets/locations/taganskaya-golden-hour-03-640.webp 480w, ../assets/locations/taganskaya-golden-hour-03-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-golden-hour-03-640.jpg" data-srcset="../assets/locations/taganskaya-golden-hour-03-640.jpg 480w, ../assets/locations/taganskaya-golden-hour-03-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Солнце и силуэты центра Москвы в золотом вечернем свете" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 2 из 10"><picture><source type="image/webp" data-srcset="../assets/locations/taganskaya-golden-hour-07-640.webp 480w, ../assets/locations/taganskaya-golden-hour-07-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-golden-hour-07-640.jpg" data-srcset="../assets/locations/taganskaya-golden-hour-07-640.jpg 480w, ../assets/locations/taganskaya-golden-hour-07-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Высотка на Котельнической набережной в вечерней подсветке" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 3 из 10"><picture><source type="image/webp" data-srcset="../assets/locations/taganskaya-golden-hour-02-640.webp 480w, ../assets/locations/taganskaya-golden-hour-02-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-golden-hour-02-640.jpg" data-srcset="../assets/locations/taganskaya-golden-hour-02-640.jpg 480w, ../assets/locations/taganskaya-golden-hour-02-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Городские здания и высотка в лучах золотого часа" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 4 из 10"><picture><source type="image/webp" data-srcset="../assets/locations/taganskaya-golden-hour-09-640.webp 480w, ../assets/locations/taganskaya-golden-hour-09-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-golden-hour-09-640.jpg" data-srcset="../assets/locations/taganskaya-golden-hour-09-640.jpg 480w, ../assets/locations/taganskaya-golden-hour-09-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Москва-река, мост и вечерние огни города с высоты" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 5 из 10"><picture><source type="image/webp" data-srcset="../assets/locations/taganskaya-golden-hour-10-640.webp 480w, ../assets/locations/taganskaya-golden-hour-10-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-golden-hour-10-640.jpg" data-srcset="../assets/locations/taganskaya-golden-hour-10-640.jpg 480w, ../assets/locations/taganskaya-golden-hour-10-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Закат над городом с силуэтами Москва-Сити на горизонте" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 6 из 10"><picture><source type="image/webp" data-srcset="../assets/locations/taganskaya-golden-hour-01-640.webp 480w, ../assets/locations/taganskaya-golden-hour-01-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-golden-hour-01-640.jpg" data-srcset="../assets/locations/taganskaya-golden-hour-01-640.jpg 480w, ../assets/locations/taganskaya-golden-hour-01-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Панорама центра Москвы в тёплом вечернем свете" loading="lazy" decoding="async" /></picture></div><a class="cat-slide cat-slide-more" href="taganskaya/"><span>Ещё 4 кадра<br /><b>Смотреть все →</b></span></a></div>
+            <span class="cat-badge" hidden></span>
+            <span class="cat-counter" data-total="10" aria-hidden="true">1 / 10</span>
+            
+            <button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button><button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>
+          </div>
+          <div class="cat-body">
+            <div class="cat-top">
+              <h3>Таганская</h3>
+              <p class="cat-price-wrap"><strong class="cat-price" data-roof-price>3 000 ₽</strong><span class="cat-unit">за человека</span></p>
+            </div>
+            <p class="cat-desc">Тёплый свет, панорама центра, Кремль и выразительные городские силуэты.</p>
+            <ul class="cat-tags"><li>Прогулка</li><li>Закат</li><li>Фотосессия</li></ul>
+            <div class="cat-actions">
+              <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_taganskaya">Записаться в боте</a>
+              <a class="cat-secondary" href="taganskaya/">Все фото</a>
+            </div>
+            <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
+          </div>
+        </article>
+        <article class="cat-card" data-roof-id="fili-rooftop" data-roof-name="Фили" data-slug="fili">
+          <div class="cat-media">
+            <div class="cat-rail" role="group" aria-roledescription="галерея" aria-label="Фотографии: Фили" tabindex="0"><div class="cat-slide" role="group" aria-label="Фото 1 из 6"><picture><source type="image/webp" data-srcset="../assets/locations/fili-rooftop-04-640.webp 480w, ../assets/locations/fili-rooftop-04-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-rooftop-04-640.jpg" data-srcset="../assets/locations/fili-rooftop-04-640.jpg 480w, ../assets/locations/fili-rooftop-04-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Башни Москва-Сити в розовом рассветном свете, внизу крыша и набережная" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 2 из 6"><picture><source type="image/webp" data-srcset="../assets/locations/fili-rooftop-05-640.webp 480w, ../assets/locations/fili-rooftop-05-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-rooftop-05-640.jpg" data-srcset="../assets/locations/fili-rooftop-05-640.jpg 480w, ../assets/locations/fili-rooftop-05-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Закатное солнце за тёмной башней и вечерние огни города" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 3 из 6"><picture><source type="image/webp" data-srcset="../assets/locations/fili-rooftop-06-640.webp 480w, ../assets/locations/fili-rooftop-06-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-rooftop-06-640.jpg" data-srcset="../assets/locations/fili-rooftop-06-640.jpg 480w, ../assets/locations/fili-rooftop-06-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Сумеречная панорама: золотые купола храма и высотки на горизонте" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 4 из 6"><picture><source type="image/webp" data-srcset="../assets/locations/fili-rooftop-03-640.webp 480w, ../assets/locations/fili-rooftop-03-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-rooftop-03-640.jpg" data-srcset="../assets/locations/fili-rooftop-03-640.jpg 480w, ../assets/locations/fili-rooftop-03-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Молодой человек на крыше на фоне панорамы Москва-Сити" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 5 из 6"><picture><source type="image/webp" data-srcset="../assets/locations/fili-rooftop-02-640.webp 640w, ../assets/locations/fili-rooftop-02-1280.webp 1280w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-rooftop-02-640.jpg" data-srcset="../assets/locations/fili-rooftop-02-640.jpg 640w, ../assets/locations/fili-rooftop-02-1280.jpg 1280w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="1280" height="960" alt="Девушка на крыше на фоне башен Москва-Сити в закатном свете" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 6 из 6"><picture><source type="image/webp" data-srcset="../assets/locations/fili-rooftop-01-640.webp 480w, ../assets/locations/fili-rooftop-01-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-rooftop-01-640.jpg" data-srcset="../assets/locations/fili-rooftop-01-640.jpg 480w, ../assets/locations/fili-rooftop-01-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Вид с крыши на башни Москва-Сити, реку и жилые кварталы вечером" loading="lazy" decoding="async" /></picture></div></div>
+            <span class="cat-badge" hidden></span>
+            <span class="cat-counter" data-total="6" aria-hidden="true">1 / 6</span>
+            
+            <button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button><button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>
+          </div>
+          <div class="cat-body">
+            <div class="cat-top">
+              <h3>Фили</h3>
+              <p class="cat-price-wrap"><strong class="cat-price" data-roof-price>2 500 ₽</strong><span class="cat-unit">за человека</span></p>
+            </div>
+            <p class="cat-desc">Крыша с прямым видом на башни Москва-Сити: река, мосты и город в закатном свете.</p>
+            <ul class="cat-tags"><li>Закат</li><li>Фотосессия</li><li>Свидание</li></ul>
+            <div class="cat-actions">
+              <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_fili">Записаться в боте</a>
+              <a class="cat-secondary" href="fili/">Все фото</a>
+            </div>
+            <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
+          </div>
+        </article>
+        <article class="cat-card" data-roof-id="kievskaya-skatnaya" data-roof-name="Киевская Скатная" data-slug="kievskaya-skatnaya">
+          <div class="cat-media">
+            <div class="cat-rail" role="group" aria-roledescription="галерея" aria-label="Фотографии: Киевская Скатная" tabindex="0"><div class="cat-slide" role="group" aria-label="Фото 1 из 4"><picture><source type="image/webp" data-srcset="../assets/locations/kievskaya-skatnaya-01-640.webp 360w, ../assets/locations/kievskaya-skatnaya-01-1280.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/kievskaya-skatnaya-01-640.jpg" data-srcset="../assets/locations/kievskaya-skatnaya-01-640.jpg 360w, ../assets/locations/kievskaya-skatnaya-01-1280.jpg 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="720" height="1280" alt="Гостиница «Украина» на фоне алого закатного неба" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 2 из 4"><picture><source type="image/webp" data-srcset="../assets/locations/kievskaya-skatnaya-03-640.webp 480w, ../assets/locations/kievskaya-skatnaya-03-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/kievskaya-skatnaya-03-640.jpg" data-srcset="../assets/locations/kievskaya-skatnaya-03-640.jpg 480w, ../assets/locations/kievskaya-skatnaya-03-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Девушка на скатной крыше на фоне гостиницы «Украина» вечером" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 3 из 4"><picture><source type="image/webp" data-srcset="../assets/locations/kievskaya-skatnaya-04-640.webp 480w, ../assets/locations/kievskaya-skatnaya-04-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/kievskaya-skatnaya-04-640.jpg" data-srcset="../assets/locations/kievskaya-skatnaya-04-640.jpg 480w, ../assets/locations/kievskaya-skatnaya-04-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Вид со скатной крыши на башни Москва-Сити на закате" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 4 из 4"><picture><source type="image/webp" data-srcset="../assets/locations/kievskaya-skatnaya-02-640.webp 480w, ../assets/locations/kievskaya-skatnaya-02-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/kievskaya-skatnaya-02-640.jpg" data-srcset="../assets/locations/kievskaya-skatnaya-02-640.jpg 480w, ../assets/locations/kievskaya-skatnaya-02-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Фотосессия на скатной крыше у подсвеченной башни Киевского вокзала" loading="lazy" decoding="async" /></picture></div></div>
+            <span class="cat-badge" hidden></span>
+            <span class="cat-counter" data-total="4" aria-hidden="true">1 / 4</span>
+            <div class="cat-dots" aria-hidden="true"><span class="cat-dot is-active"></span><span class="cat-dot"></span><span class="cat-dot"></span><span class="cat-dot"></span></div>
+            <button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button><button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>
+          </div>
+          <div class="cat-body">
+            <div class="cat-top">
+              <h3>Киевская Скатная</h3>
+              <p class="cat-price-wrap"><strong class="cat-price" data-roof-price>2 300 ₽</strong><span class="cat-unit">за человека</span></p>
+            </div>
+            <p class="cat-desc">Скатная крыша у Киевского вокзала: гостиница «Украина», вечерняя подсветка и виды на Москва-Сити.</p>
+            <ul class="cat-tags"><li>Вечер</li><li>Фотосессия</li><li>Свидание</li></ul>
+            <div class="cat-actions">
+              <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_kievskaya_skatnaya">Записаться в боте</a>
+              <a class="cat-secondary" href="kievskaya-skatnaya/">Все фото</a>
+            </div>
+            <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
+          </div>
+        </article>
+        <article class="cat-card" data-roof-id="novokuznetskaya" data-roof-name="Новокузнецкая" data-slug="novokuznetskaya">
+          <div class="cat-media">
+            <div class="cat-rail" role="group" aria-roledescription="галерея" aria-label="Фотографии: Новокузнецкая" tabindex="0"><div class="cat-slide" role="group" aria-label="Фото 1 из 2"><picture><source type="image/webp" data-srcset="../assets/locations/novokuznetskaya-02-640.webp 480w, ../assets/locations/novokuznetskaya-02-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/novokuznetskaya-02-640.jpg" data-srcset="../assets/locations/novokuznetskaya-02-640.jpg 480w, ../assets/locations/novokuznetskaya-02-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Подсвеченная высотка на Котельнической набережной над Москва-рекой вечером" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 2 из 2"><picture><source type="image/webp" data-srcset="../assets/locations/novokuznetskaya-01-640.webp 480w, ../assets/locations/novokuznetskaya-01-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/novokuznetskaya-01-640.jpg" data-srcset="../assets/locations/novokuznetskaya-01-640.jpg 480w, ../assets/locations/novokuznetskaya-01-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Высотка на Котельнической набережной и теплоход на Москва-реке днём" loading="lazy" decoding="async" /></picture></div></div>
+            <span class="cat-badge" hidden></span>
+            <span class="cat-counter" data-total="2" aria-hidden="true">1 / 2</span>
+            <div class="cat-dots" aria-hidden="true"><span class="cat-dot is-active"></span><span class="cat-dot"></span></div>
+            <button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button><button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>
+          </div>
+          <div class="cat-body">
+            <div class="cat-top">
+              <h3>Новокузнецкая</h3>
+              <p class="cat-price-wrap"><strong class="cat-price" data-roof-price>2 500 ₽</strong><span class="cat-unit">за человека</span></p>
+            </div>
+            <p class="cat-desc">Крыша над Москва-рекой — прямо напротив высотки на Котельнической набережной.</p>
+            <ul class="cat-tags"><li>Вечер</li><li>Свидание</li><li>Фотосессия</li></ul>
+            <div class="cat-actions">
+              <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_novokuznetskaya">Записаться в боте</a>
+              <a class="cat-secondary" href="novokuznetskaya/">Все фото</a>
+            </div>
+            <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
+          </div>
+        </article>
+        <article class="cat-card" data-roof-id="smolenskaya" data-roof-name="Смоленская" data-slug="smolenskaya">
+          <div class="cat-media">
+            <div class="cat-rail" role="group" aria-roledescription="галерея" aria-label="Фотографии: Смоленская" tabindex="0"><div class="cat-slide" role="group" aria-label="Фото 1 из 3"><picture><source type="image/webp" data-srcset="../assets/locations/smolenskaya-01-640.webp 480w, ../assets/locations/smolenskaya-01-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/smolenskaya-01-640.jpg" data-srcset="../assets/locations/smolenskaya-01-640.jpg 480w, ../assets/locations/smolenskaya-01-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Ночной Бородинский мост, Москва-река, гостиница «Украина» и башни Сити" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 2 из 3"><picture><source type="image/webp" data-srcset="../assets/locations/smolenskaya-03-640.webp 480w, ../assets/locations/smolenskaya-03-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/smolenskaya-03-640.jpg" data-srcset="../assets/locations/smolenskaya-03-640.jpg 480w, ../assets/locations/smolenskaya-03-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Высотка МИД в вечерней подсветке крупным планом" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 3 из 3"><picture><source type="image/webp" data-srcset="../assets/locations/smolenskaya-02-640.webp 480w, ../assets/locations/smolenskaya-02-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/smolenskaya-02-640.jpg" data-srcset="../assets/locations/smolenskaya-02-640.jpg 480w, ../assets/locations/smolenskaya-02-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Вечерняя панорама набережной: подсвеченная гостиница «Украина» и Москва-Сити" loading="lazy" decoding="async" /></picture></div></div>
+            <span class="cat-badge" hidden></span>
+            <span class="cat-counter" data-total="3" aria-hidden="true">1 / 3</span>
+            <div class="cat-dots" aria-hidden="true"><span class="cat-dot is-active"></span><span class="cat-dot"></span><span class="cat-dot"></span></div>
+            <button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button><button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>
+          </div>
+          <div class="cat-body">
+            <div class="cat-top">
+              <h3>Смоленская</h3>
+              <p class="cat-price-wrap"><strong class="cat-price" data-roof-price>3 000 ₽</strong><span class="cat-unit">за человека</span></p>
+            </div>
+            <p class="cat-desc">Крыша у высотки МИД: Бородинский мост, Москва-река, гостиница «Украина» и башни Сити в вечерних огнях.</p>
+            <ul class="cat-tags"><li>Вечер</li><li>Фотосессия</li><li>Свидание</li></ul>
+            <div class="cat-actions">
+              <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_smolenskaya">Записаться в боте</a>
+              <a class="cat-secondary" href="smolenskaya/">Все фото</a>
+            </div>
+            <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
+          </div>
+        </article>
+        <article class="cat-card" data-roof-id="rimskaya-skyline" data-roof-name="Римская" data-slug="rimskaya">
+          <div class="cat-media">
+            <div class="cat-rail" role="group" aria-roledescription="галерея" aria-label="Фотографии: Римская" tabindex="0"><div class="cat-slide" role="group" aria-label="Фото 1 из 6"><picture><source type="image/webp" data-srcset="../assets/locations/rimskaya-city-sunset-01-640.webp 480w, ../assets/locations/rimskaya-city-sunset-01-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/rimskaya-city-sunset-01-640.jpg" data-srcset="../assets/locations/rimskaya-city-sunset-01-640.jpg 480w, ../assets/locations/rimskaya-city-sunset-01-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Сталинская высотка на фоне Москва-Сити в золотом свете" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 2 из 6"><picture><source type="image/webp" data-srcset="../assets/locations/rimskaya-city-sunset-07-640.webp 480w, ../assets/locations/rimskaya-city-sunset-07-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/rimskaya-city-sunset-07-640.jpg" data-srcset="../assets/locations/rimskaya-city-sunset-07-640.jpg 480w, ../assets/locations/rimskaya-city-sunset-07-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Фотосессия на крыше на фоне закатной панорамы Москвы" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 3 из 6"><picture><source type="image/webp" data-srcset="../assets/locations/rimskaya-city-sunset-03-640.webp 360w, ../assets/locations/rimskaya-city-sunset-03-1280.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/rimskaya-city-sunset-03-640.jpg" data-srcset="../assets/locations/rimskaya-city-sunset-03-640.jpg 360w, ../assets/locations/rimskaya-city-sunset-03-1280.jpg 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="720" height="1280" alt="Закатное солнце над городом, высотка и купола в дымке" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 4 из 6"><picture><source type="image/webp" data-srcset="../assets/locations/rimskaya-city-sunset-04-640.webp 480w, ../assets/locations/rimskaya-city-sunset-04-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/rimskaya-city-sunset-04-640.jpg" data-srcset="../assets/locations/rimskaya-city-sunset-04-640.jpg 480w, ../assets/locations/rimskaya-city-sunset-04-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Сталинская высотка и подсвеченная церковь в закатной дымке" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 5 из 6"><picture><source type="image/webp" data-srcset="../assets/locations/rimskaya-city-sunset-05-640.webp 480w, ../assets/locations/rimskaya-city-sunset-05-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/rimskaya-city-sunset-05-640.jpg" data-srcset="../assets/locations/rimskaya-city-sunset-05-640.jpg 480w, ../assets/locations/rimskaya-city-sunset-05-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Крыши домов и вечернее небо над городом после заката" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 6 из 6"><picture><source type="image/webp" data-srcset="../assets/locations/rimskaya-city-sunset-06-640.webp 480w, ../assets/locations/rimskaya-city-sunset-06-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/rimskaya-city-sunset-06-640.jpg" data-srcset="../assets/locations/rimskaya-city-sunset-06-640.jpg 480w, ../assets/locations/rimskaya-city-sunset-06-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Дневной вид с крыши: храмы, трамвай и сталинская высотка вдали" loading="lazy" decoding="async" /></picture></div></div>
+            <span class="cat-badge" hidden></span>
+            <span class="cat-counter" data-total="6" aria-hidden="true">1 / 6</span>
+            
+            <button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button><button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>
+          </div>
+          <div class="cat-body">
+            <div class="cat-top">
+              <h3>Римская</h3>
+              <p class="cat-price-wrap"><strong class="cat-price" data-roof-price>2 000 ₽</strong><span class="cat-unit">за человека</span></p>
+            </div>
+            <p class="cat-desc">Классическая Москва на переднем плане и современный деловой центр вдали.</p>
+            <ul class="cat-tags"><li>Прогулка</li><li>Закат</li><li>Свидание</li></ul>
+            <div class="cat-actions">
+              <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_rimskaya">Записаться в боте</a>
+              <a class="cat-secondary" href="rimskaya/">Все фото</a>
+            </div>
+            <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
+          </div>
+        </article>
+        <article class="cat-card" data-roof-id="shelepikha-9" data-roof-name="Шелепиха 9 этажей" data-slug="shelepikha-9-etazhey">
+          <div class="cat-media">
+            <div class="cat-rail" role="group" aria-label="Фотография: Шелепиха 9 этажей"><div class="cat-slide" role="group" aria-label="Фото 1 из 1"><picture><source type="image/webp" data-srcset="../assets/locations/shelepikha-9-01-640.webp 464w, ../assets/locations/shelepikha-9-01-1280.webp 928w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/shelepikha-9-01-640.jpg" data-srcset="../assets/locations/shelepikha-9-01-640.jpg 464w, ../assets/locations/shelepikha-9-01-1280.jpg 928w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="928" height="1280" alt="Ночные башни Москва-Сити в огнях и силуэт человека на крыше" loading="lazy" decoding="async" /></picture></div></div>
+            <span class="cat-badge" hidden></span>
+            
+            
+            
+          </div>
+          <div class="cat-body">
+            <div class="cat-top">
+              <h3>Шелепиха 9 этажей</h3>
+              <p class="cat-price-wrap"><strong class="cat-price" data-roof-price>2 000 ₽</strong><span class="cat-unit">за человека</span></p>
+            </div>
+            <p class="cat-desc">Невысокая крыша с близким видом на небоскрёбы Москва-Сити — эффектные кадры в сумерках.</p>
+            <ul class="cat-tags"><li>Вечер</li><li>Фотосессия</li><li>Свидание</li></ul>
+            <div class="cat-actions">
+              <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_shelepikha_9_etazhey">Записаться в боте</a>
+              <a class="cat-secondary" href="shelepikha-9-etazhey/">Все фото</a>
+            </div>
+            <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
+          </div>
+        </article>
+        <article class="cat-card" data-roof-id="kurskaya-sunset" data-roof-name="Курская" data-slug="kurskaya">
+          <div class="cat-media">
+            <div class="cat-rail" role="group" aria-roledescription="галерея" aria-label="Фотографии: Курская" tabindex="0"><div class="cat-slide" role="group" aria-label="Фото 1 из 4"><picture><source type="image/webp" data-srcset="../assets/locations/kurskaya-center-view-03-640.webp 480w, ../assets/locations/kurskaya-center-view-03-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/kurskaya-center-view-03-640.jpg" data-srcset="../assets/locations/kurskaya-center-view-03-640.jpg 480w, ../assets/locations/kurskaya-center-view-03-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Оранжевый закат над высотками и крышами центра Москвы" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 2 из 4"><picture><source type="image/webp" data-srcset="../assets/locations/kurskaya-center-view-02-640.webp 480w, ../assets/locations/kurskaya-center-view-02-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/kurskaya-center-view-02-640.jpg" data-srcset="../assets/locations/kurskaya-center-view-02-640.jpg 480w, ../assets/locations/kurskaya-center-view-02-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Подсвеченная сталинская высотка в вечернем городе" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 3 из 4"><picture><source type="image/webp" data-srcset="../assets/locations/kurskaya-center-view-01-640.webp 480w, ../assets/locations/kurskaya-center-view-01-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/kurskaya-center-view-01-640.jpg" data-srcset="../assets/locations/kurskaya-center-view-01-640.jpg 480w, ../assets/locations/kurskaya-center-view-01-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Вечерняя панорама исторического центра Москвы" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 4 из 4"><picture><source type="image/webp" data-srcset="../assets/locations/kurskaya-center-view-04-640.webp 480w, ../assets/locations/kurskaya-center-view-04-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/kurskaya-center-view-04-640.jpg" data-srcset="../assets/locations/kurskaya-center-view-04-640.jpg 480w, ../assets/locations/kurskaya-center-view-04-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Купола, городские крыши и Москва-Сити вдалеке" loading="lazy" decoding="async" /></picture></div></div>
+            <span class="cat-badge" hidden></span>
+            <span class="cat-counter" data-total="4" aria-hidden="true">1 / 4</span>
+            <div class="cat-dots" aria-hidden="true"><span class="cat-dot is-active"></span><span class="cat-dot"></span><span class="cat-dot"></span><span class="cat-dot"></span></div>
+            <button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button><button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>
+          </div>
+          <div class="cat-body">
+            <div class="cat-top">
+              <h3>Курская</h3>
+              <p class="cat-price-wrap"><strong class="cat-price" data-roof-price>2 300 ₽</strong><span class="cat-unit">за человека</span></p>
+            </div>
+            <p class="cat-desc">Закат над историческим центром: высотки, купола и городские крыши в мягком вечернем свете.</p>
+            <ul class="cat-tags"><li>Прогулка</li><li>Закат</li><li>Фотосессия</li></ul>
+            <div class="cat-actions">
+              <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_kurskaya">Записаться в боте</a>
+              <a class="cat-secondary" href="kurskaya/">Все фото</a>
+            </div>
+            <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
+          </div>
+        </article>
+        <article class="cat-card" data-roof-id="taganskaya-skatnaya" data-roof-name="Таганская Скатная" data-slug="taganskaya-skatnaya">
+          <div class="cat-media">
+            <div class="cat-rail" role="group" aria-roledescription="галерея" aria-label="Фотографии: Таганская Скатная" tabindex="0"><div class="cat-slide" role="group" aria-label="Фото 1 из 5"><picture><source type="image/webp" data-srcset="../assets/locations/taganskaya-skatnaya-01-640.webp 480w, ../assets/locations/taganskaya-skatnaya-01-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-skatnaya-01-640.jpg" data-srcset="../assets/locations/taganskaya-skatnaya-01-640.jpg 480w, ../assets/locations/taganskaya-skatnaya-01-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Скатная крыша и высотка на Котельнической набережной на закате" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 2 из 5"><picture><source type="image/webp" data-srcset="../assets/locations/taganskaya-skatnaya-05-640.webp 480w, ../assets/locations/taganskaya-skatnaya-05-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-skatnaya-05-640.jpg" data-srcset="../assets/locations/taganskaya-skatnaya-05-640.jpg 480w, ../assets/locations/taganskaya-skatnaya-05-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Вечерний вид на высотку у Краснохолмского моста и Москва-реку" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 3 из 5"><picture><source type="image/webp" data-srcset="../assets/locations/taganskaya-skatnaya-06-640.webp 480w, ../assets/locations/taganskaya-skatnaya-06-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-skatnaya-06-640.jpg" data-srcset="../assets/locations/taganskaya-skatnaya-06-640.jpg 480w, ../assets/locations/taganskaya-skatnaya-06-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Подсвеченные дома на набережной и Москва-Сити на горизонте" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 4 из 5"><picture><source type="image/webp" data-srcset="../assets/locations/taganskaya-skatnaya-07-640.webp 480w, ../assets/locations/taganskaya-skatnaya-07-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-skatnaya-07-640.jpg" data-srcset="../assets/locations/taganskaya-skatnaya-07-640.jpg 480w, ../assets/locations/taganskaya-skatnaya-07-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Мост через Москва-реку и вечерние огни города с крыши" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 5 из 5"><picture><source type="image/webp" data-srcset="../assets/locations/taganskaya-skatnaya-04-640.webp 480w, ../assets/locations/taganskaya-skatnaya-04-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-skatnaya-04-640.jpg" data-srcset="../assets/locations/taganskaya-skatnaya-04-640.jpg 480w, ../assets/locations/taganskaya-skatnaya-04-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Москва-река, набережные и вечерняя панорама центра с крыши" loading="lazy" decoding="async" /></picture></div></div>
+            <span class="cat-badge" hidden></span>
+            <span class="cat-counter" data-total="5" aria-hidden="true">1 / 5</span>
+            <div class="cat-dots" aria-hidden="true"><span class="cat-dot is-active"></span><span class="cat-dot"></span><span class="cat-dot"></span><span class="cat-dot"></span><span class="cat-dot"></span></div>
+            <button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button><button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>
+          </div>
+          <div class="cat-body">
+            <div class="cat-top">
+              <h3>Таганская Скатная</h3>
+              <p class="cat-price-wrap"><strong class="cat-price" data-roof-price>2 500 ₽</strong><span class="cat-unit">за человека</span></p>
+            </div>
+            <p class="cat-desc">Скатная крыша над старой Таганкой: Москва-река, мосты и высотка на Котельнической.</p>
+            <ul class="cat-tags"><li>Фотосессия</li><li>Закат</li><li>Прогулка</li></ul>
+            <div class="cat-actions">
+              <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_taganskaya_skatnaya">Записаться в боте</a>
+              <a class="cat-secondary" href="taganskaya-skatnaya/">Все фото</a>
+            </div>
+            <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
+          </div>
+        </article>
+        <article class="cat-card" data-roof-id="fili-city" data-roof-name="Фили 60 этажей" data-slug="fili-60-etazhey">
+          <div class="cat-media">
+            <div class="cat-rail" role="group" aria-roledescription="галерея" aria-label="Фотографии: Фили 60 этажей" tabindex="0"><div class="cat-slide" role="group" aria-label="Фото 1 из 5"><picture><source type="image/webp" data-srcset="../assets/locations/fili-moscow-city-05-640.webp 480w, ../assets/locations/fili-moscow-city-05-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-moscow-city-05-640.jpg" data-srcset="../assets/locations/fili-moscow-city-05-640.jpg 480w, ../assets/locations/fili-moscow-city-05-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Панорама Москва-Сити и Москва-реки с большой высоты вечером" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 2 из 5"><picture><source type="image/webp" data-srcset="../assets/locations/fili-moscow-city-04-640.webp 480w, ../assets/locations/fili-moscow-city-04-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-moscow-city-04-640.jpg" data-srcset="../assets/locations/fili-moscow-city-04-640.jpg 480w, ../assets/locations/fili-moscow-city-04-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Панорама делового центра Москвы после заката" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 3 из 5"><picture><source type="image/webp" data-srcset="../assets/locations/fili-moscow-city-03-640.webp 480w, ../assets/locations/fili-moscow-city-03-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-moscow-city-03-640.jpg" data-srcset="../assets/locations/fili-moscow-city-03-640.jpg 480w, ../assets/locations/fili-moscow-city-03-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Вечерний вид на небоскрёбы Москва-Сити" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 4 из 5"><picture><source type="image/webp" data-srcset="../assets/locations/fili-moscow-city-02-640.webp 480w, ../assets/locations/fili-moscow-city-02-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-moscow-city-02-640.jpg" data-srcset="../assets/locations/fili-moscow-city-02-640.jpg 480w, ../assets/locations/fili-moscow-city-02-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Подсвеченные башни Москва-Сити и изгиб Москва-реки" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 5 из 5"><picture><source type="image/webp" data-srcset="../assets/locations/fili-moscow-city-01-640.webp 480w, ../assets/locations/fili-moscow-city-01-1280.webp 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-moscow-city-01-640.jpg" data-srcset="../assets/locations/fili-moscow-city-01-640.jpg 480w, ../assets/locations/fili-moscow-city-01-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Башни Москва-Сити и вечерний город за ограждением высокой площадки" loading="lazy" decoding="async" /></picture></div></div>
+            <span class="cat-badge" hidden></span>
+            <span class="cat-counter" data-total="5" aria-hidden="true">1 / 5</span>
+            <div class="cat-dots" aria-hidden="true"><span class="cat-dot is-active"></span><span class="cat-dot"></span><span class="cat-dot"></span><span class="cat-dot"></span><span class="cat-dot"></span></div>
+            <button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button><button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>
+          </div>
+          <div class="cat-body">
+            <div class="cat-top">
+              <h3>Фили 60 этажей</h3>
+              <p class="cat-price-wrap"><strong class="cat-price" data-roof-price>3 000 ₽</strong><span class="cat-unit">за человека</span></p>
+            </div>
+            <p class="cat-desc">Панорама башен делового центра, Москва-реки и вечерних огней с высоты 60 этажей.</p>
+            <ul class="cat-tags"><li>Вечер</li><li>Свидание</li><li>Фотосессия</li></ul>
+            <div class="cat-actions">
+              <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_fili_60_etazhey">Записаться в боте</a>
+              <a class="cat-secondary" href="fili-60-etazhey/">Все фото</a>
+            </div>
+            <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
+          </div>
+        </article>
+
+        </div>
+
+        <h2 class="cat-divider" id="cat-divider" hidden>Сейчас недоступны</h2>
+        <div class="cat-feed" id="cat-feed-off" hidden></div>
+
+        <section class="cat-more" id="cat-more" hidden>
+          <h2>Есть и другие крыши</h2>
+          <div id="cat-more-rows"></div>
+        </section>
+
+        <p class="cat-footnote">
+          Фотографии показывают характер вида. Точный адрес и детали встречи — после подтверждения записи в боте.
+        </p>
+        <p class="cat-archive">
+          Полный архив фото и видео:
+          <a href="https://yadi.sk/d/vDKSXelDIYtb7Q" target="_blank" rel="noopener">Яндекс&nbsp;Диск</a> ·
+          <a href="https://drive.google.com/drive/folders/1hlpTbwkgFhdHnriPe5qU8UqypKMcf7DY?usp=drive_link" target="_blank" rel="noopener">Google&nbsp;Drive</a>
+        </p>
+      </main>
+
+      <footer class="cat-footer">Moscow Rooftop · прогулки по крышам Москвы · запись в Telegram-боте</footer>
+    </div>
+
+    <div class="cat-sticky"><a id="cat-main-cta" href="https://t.me/MoscowRoofTopBot">Записаться в боте</a></div>
+
+    <dialog class="cat-lightbox" id="cat-lightbox">
+      <img id="cat-lightbox-img" alt="" width="1280" height="960" />
+      <div class="cat-lightbox-bar">
+        <button type="button" id="cat-lb-prev">‹ Назад</button>
+        <span id="cat-lb-counter"></span>
+        <button type="button" id="cat-lb-next">Вперёд ›</button>
+        <button type="button" id="cat-lb-close">Закрыть</button>
+      </div>
+    </dialog>
+
+    <script type="application/json" id="cat-galleries">{"marksistskaya-high-rise":{"name":"Марксистская","images":[{"b":"../assets/locations/marksistskaya-high-rise-04","a":"Силуэт высотки на Котельнической набережной против закатного солнца"},{"b":"../assets/locations/marksistskaya-high-rise-03","a":"Башня со шпилем и строительный кран на фоне рассветного неба"},{"b":"../assets/locations/marksistskaya-high-rise-02","a":"Купол храма и сталинская высотка в золотой дымке над крышами центра"},{"b":"../assets/locations/marksistskaya-high-rise-08","a":"Останкинская телебашня и городские крыши в розовых сумерках"},{"b":"../assets/locations/marksistskaya-high-rise-01","a":"Сталинская высотка и вечерний город под красным небом"},{"b":"../assets/locations/marksistskaya-high-rise-09","a":"Башни Москва-Сити в дымке и золотой купол храма над жилыми домами"},{"b":"../assets/locations/marksistskaya-high-rise-07","a":"Высотка на Котельнической набережной под розово-оранжевым небом"},{"b":"../assets/locations/marksistskaya-high-rise-06","a":"Фотосессия на крыше у парапета, внизу купола и кварталы центра"},{"b":"../assets/locations/marksistskaya-high-rise-05","a":"Девушка на крыше в закатном свете, за спиной сталинская высотка"}]},"taganskaya-golden-hour":{"name":"Таганская","images":[{"b":"../assets/locations/taganskaya-golden-hour-03","a":"Солнце и силуэты центра Москвы в золотом вечернем свете"},{"b":"../assets/locations/taganskaya-golden-hour-07","a":"Высотка на Котельнической набережной в вечерней подсветке"},{"b":"../assets/locations/taganskaya-golden-hour-02","a":"Городские здания и высотка в лучах золотого часа"},{"b":"../assets/locations/taganskaya-golden-hour-09","a":"Москва-река, мост и вечерние огни города с высоты"},{"b":"../assets/locations/taganskaya-golden-hour-10","a":"Закат над городом с силуэтами Москва-Сити на горизонте"},{"b":"../assets/locations/taganskaya-golden-hour-01","a":"Панорама центра Москвы в тёплом вечернем свете"},{"b":"../assets/locations/taganskaya-golden-hour-08","a":"Стеклянный купол Дома музыки и вечерние небоскрёбы"},{"b":"../assets/locations/taganskaya-golden-hour-04","a":"Вечерняя панорама города с силуэтом сталинской высотки на горизонте"},{"b":"../assets/locations/taganskaya-golden-hour-06","a":"Вид с крыши на Кремль и собор Василия Блаженного в закатном небе"},{"b":"../assets/locations/taganskaya-golden-hour-05","a":"Крыша, Москва-река и высотка на Котельнической на закате"}]},"fili-rooftop":{"name":"Фили","images":[{"b":"../assets/locations/fili-rooftop-04","a":"Башни Москва-Сити в розовом рассветном свете, внизу крыша и набережная"},{"b":"../assets/locations/fili-rooftop-05","a":"Закатное солнце за тёмной башней и вечерние огни города"},{"b":"../assets/locations/fili-rooftop-06","a":"Сумеречная панорама: золотые купола храма и высотки на горизонте"},{"b":"../assets/locations/fili-rooftop-03","a":"Молодой человек на крыше на фоне панорамы Москва-Сити"},{"b":"../assets/locations/fili-rooftop-02","a":"Девушка на крыше на фоне башен Москва-Сити в закатном свете"},{"b":"../assets/locations/fili-rooftop-01","a":"Вид с крыши на башни Москва-Сити, реку и жилые кварталы вечером"}]},"kievskaya-skatnaya":{"name":"Киевская Скатная","images":[{"b":"../assets/locations/kievskaya-skatnaya-01","a":"Гостиница «Украина» на фоне алого закатного неба"},{"b":"../assets/locations/kievskaya-skatnaya-03","a":"Девушка на скатной крыше на фоне гостиницы «Украина» вечером"},{"b":"../assets/locations/kievskaya-skatnaya-04","a":"Вид со скатной крыши на башни Москва-Сити на закате"},{"b":"../assets/locations/kievskaya-skatnaya-02","a":"Фотосессия на скатной крыше у подсвеченной башни Киевского вокзала"}]},"novokuznetskaya":{"name":"Новокузнецкая","images":[{"b":"../assets/locations/novokuznetskaya-02","a":"Подсвеченная высотка на Котельнической набережной над Москва-рекой вечером"},{"b":"../assets/locations/novokuznetskaya-01","a":"Высотка на Котельнической набережной и теплоход на Москва-реке днём"}]},"smolenskaya":{"name":"Смоленская","images":[{"b":"../assets/locations/smolenskaya-01","a":"Ночной Бородинский мост, Москва-река, гостиница «Украина» и башни Сити"},{"b":"../assets/locations/smolenskaya-03","a":"Высотка МИД в вечерней подсветке крупным планом"},{"b":"../assets/locations/smolenskaya-02","a":"Вечерняя панорама набережной: подсвеченная гостиница «Украина» и Москва-Сити"}]},"rimskaya-skyline":{"name":"Римская","images":[{"b":"../assets/locations/rimskaya-city-sunset-01","a":"Сталинская высотка на фоне Москва-Сити в золотом свете"},{"b":"../assets/locations/rimskaya-city-sunset-07","a":"Фотосессия на крыше на фоне закатной панорамы Москвы"},{"b":"../assets/locations/rimskaya-city-sunset-03","a":"Закатное солнце над городом, высотка и купола в дымке"},{"b":"../assets/locations/rimskaya-city-sunset-04","a":"Сталинская высотка и подсвеченная церковь в закатной дымке"},{"b":"../assets/locations/rimskaya-city-sunset-05","a":"Крыши домов и вечернее небо над городом после заката"},{"b":"../assets/locations/rimskaya-city-sunset-06","a":"Дневной вид с крыши: храмы, трамвай и сталинская высотка вдали"}]},"shelepikha-9":{"name":"Шелепиха 9 этажей","images":[{"b":"../assets/locations/shelepikha-9-01","a":"Ночные башни Москва-Сити в огнях и силуэт человека на крыше"}]},"kurskaya-sunset":{"name":"Курская","images":[{"b":"../assets/locations/kurskaya-center-view-03","a":"Оранжевый закат над высотками и крышами центра Москвы"},{"b":"../assets/locations/kurskaya-center-view-02","a":"Подсвеченная сталинская высотка в вечернем городе"},{"b":"../assets/locations/kurskaya-center-view-01","a":"Вечерняя панорама исторического центра Москвы"},{"b":"../assets/locations/kurskaya-center-view-04","a":"Купола, городские крыши и Москва-Сити вдалеке"}]},"taganskaya-skatnaya":{"name":"Таганская Скатная","images":[{"b":"../assets/locations/taganskaya-skatnaya-01","a":"Скатная крыша и высотка на Котельнической набережной на закате"},{"b":"../assets/locations/taganskaya-skatnaya-05","a":"Вечерний вид на высотку у Краснохолмского моста и Москва-реку"},{"b":"../assets/locations/taganskaya-skatnaya-06","a":"Подсвеченные дома на набережной и Москва-Сити на горизонте"},{"b":"../assets/locations/taganskaya-skatnaya-07","a":"Мост через Москва-реку и вечерние огни города с крыши"},{"b":"../assets/locations/taganskaya-skatnaya-04","a":"Москва-река, набережные и вечерняя панорама центра с крыши"}]},"fili-city":{"name":"Фили 60 этажей","images":[{"b":"../assets/locations/fili-moscow-city-05","a":"Панорама Москва-Сити и Москва-реки с большой высоты вечером"},{"b":"../assets/locations/fili-moscow-city-04","a":"Панорама делового центра Москвы после заката"},{"b":"../assets/locations/fili-moscow-city-03","a":"Вечерний вид на небоскрёбы Москва-Сити"},{"b":"../assets/locations/fili-moscow-city-02","a":"Подсвеченные башни Москва-Сити и изгиб Москва-реки"},{"b":"../assets/locations/fili-moscow-city-01","a":"Башни Москва-Сити и вечерний город за ограждением высокой площадки"}]}}</script>
+    <script type="application/json" id="cat-aliases">{"марксистская":"марксисткая"}</script>
+    <script defer src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+      (function () {
+        'use strict';
+        var BOT_URL = 'https://t.me/MoscowRoofTopBot';
+        var API_TIMEOUT = 4000;
+        var CACHE_KEY = 'mr_roofs_cache';
+        var CACHE_TTL = 300000; // ровно TTL воркера
+        var root = document.documentElement;
+        var isMiniApp = root.classList.contains('is-miniapp');
+        // И лента каталога, и страница крыши: всё, у чего есть имя крыши.
+        var cards = [].slice.call(document.querySelectorAll('[data-roof-name]'));
+        var statusNode = document.getElementById('cat-status');
+        // Написание сайта -> написание таблицы (SHEET_NAME_ALIASES воркера).
+        var aliases = {};
+        try { aliases = JSON.parse(document.getElementById('cat-aliases').textContent || '{}'); } catch (e) {}
+
+        function safely(fn) {
+          try { fn(); return true; } catch (e) { return false; }
+        }
+        function isInTelegram(tg) {
+          // Официальные клиенты проставляют платформу; вне Telegram она 'unknown'.
+          return !!(tg && tg.platform && tg.platform !== 'unknown');
+        }
+        function sendToBot(tg, payload) {
+          // sendData доступен только у Mini App, открытого кнопкой reply-клавиатуры.
+          if (!tg || typeof tg.sendData !== 'function') return false;
+          return safely(function () { tg.sendData(JSON.stringify(payload)); });
+        }
+        function normalizeRoofName(name) {
+          return String(name || '').replace(/ё/g, 'е').replace(/Ё/g, 'Е').replace(/\s+/g, ' ').trim().toLowerCase();
+        }
+        function formatPrice(value) {
+          if (!value) return 'Цена по запросу';
+          return new Intl.NumberFormat('ru-RU').format(value) + ' ₽';
+        }
+
+        // --- Галерея: нативный скролл со snap, JS только считает кадры ---
+        function revealImage(img) {
+          var source = img.parentNode ? img.parentNode.querySelector('source[data-srcset]') : null;
+          if (source) { source.srcset = source.dataset.srcset; delete source.dataset.srcset; }
+          img.addEventListener('load', function () {
+            // Догрузка кадра не должна утаскивать ленту вбок (см. keepAtStart).
+            var rail = img.closest ? img.closest('.cat-rail') : null;
+            if (rail && !rail.dataset.touched && rail.scrollLeft !== 0) rail.scrollLeft = 0;
+          }, { once: true });
+          img.srcset = img.dataset.srcset || '';
+          img.src = img.dataset.src;
+          delete img.dataset.src;
+        }
+
+        // Один наблюдатель на все отложенные кадры: и слайды ленты, и снимки
+        // на странице крыши. Браузерный loading="lazy" в горизонтальном
+        // контейнере срабатывает непредсказуемо, поэтому подставляем сами.
+        var lazyImages = [].slice.call(document.querySelectorAll('img[data-src]'));
+        if ('IntersectionObserver' in window) {
+          var lazyObserver = new IntersectionObserver(
+            function (entries) {
+              entries.forEach(function (entry) {
+                if (!entry.isIntersecting) return;
+                lazyObserver.unobserve(entry.target);
+                revealImage(entry.target);
+              });
+            },
+            { rootMargin: '400px' }
+          );
+          lazyImages.forEach(function (img) { lazyObserver.observe(img); });
+        } else {
+          lazyImages.forEach(revealImage);
+        }
+
+        cards.forEach(function (card) {
+          var rail = card.querySelector('.cat-rail');
+          if (!rail) return;
+          // Пока ленту не листали руками, она обязана стоять на первом кадре:
+          // догрузка соседних снимков иначе утаскивает её вбок.
+          ['pointerdown', 'touchstart', 'wheel', 'keydown'].forEach(function (evt) {
+            rail.addEventListener(evt, function () { rail.dataset.touched = '1'; }, { passive: true, once: true });
+          });
+          function keepAtStart() {
+            if (!rail.dataset.touched && rail.scrollLeft !== 0) rail.scrollLeft = 0;
+          }
+          var slides = [].slice.call(rail.querySelectorAll('.cat-slide'));
+          var photoSlides = slides.filter(function (slide) { return !slide.classList.contains('cat-slide-more'); });
+
+          var counter = card.querySelector('.cat-counter');
+          var dots = [].slice.call(card.querySelectorAll('.cat-dot'));
+          // Кадров в галерее бывает больше, чем слайдов в ленте: хвост уходит на страницу крыши.
+          var total = counter ? Number(counter.dataset.total) || slides.length : slides.length;
+          var ticking = false;
+          function sync() {
+            var index = Math.round(rail.scrollLeft / Math.max(rail.clientWidth, 1));
+            if (counter) {
+              // На плитке «Смотреть все» счётчик кадров прячем — это не фотография.
+              var onMoreTile = index >= photoSlides.length;
+              counter.hidden = onMoreTile;
+              if (!onMoreTile) counter.textContent = Math.min(index + 1, total) + ' / ' + total;
+            }
+            dots.forEach(function (dot, i) { dot.classList.toggle('is-active', i === index); });
+            ticking = false;
+          }
+          rail.addEventListener(
+            'scroll',
+            function () { if (!ticking) { ticking = true; requestAnimationFrame(sync); } },
+            { passive: true }
+          );
+          keepAtStart();
+          window.addEventListener('load', keepAtStart);
+
+          var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+          function step(direction) {
+            rail.scrollBy({ left: direction * rail.clientWidth, behavior: motion.matches ? 'auto' : 'smooth' });
+          }
+          var prev = card.querySelector('.cat-arrow-prev');
+          var next = card.querySelector('.cat-arrow-next');
+          if (prev) prev.addEventListener('click', function () { step(-1); });
+          if (next) next.addEventListener('click', function () { step(1); });
+          rail.addEventListener('keydown', function (event) {
+            if (event.key === 'ArrowRight') { event.preventDefault(); step(1); }
+            if (event.key === 'ArrowLeft') { event.preventDefault(); step(-1); }
+          });
+        });
+
+        // --- Лайтбокс: только там, где есть мышь; на телефоне кадр и так во всю ширину ---
+        var lightbox = document.getElementById('cat-lightbox');
+        var canLightbox =
+          lightbox &&
+          typeof lightbox.showModal === 'function' &&
+          window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+        if (canLightbox) {
+          var galleries = {};
+          try { galleries = JSON.parse(document.getElementById('cat-galleries').textContent || '{}'); } catch (e) {}
+          var lbImg = document.getElementById('cat-lightbox-img');
+          var lbCounter = document.getElementById('cat-lb-counter');
+          var active = { id: null, index: 0 };
+          function renderLightbox() {
+            var gallery = galleries[active.id];
+            if (!gallery) return;
+            var image = gallery.images[active.index];
+            lbImg.src = image.b + '-1280.jpg';
+            lbImg.alt = image.a;
+            lbCounter.textContent = active.index + 1 + ' / ' + gallery.images.length;
+            var nextImage = gallery.images[active.index + 1];
+            if (nextImage) new Image().src = nextImage.b + '-1280.jpg';
+          }
+          function move(delta) {
+            var gallery = galleries[active.id];
+            if (!gallery) return;
+            active.index = (active.index + delta + gallery.images.length) % gallery.images.length;
+            renderLightbox();
+          }
+          document.addEventListener('click', function (event) {
+            var slide = event.target.closest && event.target.closest('.cat-slide');
+            if (!slide || slide.classList.contains('cat-slide-more')) return;
+            var card = slide.closest('.cat-card');
+            if (!card) return;
+            event.preventDefault();
+            active = { id: card.dataset.roofId, index: [].slice.call(card.querySelectorAll('.cat-slide')).indexOf(slide) };
+            renderLightbox();
+            lightbox.showModal();
+          });
+          document.getElementById('cat-lb-prev').addEventListener('click', function () { move(-1); });
+          document.getElementById('cat-lb-next').addEventListener('click', function () { move(1); });
+          document.getElementById('cat-lb-close').addEventListener('click', function () { lightbox.close(); });
+          lightbox.addEventListener('keydown', function (event) {
+            if (event.key === 'ArrowRight') move(1);
+            if (event.key === 'ArrowLeft') move(-1);
+          });
+        }
+
+        // --- Статусы и цены из той же гугл-таблицы, что у бота ---
+        function readCache() {
+          try {
+            var raw = sessionStorage.getItem(CACHE_KEY);
+            if (!raw) return null;
+            var parsed = JSON.parse(raw);
+            return Date.now() - parsed.ts < CACHE_TTL ? parsed.data : null;
+          } catch (e) { return null; }
+        }
+        function writeCache(data) {
+          try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data })); } catch (e) {}
+        }
+
+        function applyRoofData(data) {
+          if (!data || !data.roofs) return;
+          var offFeed = document.getElementById('cat-feed-off');   // на странице крыши их нет
+          var divider = document.getElementById('cat-divider');
+          var known = {};
+          var available = 0;
+          cards.forEach(function (card) {
+            var key = normalizeRoofName(card.dataset.roofName);
+            known[key] = true;
+            if (aliases[key]) known[aliases[key]] = true; // та же крыша под именем из таблицы
+            // Нет ключа в таблице — крышу убрали или переименовали: обещать её нельзя.
+            var isOn = data.roofs[key] === true;
+            var price = data.prices && data.prices[key];
+            var priceNode = card.querySelector('[data-roof-price]');
+            if (priceNode && price) priceNode.textContent = formatPrice(price);
+            if (!(key in data.roofs)) {
+              // Название в таблице разошлось с сайтом — сигнал, а не тихая поломка.
+              if (window.console) console.warn('[Каталог] крыши нет в таблице:', card.dataset.roofName);
+            }
+            var badge = card.querySelector('.cat-badge');
+            if (badge) {
+              badge.textContent = isOn ? 'В расписании' : 'Пока недоступна';
+              badge.classList.toggle('is-off', !isOn);
+              badge.hidden = false;
+            }
+            if (isOn) available += 1;
+            else {
+              card.classList.add('is-off');
+              var offNote = card.querySelector('.cat-off-note');
+              if (offNote) offNote.hidden = false;
+              if (offFeed) offFeed.appendChild(card);
+            }
+          });
+          if (offFeed && offFeed.children.length) { offFeed.hidden = false; divider.hidden = false; }
+
+          if (statusNode) {
+            if (available === cards.length) statusNode.innerHTML = 'Все <b>' + cards.length + '</b> крыш в расписании';
+            else if (available === 0) statusNode.textContent = 'Сегодня все крыши заняты — напишите в бота, подберём дату';
+            else statusNode.innerHTML = 'Сейчас в расписании <b>' + available + '</b> из ' + cards.length + ' крыш';
+          }
+
+          // Крыша есть в таблице, а фотографий на сайте ещё нет — показываем строкой.
+          var extras = [];
+          var moreHost = document.getElementById('cat-more-rows');
+          if (!moreHost) return; // страница одной крыши: блока «другие крыши» нет
+          Object.keys(data.roofs).forEach(function (key) {
+            if (known[key] || data.roofs[key] !== true) return;
+            if (key.length > 40 || !/^[а-яёa-z0-9 \-]+$/i.test(key)) return;
+            extras.push({ name: key.charAt(0).toUpperCase() + key.slice(1), price: data.prices && data.prices[key] });
+          });
+          if (extras.length) {
+            var host = moreHost;
+            extras.slice(0, 12).forEach(function (extra) {
+              var row = document.createElement('div');
+              row.className = 'cat-more-row';
+              var name = document.createElement('b');
+              name.textContent = extra.name; // только textContent: таблицу правят руками
+              var price = document.createElement('span');
+              price.textContent = formatPrice(extra.price);
+              row.appendChild(name);
+              row.appendChild(price);
+              host.appendChild(row);
+            });
+            document.getElementById('cat-more').hidden = false;
+          }
+        }
+
+        function loadRoofs() {
+          var cached = readCache();
+          if (cached) { applyRoofData(cached); return; }
+          var controller = 'AbortController' in window ? new AbortController() : null;
+          var timer = controller ? setTimeout(function () { controller.abort(); }, API_TIMEOUT) : null;
+          fetch('/api/roofs', { headers: { Accept: 'application/json' }, signal: controller && controller.signal })
+            .then(function (response) { return response.ok ? response.json() : Promise.reject(new Error(response.status)); })
+            .then(function (data) {
+              if (timer) clearTimeout(timer);
+              if (!data || !data.ok) throw new Error('bad payload');
+              writeCache(data);
+              applyRoofData(data);
+            })
+            .catch(function () {
+              if (timer) clearTimeout(timer);
+              // Ничего не прячем и не ломаем: цены-снапшот уже в HTML, запись работает.
+              if (statusNode) statusNode.textContent = 'Статусы не обновились — уточним при записи';
+            });
+        }
+
+        // --- Возврат в бота ---
+        document.addEventListener('click', function (event) {
+          var link = event.target.closest && event.target.closest('.cat-book');
+          if (!link) return;
+          var tg = window.Telegram && window.Telegram.WebApp;
+          if (!isInTelegram(tg)) return; // обычный браузер — работает штатная ссылка ?start=book_…
+          var card = link.closest('.cat-card');
+          safely(function () {
+            if (tg.HapticFeedback && tg.HapticFeedback.impactOccurred) tg.HapticFeedback.impactOccurred('light');
+          });
+          if (!sendToBot(tg, { v: 1, a: 'book', roof: card.dataset.roofName })) return; // ссылка отработает сама
+          event.preventDefault();
+          // Если Telegram почему-то не закрыл окно — уходим по обычной ссылке.
+          setTimeout(function () { window.location.href = link.href; }, 800);
+        });
+
+        function initTelegram() {
+          var tg = window.Telegram && window.Telegram.WebApp;
+          if (!tg) return false;
+          // initData ПУСТ, когда Mini App открыт кнопкой reply-клавиатуры, — именно наш случай.
+          // Поэтому «мы внутри Telegram» определяем по платформе, а не по initData.
+          if (!isInTelegram(tg)) return true;
+          // Каждый необязательный вызов — отдельно: на старых клиентах setHeaderColor
+          // с произвольным hex бросает и обрывал всю инициализацию.
+          safely(function () { tg.ready(); });
+          safely(function () { tg.expand(); });
+          safely(function () {
+            if (tg.setHeaderColor && (!tg.isVersionAtLeast || tg.isVersionAtLeast('6.9'))) tg.setHeaderColor('#0b0a09');
+          });
+          safely(function () {
+            if (tg.setBackgroundColor && (!tg.isVersionAtLeast || tg.isVersionAtLeast('6.9'))) tg.setBackgroundColor('#0b0a09');
+          });
+          safely(function () {
+            if (!tg.MainButton) return;
+            tg.MainButton.setParams({ text: 'Вернуться в бота', color: '#f6c56f', text_color: '#18100a' });
+            tg.MainButton.onClick(function () {
+              if (!sendToBot(tg, { v: 1, a: 'menu' })) safely(function () { tg.close(); });
+            });
+            tg.MainButton.show();
+            root.classList.add('has-main-button');
+          });
+          return true;
+        }
+
+        // Статусы и цены не ждут DOMContentLoaded: его задерживает defer-скрипт
+        // telegram.org, который в российских сетях может тянуться секундами.
+        loadRoofs();
+
+        // Опрос SDK тоже не ждёт DOMContentLoaded: его задерживает тот же defer-скрипт
+        // telegram.org. Если SDK не приедет — останется липкая кнопка со ссылкой на бота.
+        (function waitForTelegram() {
+          if (initTelegram() || !isMiniApp) return;
+          var waited = 0;
+          var poll = setInterval(function () {
+            waited += 250;
+            if (initTelegram() || waited >= 8000) clearInterval(poll);
+          }, 250);
+        })();
+      })();
+
+    </script>
+  </body>
+</html>

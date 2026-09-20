@@ -6,6 +6,7 @@ README.md
 wrangler.toml
 ops/
 src/
+tools/
 
 *.MOV
 *.mov
@@ -18,3 +19,12 @@ src/
 
 Локации/
 /IMG_*.jpg
+
+# Служебное и внутреннее — в публичную выдачу попадать не должно.
+# .wrangler появляется от локального `wrangler dev` и тащит с собой
+# исходник воркера (tmp/deploy-*/index.js) и кеш аккаунта.
+.wrangler/
+.claude/
+design/
+Продвижение-анкеты-площадок.md
+Codex Image*.png

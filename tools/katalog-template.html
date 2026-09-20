@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Каталог крыш Москвы: фото и цены | Moscow Rooftop</title>
+    <meta name="description" content="Каталог крыш Москвы: фотографии каждой локации, цена за человека и что доступно сейчас. Запись — в Telegram-боте." />
+    <!-- Страница-спутник Telegram-бота: почти дословно повторяет секцию каталога на главной, поэтому из индекса исключена. -->
+    <meta name="robots" content="noindex, follow" />
+    <link rel="canonical" href="https://moscowrooftop.ru/" />
+    <meta name="theme-color" content="#0b0a09" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Moscow Rooftop" />
+    <meta property="og:title" content="Каталог крыш Москвы: фото и цены" />
+    <meta property="og:description" content="Фотографии крыш, цена за человека и актуальная доступность. Запись — в Telegram-боте." />
+    <meta property="og:image" content="https://moscowrooftop.ru/assets/og-cover.jpg" />
+    <meta property="og:locale" content="ru_RU" />
+    <link rel="icon" href="/assets/favicon.svg?v=20260725-m" type="image/svg+xml" />
+    <link rel="icon" href="/assets/favicon.ico?v=20260725-m" sizes="any" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=20260725-m" />
+    <link
+      rel="preload"
+      as="image"
+      type="image/webp"
+      href="{{FIRST_COVER}}-640.webp"
+      imagesrcset="{{FIRST_COVER}}-640.webp 480w, {{FIRST_COVER}}-1280.webp 960w"
+      imagesizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px"
+    />
+    <script>
+      // Режим Mini App определяем до первой отрисовки и без SDK: Telegram дописывает
+      // к адресу #tgWebAppData=…, а sessionStorage держит флаг, когда хеш уже убран.
+      (function () {
+        var isMiniApp = /[#&?]tgWebApp/.test(location.href);
+        try {
+          if (!isMiniApp) isMiniApp = sessionStorage.getItem('mr_miniapp') === '1';
+        } catch (e) {}
+        // Класс — раньше хранилища: в приватном режиме setItem бросает, и режим терялся целиком.
+        if (isMiniApp) document.documentElement.className += ' is-miniapp';
+        try {
+          if (isMiniApp) sessionStorage.setItem('mr_miniapp', '1');
+        } catch (e) {}
+      })();
+    </script>
+    <style>
+/*STYLES*/
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="cat-header">
+        <!-- Ссылок на сайт здесь нет: человек пришёл из бота и должен вернуться в бота. -->
+        <p class="cat-logo"><span>MR</span>Moscow Rooftop</p>
+      </header>
+
+      <main>
+        <div class="cat-head">
+          <h1>Крыши Москвы</h1>
+          <p class="cat-note">{{ROOF_COUNT}} крыш · цена за человека · час на площадке</p>
+          <p class="cat-status" id="cat-status" aria-live="polite"></p>
+        </div>
+
+        <div class="cat-feed" id="cat-feed">
+<!--CARDS-->
+        </div>
+
+        <h2 class="cat-divider" id="cat-divider" hidden>Сейчас недоступны</h2>
+        <div class="cat-feed" id="cat-feed-off" hidden></div>
+
+        <section class="cat-more" id="cat-more" hidden>
+          <h2>Есть и другие крыши</h2>
+          <div id="cat-more-rows"></div>
+        </section>
+
+        <p class="cat-footnote">
+          Фотографии показывают характер вида. Точный адрес и детали встречи — после подтверждения записи в боте.
+        </p>
+        <p class="cat-archive">
+          Полный архив фото и видео:
+          <a href="{{YANDEX_DISK_URL}}" target="_blank" rel="noopener">Яндекс&nbsp;Диск</a> ·
+          <a href="{{GOOGLE_DRIVE_URL}}" target="_blank" rel="noopener">Google&nbsp;Drive</a>
+        </p>
+      </main>
+
+      <footer class="cat-footer">Moscow Rooftop · прогулки по крышам Москвы · запись в Telegram-боте</footer>
+    </div>
+
+    <div class="cat-sticky"><a id="cat-main-cta" href="{{BOT_URL}}">Записаться в боте</a></div>
+
+    <dialog class="cat-lightbox" id="cat-lightbox">
+      <img id="cat-lightbox-img" alt="" width="1280" height="960" />
+      <div class="cat-lightbox-bar">
+        <button type="button" id="cat-lb-prev">‹ Назад</button>
+        <span id="cat-lb-counter"></span>
+        <button type="button" id="cat-lb-next">Вперёд ›</button>
+        <button type="button" id="cat-lb-close">Закрыть</button>
+      </div>
+    </dialog>
+
+    <script type="application/json" id="cat-galleries"><!--GALLERY_JSON--></script>
+    <script type="application/json" id="cat-aliases"><!--ALIASES_JSON--></script>
+    <script defer src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+/*SCRIPT*/
+    </script>
+  </body>
+</html>

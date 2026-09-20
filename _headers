@@ -15,3 +15,10 @@
 
 /*.js
   Cache-Control: public, max-age=2592000
+
+# Каталог открывается внутри Telegram: на web.telegram.org Mini App живёт в iframe,
+# поэтому унаследованный X-Frame-Options тут снимаем и разрешаем встраивание точечно.
+/katalog/*
+  ! X-Frame-Options
+  Content-Security-Policy: frame-ancestors 'self' https://web.telegram.org https://*.telegram.org
+  Cache-Control: public, max-age=300

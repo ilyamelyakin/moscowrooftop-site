@@ -38,6 +38,7 @@ const FALLBACK_ROOF_PRICES = new Map([
   ["таганская", 3000],
   ["таганская скатная", 2500],
   ["шелепиха 9 этажей", 2000],
+  ["смоленская", 3000],
 ]);
 
 function jsonResponse(payload, status = 200, extraHeaders = {}) {
@@ -219,8 +220,23 @@ function parseCsvLine(line) {
   return cells;
 }
 
+// Доступность строки таблицы. Правила — те же, что у бота (is_available_status
+// в excursion_bot.py): иначе сайт и бот по-разному понимают «❌» или пустую ячейку.
+function isAvailableStatus(raw) {
+  const text = String(raw || "").trim().toLowerCase();
+  if (!text) return false;
+  if (text === "on" || text === "1") return true;
+  if (text === "off" || text === "0") return false;
+  if (text.includes("✅") || text.includes("🟨")) return true;
+  if (text.includes("❌")) return false;
+  if (["недоступ", "закрыт", "архив", "no", "false", "нет", "неакт"].some((m) => text.includes(m))) return false;
+  if (["доступ", "актуал", "available", "yes", "true", "соглас"].some((m) => text.includes(m))) return true;
+  return false;
+}
+
 // Строка таблицы -> { price: number | null, on: boolean }.
-// Крыша скрывается только при явном status=off, иначе считается доступной.
+// Колонки status нет вовсе — считаем все крыши доступными (как и бот: он
+// пропускает проверку статуса, если колонку не нашёл).
 function parseRoofSheetCsv(csv) {
   const lines = csv.split(/\r?\n/).filter((line) => line.trim());
   const header = parseCsvLine(lines[0] || "").map((cell) => cell.trim().toLowerCase());
@@ -241,12 +257,9 @@ function parseRoofSheetCsv(csv) {
       return;
     }
     const price = Number.parseInt(String(cells[priceIndex] || "").replace(/[^\d]/g, ""), 10);
-    const status = String(statusIndex === -1 ? "" : cells[statusIndex] || "")
-      .trim()
-      .toLowerCase();
     roofs[name] = {
       price: Number.isInteger(price) && price > 0 ? price : null,
-      on: status !== "off",
+      on: statusIndex === -1 ? true : isAvailableStatus(cells[statusIndex]),
     };
   });
 
