@@ -288,7 +288,13 @@ async function readRoofCache() {
   if (!cached) return null;
   try {
     const payload = await cached.json();
-    if (!payload || typeof payload !== "object" || !payload.roofs) return null;
+    // Пустой объект — не «нашли пустую таблицу», а битая запись. Свежий путь
+    // на такую бросает «Sheet contained no roofs»; если кешированный этого не
+    // сделает, /api/roofs ответит 200 с нулём крыш и каталог целиком уедет
+    // в «Пока недоступна».
+    if (!payload || typeof payload !== "object") return null;
+    if (!payload.roofs || typeof payload.roofs !== "object") return null;
+    if (!Object.keys(payload.roofs).length) return null;
     return payload;
   } catch {
     return null;
@@ -307,13 +313,15 @@ async function writeRoofCache(roofs) {
   );
 }
 
-// Одно обновление на изолят: без этого каждый запрос, попавший на устаревшую
-// запись, дёргал бы Google отдельно.
+// Один поход в таблицу на изолят: без этого каждый запрос, попавший на
+// устаревшую или пустую запись, дёргал бы Google отдельно. Возвращает null
+// вместо ошибки — вызывающий решает, это фон (и тогда всё равно) или холодный
+// путь (и тогда надо ответить 503).
 let roofRefreshInFlight = null;
 
-function refreshRoofSheet() {
+function refreshRoofSheet(timeoutMs = PRICE_REFRESH_TIMEOUT_MS) {
   if (!roofRefreshInFlight) {
-    roofRefreshInFlight = fetchRoofSheetFresh(PRICE_REFRESH_TIMEOUT_MS)
+    roofRefreshInFlight = fetchRoofSheetFresh(timeoutMs)
       .catch(() => null)
       .finally(() => {
         roofRefreshInFlight = null;
@@ -328,14 +336,23 @@ function refreshRoofSheet() {
 async function fetchRoofSheet(ctx) {
   const cached = await readRoofCache();
   if (cached) {
-    const ageSeconds = (Date.now() - (cached.at || 0)) / 1000;
-    if (ageSeconds > PRICE_CACHE_TTL_SECONDS) {
-      const refresh = refreshRoofSheet();
-      if (ctx && typeof ctx.waitUntil === "function") ctx.waitUntil(refresh);
+    // Модуль по модулю: отметка из будущего (часы разъехались, запись из
+    // другого колоцентра) иначе считалась бы вечно свежей и замораживала цены
+    // на сутки — ровно на PRICE_CACHE_MAX_AGE_SECONDS.
+    const ageSeconds = Math.abs(Date.now() - (cached.at || 0)) / 1000;
+    // Обновление запускаем, только если есть кому его удержать: без
+    // ctx.waitUntil незавершённый ввод-вывод обрывается сразу после ответа,
+    // и поход в Google просто пропал бы впустую.
+    if (ageSeconds > PRICE_CACHE_TTL_SECONDS && ctx && typeof ctx.waitUntil === "function") {
+      ctx.waitUntil(refreshRoofSheet());
     }
     return new Map(Object.entries(cached.roofs));
   }
-  return new Map(Object.entries(await fetchRoofSheetFresh()));
+  // Холодный кеш — тоже через дедупликацию: иначе десять одновременных
+  // запросов дали бы десять походов в Google по четыре секунды каждый.
+  const fresh = await refreshRoofSheet(PRICE_FETCH_TIMEOUT_MS);
+  if (!fresh) throw new Error("Sheet unavailable");
+  return new Map(Object.entries(fresh));
 }
 
 async function fetchRoofSheetFresh(timeoutMs = PRICE_FETCH_TIMEOUT_MS) {
@@ -343,36 +360,48 @@ async function fetchRoofSheetFresh(timeoutMs = PRICE_FETCH_TIMEOUT_MS) {
   // signal (так делает локальный miniflare), ждём Google не дольше таймаута.
   const controller = new AbortController();
   let timer;
-  const fetchPromise = fetch(PRICE_SHEET_CSV_URL, {
-    signal: controller.signal,
-    headers: { Accept: "text/csv" },
-  });
-  fetchPromise.catch(() => {});
   const timeoutPromise = new Promise((_, reject) => {
     timer = setTimeout(() => {
       controller.abort();
       reject(new Error("Sheet fetch timed out"));
     }, timeoutMs);
   });
-  let response;
+  // В гонку идёт ЧТЕНИЕ ТЕЛА, а не один fetch. Гонка по одному fetch
+  // заканчивалась, как только Google присылал заголовки; дальше clearTimeout
+  // разоружал AbortController, и повисшее тело ждали бесконечно. На изоляте
+  // это значило, что roofRefreshInFlight застревал навсегда и обновления
+  // прекращались совсем. Ровно так сейчас ведёт себя канал у части
+  // российских операторов: заголовки приходят, тело — нет.
+  const load = (async () => {
+    const response = await fetch(PRICE_SHEET_CSV_URL, {
+      signal: controller.signal,
+      headers: { Accept: "text/csv" },
+    });
+    if (!response.ok) throw new Error(`Sheet responded with ${response.status}`);
+    return response.text();
+  })();
+  load.catch(() => {});
 
+  let csv;
   try {
-    response = await Promise.race([fetchPromise, timeoutPromise]);
+    csv = await Promise.race([load, timeoutPromise]);
   } finally {
     clearTimeout(timer);
   }
 
-  if (!response.ok) {
-    throw new Error(`Sheet responded with ${response.status}`);
-  }
-
-  const roofs = parseRoofSheetCsv(await response.text());
+  const roofs = parseRoofSheetCsv(csv);
 
   if (!Object.keys(roofs).length) {
     throw new Error("Sheet contained no roofs");
   }
 
-  await writeRoofCache(roofs);
+  // Кеш — ускорение, а не условие работы. Таблица уже скачана и разобрана,
+  // и ронять из-за недоступного Cache API готовый ответ нечестно.
+  try {
+    await writeRoofCache(roofs);
+  } catch {
+    /* переживём: следующий запрос сходит в таблицу заново */
+  }
 
   return roofs;
 }
