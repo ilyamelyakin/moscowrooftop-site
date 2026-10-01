@@ -76,12 +76,6 @@
       .cat-rail:focus-visible { outline: 2px solid var(--gold); outline-offset: -3px; }
       .cat-slide { position: relative; flex: 0 0 100%; min-width: 0; height: 100%; scroll-snap-align: start; scroll-snap-stop: always; }
       .cat-slide picture { display: block; height: 100%; }
-      .cat-slide-more {
-        display: grid; place-items: center; padding: 20px; text-align: center;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
-        color: var(--muted); font-size: 0.95rem; line-height: 1.7;
-      }
-      .cat-slide-more b { color: var(--gold); }
 
       .cat-badge {
         position: absolute; top: 12px; left: 12px; z-index: 2;

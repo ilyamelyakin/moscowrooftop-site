@@ -95,21 +95,13 @@
             if (!rail.dataset.touched && rail.scrollLeft !== 0) rail.scrollLeft = 0;
           }
           var slides = [].slice.call(rail.querySelectorAll('.cat-slide'));
-          var photoSlides = slides.filter(function (slide) { return !slide.classList.contains('cat-slide-more'); });
-
           var counter = card.querySelector('.cat-counter');
           var dots = [].slice.call(card.querySelectorAll('.cat-dot'));
-          // Кадров в галерее бывает больше, чем слайдов в ленте: хвост уходит на страницу крыши.
           var total = counter ? Number(counter.dataset.total) || slides.length : slides.length;
           var ticking = false;
           function sync() {
             var index = Math.round(rail.scrollLeft / Math.max(rail.clientWidth, 1));
-            if (counter) {
-              // На плитке «Смотреть все» счётчик кадров прячем — это не фотография.
-              var onMoreTile = index >= photoSlides.length;
-              counter.hidden = onMoreTile;
-              if (!onMoreTile) counter.textContent = Math.min(index + 1, total) + ' / ' + total;
-            }
+            if (counter) counter.textContent = Math.min(index + 1, total) + ' / ' + total;
             dots.forEach(function (dot, i) { dot.classList.toggle('is-active', i === index); });
             ticking = false;
           }
@@ -183,7 +175,7 @@
           }
           document.addEventListener('click', function (event) {
             var slide = event.target.closest && event.target.closest('.cat-slide');
-            if (!slide || slide.classList.contains('cat-slide-more')) return;
+            if (!slide) return;
             var card = slide.closest('.cat-card');
             if (!card) return;
             event.preventDefault();

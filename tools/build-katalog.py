@@ -31,7 +31,6 @@ BOT_URL = "https://t.me/MoscowRoofTopBot"
 API_URL = "https://moscowrooftop.ru/api/roofs"
 YANDEX_DISK_URL = "https://yadi.sk/d/vDKSXelDIYtb7Q"
 GOOGLE_DRIVE_URL = "https://drive.google.com/drive/folders/1hlpTbwkgFhdHnriPe5qU8UqypKMcf7DY?usp=drive_link"
-FEED_SLIDES = 6          # больше кадров в ленте не держим: вес и смысл страницы крыши
 FEED_SIZES = "(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px"
 ROOF_SIZES = "(max-width: 980px) calc(100vw - 32px), 560px"
 
@@ -224,7 +223,7 @@ def picture(photo: dict, sizes: str, *, eager: bool, prefix: str, ladder: tuple[
 
 def render_card(roof: dict, price: int | None, first_card: bool, on: bool | None = None, prefix: str = "../assets/locations/", order: int = 0) -> str:
     photos = roof["photos"]
-    shown = photos[:FEED_SLIDES]
+    shown = photos
     total = len(photos)
     slides = "".join(
         f'<div class="cat-slide" role="group" aria-label="Фото {i + 1} из {total}">'
@@ -232,13 +231,6 @@ def render_card(roof: dict, price: int | None, first_card: bool, on: bool | None
         + "</div>"
         for i, photo in enumerate(shown)
     )
-    if total > FEED_SLIDES:
-        rest = total - FEED_SLIDES
-        word = "кадр" if rest % 10 == 1 and rest % 100 != 11 else ("кадра" if 2 <= rest % 10 <= 4 and not 12 <= rest % 100 <= 14 else "кадров")
-        slides += (
-            f'<a class="cat-slide cat-slide-more" href="{roof["slug"]}/">'
-            f"<span>Ещё {rest} {word}<br /><b>Смотреть все →</b></span></a>"
-        )
     single = total == 1
     rail_attrs = (
         f'role="group" aria-roledescription="галерея" aria-label="Фотографии: {esc(roof["title"])}" tabindex="0"'
@@ -247,7 +239,7 @@ def render_card(roof: dict, price: int | None, first_card: bool, on: bool | None
     )
     counter = "" if single else f'<span class="cat-counter" data-total="{total}" aria-hidden="true">1 / {total}</span>'
     dots = ""
-    if 2 <= len(shown) <= 5 and total <= FEED_SLIDES:
+    if 2 <= total <= 5:
         dots = '<div class="cat-dots" aria-hidden="true">' + "".join(
             f'<span class="cat-dot{" is-active" if i == 0 else ""}"></span>' for i in range(len(shown))
         ) + "</div>"
