@@ -436,6 +436,7 @@ h1 {
   display: none;
   width: 42px;
   height: 42px;
+  flex-shrink: 0;
   padding: 0;
   border: 1px solid rgba(255, 248, 236, 0.16);
   border-radius: 999px;
@@ -1433,11 +1434,16 @@ h1 {
   opacity: 0.72;
 }
 
-/* Telegram сразу под отправкой: шаг сетки формы (24px) здесь слишком велик. */
+/* Telegram под формой, но не внутри неё: фокус внутри формы засчитывается
+   как lead_form_start. Скрывается вместе с формой после успешной отправки. */
 .lead-telegram {
   width: 100%;
   min-height: 58px;
-  margin-top: -12px;
+  margin-top: 12px;
+}
+
+.lead-form[hidden] + .lead-telegram {
+  display: none;
 }
 
 .lead-success {
@@ -2179,6 +2185,14 @@ h1 {
   .header-cta {
     padding-inline: 12px;
     font-size: 0.84rem;
+  }
+}
+
+/* Уже 340px логотип, меню и обе кнопки в строку не помещаются; логотип
+   уступает место — на главную ведут «Каталог крыш» в меню и хлебные крошки. */
+@media (max-width: 340px) {
+  .site-header .brand {
+    display: none;
   }
 }
 
