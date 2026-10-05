@@ -3,7 +3,7 @@
 Статичный сайт для экскурсий по крышам Москвы. Главная цель сайта — привести человека в Telegram-бота для записи:
 
 - Telegram: `https://t.me/MoscowRoofTopBot`
-- Instagram: `https://www.instagram.com/ilya.melyakin/`
+- Instagram: `https://www.instagram.com/moscowrooftop.ru/`
 - TikTok: `https://www.tiktok.com/@ilya.melyakin`
 
 Сайт работает без сборки и backend: достаточно открыть файлы локально или загрузить их на хостинг.
