@@ -20,6 +20,7 @@
 
 - Эталоны разметки: blog/idei-fotosessii-na-kryshe/index.html и blog/chto-vidno-s-krysh-moskvy/index.html. Новая статья = тот же скелет (глубина 2: ../../styles.css и ../../script.js с теми же ?v=, иконки абсолютные, header/footer как в эталонах, включая пункт «Статьи»).
 - JSON-LD: BreadcrumbList (Главная → Статьи → статья) + Article (datePublished/dateModified = дата запуска, author/publisher Organization «Moscow Rooftop») + FAQPage с 3 вопросами статьи (не копировать вопросы с других страниц дословно).
+- Кнопки: везде, где стоит «Оставить заявку» (btn btn-primary → ../../#booking), вторая главная кнопка — Telegram: `btn btn-telegram track-link` с иконкой-самолётиком (span.btn-icon, разметку копировать из эталона), href https://t.me/MoscowRoofTopBot, data-goal="telegram_click". Порядок всегда: заявка первой, Telegram второй. Шапку (div.header-actions с заявкой и круглой кнопкой .header-tg) копировать из эталона без изменений.
 - Hero-картинка: одна из серий assets/roof-1..roof-6 (640/1280/1600 webp+jpg, как в эталонах), честный общий alt.
 - Тело: 700–1100 слов, h2/h3, живой русский без канцелярита и переспама (ключ ≈ не чаще 1 раза на 100 слов).
 - Внутренние ссылки: 3–6 штук class="text-link" по целям темы, каждая цель один раз. Перед ссылкой проверь, что директория существует в репо; если /katalog/ отсутствует — ссылайся на ../../#catalog.
