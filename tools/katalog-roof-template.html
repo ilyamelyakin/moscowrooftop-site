@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{{TITLE}} — фото крыши и цена | Moscow Rooftop</title>
+    <meta name="description" content="{{DESC_PLAIN}} Фотографии крыши и цена за человека. Запись — в Telegram-боте." />
+    <!-- Страница-спутник Telegram-бота: из индекса исключена, публичная версия живёт в /kryshi/. -->
+    <meta name="robots" content="noindex, follow" />
+    <link rel="canonical" href="https://moscowrooftop.ru/katalog/" />
+    <meta name="theme-color" content="#0b0a09" />
+    <link rel="icon" href="/assets/favicon.svg?v=20260725-m" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=20260725-m" />
+    {{ASSETS_PRECONNECT}}<link rel="preconnect" href="https://telegram.org" crossorigin />
+    <link rel="dns-prefetch" href="https://telegram.org" />
+    <script>
+      (function () {
+        var isMiniApp = /[#&?]tgWebApp/.test(location.href);
+        try {
+          if (!isMiniApp) isMiniApp = sessionStorage.getItem('mr_miniapp') === '1';
+        } catch (e) {}
+        if (isMiniApp) document.documentElement.className += ' is-miniapp';
+        try {
+          if (isMiniApp) sessionStorage.setItem('mr_miniapp', '1');
+        } catch (e) {}
+      })();
+    </script>
+    <style>
+/*STYLES*/
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="cat-header">
+        <p class="cat-logo"><span>MR</span>Moscow Rooftop</p>
+      </header>
+
+      <main class="{{ROOF_CLASS}}" data-roof-name="{{ROOF_NAME}}" data-slug="{{SLUG}}">
+        <div class="roof-top">
+          <a class="roof-back" href="../">← Все крыши</a>
+          <div class="roof-title-row">
+            <h1>{{TITLE}}</h1>
+            <p class="cat-price-wrap">
+              <strong class="cat-price" data-roof-price>{{PRICE}}</strong><span class="cat-unit">за человека</span>
+            </p>
+          </div>
+          <p class="roof-lead">{{DESC}}</p>
+          <div class="roof-meta">
+            {{BADGE}}
+            <ul class="cat-tags">{{TAGS}}</ul>
+          </div>
+          <p class="cat-off-note"{{OFF_NOTE_HIDDEN}}>Пока недоступна — спросите в боте про ближайшие даты</p>
+        </div>
+
+        <div class="roof-shots">
+{{SHOTS}}
+        </div>
+
+        <div class="roof-cta">
+          <a class="cat-book" href="{{BOT_URL}}?start=book_{{PAYLOAD}}">Записаться в боте</a>
+        </div>
+
+        <p class="roof-note">
+          Фотографии показывают характер вида. Точный адрес и детали встречи — после подтверждения записи в боте.
+        </p>
+      </main>
+
+      <footer class="cat-footer">Moscow Rooftop · прогулки по крышам Москвы · запись в Telegram-боте</footer>
+    </div>
+
+    <div class="cat-sticky"><a id="cat-main-cta" href="{{BOT_URL}}?start=book_{{PAYLOAD}}">Записаться в боте</a></div>
+
+    <script defer src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+/*SCRIPT*/
+    </script>
+  </body>
+</html>

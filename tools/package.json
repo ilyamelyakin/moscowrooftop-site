@@ -1,0 +1,8 @@
+{
+  "name": "moscowrooftop-tools",
+  "private": true,
+  "description": "Локальные инструменты сайта: конвертация фото и сборка каталога. В деплой не попадает (см. .assetsignore).",
+  "dependencies": {
+    "sharp": "^0.34.5"
+  }
+}

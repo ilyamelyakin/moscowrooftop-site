@@ -163,3 +163,48 @@ https://t.me/MoscowRoofTopBot?start=site_hero_instagram
 - Production branch: `main`
 
 Файлы `_headers` и `_redirects` лежат в корне проекта, то есть в build output directory. В `_redirects` хранится короткий переход `/bot` в Telegram. Доменные и HTTP-редиректы обрабатываются существующим Cloudflare Worker.
+
+## Каталог крыш для Telegram-бота (`/katalog/`)
+
+Витрина для тех, кто пришёл из бота: фотографии, цена за человека и актуальная
+доступность. Открывается второй кнопкой меню «📸 Каталог» как Telegram Mini App.
+**Все ссылки ведут в бота или внутрь каталога** — на сайт с его формой заявки
+каталог не уводит.
+
+Страницы:
+- `/katalog/` — лента всех крыш, у каждой свайп-галерея и цена;
+- `/katalog/<slug>/` — страница одной крыши: вся галерея целиком, без обрезки.
+
+Обе **генерируются**, править их руками не нужно:
+
+```bash
+python3 tools/build-katalog.py                      # цены из живого /api/roofs
+python3 tools/build-katalog.py --offline            # цены из снапшота src/index.js
+python3 tools/build-katalog.py --prices-json f.json # цены из сохранённого ответа API
+```
+
+Что где лежит:
+- `tools/katalog-data.json` — содержимое каталога: порядок крыш (повторяет
+  нумерацию папок в `Локации/`), названия, описания, теги и список кадров с alt.
+  Это источник правды: добавили фото — допишите сюда.
+- `tools/katalog-template.html`, `tools/katalog-roof-template.html` — разметка;
+  `tools/katalog-shared.css`, `tools/katalog-shared.js` — общие стили и скрипт.
+- `tools/convert-photos.js` — готовит кадры из оригиналов:
+
+```bash
+node tools/convert-photos.js "Локации/1. Марксистская/IMG_8493.heic" marksistskaya-high-rise-02
+```
+
+Даёт `<base>-640` и `<base>-1280` в jpg и webp в `assets/locations/`. HEIC с
+айфона сначала разворачивается системным `sips` — sharp собран без HEVC.
+
+Статусы и цены на живой странице приходят из `/api/roofs` (та же гугл-таблица,
+что у бота; правила «доступна/нет» в воркере совпадают с `is_available_status`
+в боте). В HTML лежит снапшот цен на случай, если API не ответит.
+
+Секция `/katalog/*` в `_headers` снимает `X-Frame-Options`: на web.telegram.org
+Mini App живёт в iframe.
+
+> **Перед деплоем** проверьте `.assetsignore`: `wrangler deploy` заливает всё из
+> корня, кроме перечисленного там. Локальный `wrangler dev` создаёт `.wrangler/`
+> с исходником воркера — эта папка должна оставаться в списке исключений.

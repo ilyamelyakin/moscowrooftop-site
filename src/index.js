@@ -21,9 +21,26 @@ const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "ut
 // на чтение по ссылке, поэтому воркеру не нужны ключи Google API.
 const PRICE_SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/1VrEYHh_bFuKEf0Bme468Yh-gKNtoDDbXctqeOJt9-j4/export?format=csv&gid=0";
-const PRICE_CACHE_URL = "https://moscowrooftop.ru/__cache/roof-sheet-v2";
+// Ключ намеренно вне адресного пространства сайта: caches.default — это тот же
+// кеш зоны, что и CDN-кеш, и держать служебную запись на публичном origin
+// незачем. Cache API не требует, чтобы URL ключа принадлежал зоне.
+const PRICE_CACHE_URL = "https://roof-sheet.internal/cache/v3";
+// Сколько ответ считается свежим. По истечении срока он всё равно отдаётся
+// сразу, а обновление уходит в фон (stale-while-revalidate).
 const PRICE_CACHE_TTL_SECONDS = 300;
+// Сколько держим устаревший ответ как запасной. Раньше запись просто протухала,
+// и первый посетитель каждые пять минут ждал Google Sheets — замерено 3.8 с.
+// Сутки, а не час: свежесть решает поле at внутри записи, а max-age — только
+// «сколько edge вообще её хранит». Если Google недоступен дольше часа, лучше
+// отдать вчерашние цены, чем 503.
+const PRICE_CACHE_MAX_AGE_SECONDS = 86400;
+// Два разных срока. Холодный кеш: человек ждёт ответа, дольше держать нельзя.
+// Фоновое обновление: не ждёт никто, а замеры похода в таблицу дают разброс
+// 1.6–10.0 с (Google отвечает 307-редиректом на googleusercontent.com). С общим
+// четырёхсекундным сроком каждое третье обновление не успевало бы, кеш бы не
+// наполнялся — и следующий посетитель снова попадал на холодный путь.
 const PRICE_FETCH_TIMEOUT_MS = 4000;
+const PRICE_REFRESH_TIMEOUT_MS = 15000;
 // В таблице «Марксисткая» (без «с»), на сайте — «Марксистская».
 const SHEET_NAME_ALIASES = new Map([["марксистская", "марксисткая"]]);
 // Снапшот таблицы от 2026-07-25 — используется, только если Google недоступен.
@@ -38,6 +55,7 @@ const FALLBACK_ROOF_PRICES = new Map([
   ["таганская", 3000],
   ["таганская скатная", 2500],
   ["шелепиха 9 этажей", 2000],
+  ["смоленская", 3000],
 ]);
 
 function jsonResponse(payload, status = 200, extraHeaders = {}) {
@@ -219,8 +237,23 @@ function parseCsvLine(line) {
   return cells;
 }
 
+// Доступность строки таблицы. Правила — те же, что у бота (is_available_status
+// в excursion_bot.py): иначе сайт и бот по-разному понимают «❌» или пустую ячейку.
+function isAvailableStatus(raw) {
+  const text = String(raw || "").trim().toLowerCase();
+  if (!text) return false;
+  if (text === "on" || text === "1") return true;
+  if (text === "off" || text === "0") return false;
+  if (text.includes("✅") || text.includes("🟨")) return true;
+  if (text.includes("❌")) return false;
+  if (["недоступ", "закрыт", "архив", "no", "false", "нет", "неакт"].some((m) => text.includes(m))) return false;
+  if (["доступ", "актуал", "available", "yes", "true", "соглас"].some((m) => text.includes(m))) return true;
+  return false;
+}
+
 // Строка таблицы -> { price: number | null, on: boolean }.
-// Крыша скрывается только при явном status=off, иначе считается доступной.
+// Колонки status нет вовсе — считаем все крыши доступными (как и бот: он
+// пропускает проверку статуса, если колонку не нашёл).
 function parseRoofSheetCsv(csv) {
   const lines = csv.split(/\r?\n/).filter((line) => line.trim());
   const header = parseCsvLine(lines[0] || "").map((cell) => cell.trim().toLowerCase());
@@ -241,75 +274,161 @@ function parseRoofSheetCsv(csv) {
       return;
     }
     const price = Number.parseInt(String(cells[priceIndex] || "").replace(/[^\d]/g, ""), 10);
-    const status = String(statusIndex === -1 ? "" : cells[statusIndex] || "")
-      .trim()
-      .toLowerCase();
     roofs[name] = {
       price: Number.isInteger(price) && price > 0 ? price : null,
-      on: status !== "off",
+      on: statusIndex === -1 ? true : isAvailableStatus(cells[statusIndex]),
     };
   });
 
   return roofs;
 }
 
-async function fetchRoofSheet() {
-  const cache = caches.default;
-  const cacheKey = new Request(PRICE_CACHE_URL);
-  const cached = await cache.match(cacheKey);
-
-  if (cached) {
-    return new Map(Object.entries(await cached.json()));
+// Читает запись кеша вместе с её возрастом. Формат — { at, roofs }: срок
+// жизни считаем сами, потому что Cache-Control удаляет запись в тот же миг,
+// когда она перестаёт быть свежей, а нам устаревшая ещё пригодится.
+async function readRoofCache() {
+  const cached = await caches.default.match(new Request(PRICE_CACHE_URL));
+  if (!cached) return null;
+  try {
+    const payload = await cached.json();
+    // Пустой объект — не «нашли пустую таблицу», а битая запись. Свежий путь
+    // на такую бросает «Sheet contained no roofs»; если кешированный этого не
+    // сделает, /api/roofs ответит 200 с нулём крыш и каталог целиком уедет
+    // в «Пока недоступна».
+    if (!payload || typeof payload !== "object") return null;
+    if (!payload.roofs || typeof payload.roofs !== "object") return null;
+    if (!Object.keys(payload.roofs).length) return null;
+    return payload;
+  } catch {
+    return null;
   }
+}
 
+async function writeRoofCache(roofs) {
+  await caches.default.put(
+    new Request(PRICE_CACHE_URL),
+    new Response(JSON.stringify({ at: Date.now(), roofs }), {
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": `max-age=${PRICE_CACHE_MAX_AGE_SECONDS}`,
+      },
+    })
+  );
+}
+
+// Один поход в таблицу на изолят: без этого каждый запрос, попавший на
+// устаревшую или пустую запись, дёргал бы Google отдельно. Возвращает null
+// вместо ошибки — вызывающий решает, это фон (и тогда всё равно) или холодный
+// путь (и тогда надо ответить 503).
+let roofRefreshInFlight = null;
+
+// Ждёт промис не дольше срока; по истечении отдаёт fallback, не трогая сам
+// промис. Нужен там, где зависший вызов не должен утаскивать за собой всё
+// остальное.
+function withDeadline(promise, ms, fallback) {
+  let timer;
+  const deadline = new Promise((resolve) => {
+    timer = setTimeout(() => resolve(fallback), ms);
+  });
+  return Promise.race([promise, deadline]).finally(() => clearTimeout(timer));
+}
+
+function refreshRoofSheet(timeoutMs = PRICE_REFRESH_TIMEOUT_MS) {
+  if (!roofRefreshInFlight) {
+    const attempt = fetchRoofSheetFresh(timeoutMs).catch(() => null);
+    // Слот освобождаем по собственному сроку, а не по тому, осела ли попытка.
+    // Таймаутом накрыт поход в таблицу, но не запись в кеш: если зависнет
+    // caches.default.put, промис не осядет никогда, и один застрявший вызов
+    // заблокировал бы все будущие обновления этого изолята — а с суточным
+    // max-age посетители молча получали бы вчерашние цены.
+    withDeadline(attempt, timeoutMs + 1000, null).then(() => {
+      if (roofRefreshInFlight === attempt) roofRefreshInFlight = null;
+    });
+    roofRefreshInFlight = attempt;
+  }
+  return roofRefreshInFlight;
+}
+
+// Отдаёт таблицу, не заставляя посетителя ждать Google: пока в кеше есть хоть
+// что-то, ответ мгновенный, а обновление живёт в ctx.waitUntil уже после того,
+// как ответ ушёл. Блокируемся только на холодном кеше.
+async function fetchRoofSheet(ctx) {
+  const cached = await readRoofCache();
+  if (cached) {
+    // Модуль по модулю: отметка из будущего (часы разъехались, запись из
+    // другого колоцентра) иначе считалась бы вечно свежей и замораживала цены
+    // на сутки — ровно на PRICE_CACHE_MAX_AGE_SECONDS.
+    const ageSeconds = Math.abs(Date.now() - (cached.at || 0)) / 1000;
+    // Обновление запускаем, только если есть кому его удержать: без
+    // ctx.waitUntil незавершённый ввод-вывод обрывается сразу после ответа,
+    // и поход в Google просто пропал бы впустую.
+    if (ageSeconds > PRICE_CACHE_TTL_SECONDS && ctx && typeof ctx.waitUntil === "function") {
+      ctx.waitUntil(refreshRoofSheet());
+    }
+    return new Map(Object.entries(cached.roofs));
+  }
+  // Холодный кеш — тоже через дедупликацию: иначе десять одновременных
+  // запросов дали бы десять походов в Google по четыре секунды каждый.
+  // Ждём общий промис со своим сроком: попытку мог начать фоновый вызов с
+  // пятнадцатью секундами, а посетитель столько ждать не должен.
+  const fresh = await withDeadline(refreshRoofSheet(PRICE_FETCH_TIMEOUT_MS), PRICE_FETCH_TIMEOUT_MS + 500, null);
+  if (!fresh) throw new Error("Sheet unavailable");
+  return new Map(Object.entries(fresh));
+}
+
+async function fetchRoofSheetFresh(timeoutMs = PRICE_FETCH_TIMEOUT_MS) {
   // Promise.race поверх AbortController: даже если рантайм игнорирует
   // signal (так делает локальный miniflare), ждём Google не дольше таймаута.
   const controller = new AbortController();
   let timer;
-  const fetchPromise = fetch(PRICE_SHEET_CSV_URL, {
-    signal: controller.signal,
-    headers: { Accept: "text/csv" },
-  });
-  fetchPromise.catch(() => {});
   const timeoutPromise = new Promise((_, reject) => {
     timer = setTimeout(() => {
       controller.abort();
       reject(new Error("Sheet fetch timed out"));
-    }, PRICE_FETCH_TIMEOUT_MS);
+    }, timeoutMs);
   });
-  let response;
+  // В гонку идёт ЧТЕНИЕ ТЕЛА, а не один fetch. Гонка по одному fetch
+  // заканчивалась, как только Google присылал заголовки; дальше clearTimeout
+  // разоружал AbortController, и повисшее тело ждали бесконечно. На изоляте
+  // это значило, что roofRefreshInFlight застревал навсегда и обновления
+  // прекращались совсем. Ровно так сейчас ведёт себя канал у части
+  // российских операторов: заголовки приходят, тело — нет.
+  const load = (async () => {
+    const response = await fetch(PRICE_SHEET_CSV_URL, {
+      signal: controller.signal,
+      headers: { Accept: "text/csv" },
+    });
+    if (!response.ok) throw new Error(`Sheet responded with ${response.status}`);
+    return response.text();
+  })();
+  load.catch(() => {});
 
+  let csv;
   try {
-    response = await Promise.race([fetchPromise, timeoutPromise]);
+    csv = await Promise.race([load, timeoutPromise]);
   } finally {
     clearTimeout(timer);
   }
 
-  if (!response.ok) {
-    throw new Error(`Sheet responded with ${response.status}`);
-  }
-
-  const roofs = parseRoofSheetCsv(await response.text());
+  const roofs = parseRoofSheetCsv(csv);
 
   if (!Object.keys(roofs).length) {
     throw new Error("Sheet contained no roofs");
   }
 
-  await cache.put(
-    cacheKey,
-    new Response(JSON.stringify(roofs), {
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": `max-age=${PRICE_CACHE_TTL_SECONDS}`,
-      },
-    })
-  );
+  // Кеш — ускорение, а не условие работы. Таблица уже скачана и разобрана,
+  // и ронять из-за недоступного Cache API готовый ответ нечестно.
+  try {
+    await writeRoofCache(roofs);
+  } catch {
+    /* переживём: следующий запрос сходит в таблицу заново */
+  }
 
-  return new Map(Object.entries(roofs));
+  return roofs;
 }
 
 // Возвращает цену за 1 человека или null; никогда не роняет обработку заявки.
-async function getRoofPrice(roofName) {
+async function getRoofPrice(roofName, ctx) {
   const normalized = normalizeRoofName(roofName);
   const lookupKey = SHEET_NAME_ALIASES.get(normalized) || normalized;
 
@@ -318,7 +437,7 @@ async function getRoofPrice(roofName) {
   }
 
   try {
-    const roofs = await fetchRoofSheet();
+    const roofs = await fetchRoofSheet(ctx);
     return roofs.get(lookupKey)?.price ?? FALLBACK_ROOF_PRICES.get(lookupKey) ?? null;
   } catch {
     return FALLBACK_ROOF_PRICES.get(lookupKey) ?? null;
@@ -327,7 +446,7 @@ async function getRoofPrice(roofName) {
 
 // GET /api/roofs -> { ok: true, roofs: { "<имя>": true|false } } (true = показывать).
 // При недоступной таблице отвечает 503 — клиент в этом случае ничего не скрывает.
-async function handleRoofsRequest(request) {
+async function handleRoofsRequest(request, ctx) {
   if (request.method !== "GET") {
     return jsonResponse(
       { ok: false, error: "Метод не поддерживается." },
@@ -339,7 +458,7 @@ async function handleRoofsRequest(request) {
   let sheet;
 
   try {
-    sheet = await fetchRoofSheet();
+    sheet = await fetchRoofSheet(ctx);
   } catch {
     return jsonResponse({ ok: false }, 503);
   }
@@ -413,7 +532,7 @@ function isAllowedOrigin(request, url) {
   return false;
 }
 
-async function handleLeadRequest(request, env, url) {
+async function handleLeadRequest(request, env, url, ctx) {
   if (request.method !== "POST") {
     return jsonResponse(
       { ok: false, error: "Метод не поддерживается." },
@@ -466,7 +585,7 @@ async function handleLeadRequest(request, env, url) {
     );
   }
 
-  const pricePerPerson = await getRoofPrice(lead.roof);
+  const pricePerPerson = await getRoofPrice(lead.roof, ctx);
   let telegramResponse;
 
   try {
@@ -501,7 +620,7 @@ async function handleLeadRequest(request, env, url) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const forwardedProto = request.headers.get("x-forwarded-proto");
     const cfVisitor = request.headers.get("cf-visitor") || "";
@@ -530,11 +649,11 @@ export default {
     }
 
     if (url.pathname === LEAD_PATH) {
-      return handleLeadRequest(request, env, url);
+      return handleLeadRequest(request, env, url, ctx);
     }
 
     if (url.pathname === ROOFS_PATH) {
-      return handleRoofsRequest(request);
+      return handleRoofsRequest(request, ctx);
     }
 
     if (url.pathname === "/bot" || url.pathname === "/bot/") {

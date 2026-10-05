@@ -1,0 +1,250 @@
+      :root {
+        --bg: #0b0a09;
+        --panel: rgba(255, 255, 255, 0.075);
+        --text: #fff8ec;
+        --muted: rgba(255, 248, 236, 0.72);
+        --soft: rgba(255, 248, 236, 0.52);
+        --line: rgba(255, 248, 236, 0.14);
+        --gold: #f6c56f;
+        --amber: #ff9e4f;
+        --rose: #ff6f61;
+        --radius: 8px;
+      }
+      * { box-sizing: border-box; }
+      /* Свои display: grid/inline-flex перебивают браузерный [hidden] — возвращаем приоритет атрибуту. */
+      [hidden] { display: none !important; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        padding: 0 0 96px;
+        background:
+          radial-gradient(circle at 20% 0%, rgba(255, 158, 79, 0.16), transparent 32rem),
+          radial-gradient(circle at 95% 8%, rgba(147, 197, 253, 0.11), transparent 26rem),
+          var(--bg);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      img { display: block; width: 100%; height: 100%; object-fit: cover; }
+      a { color: inherit; text-decoration: none; }
+      button { font: inherit; color: inherit; }
+
+      .wrap { width: min(1160px, calc(100vw - 32px)); margin: 0 auto; }
+
+      /* Шапка и подвал — только вне Telegram: в Mini App своя шапка от клиента. */
+      .cat-header {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        padding: 18px 0 6px;
+      }
+      .cat-logo { display: flex; align-items: center; gap: 10px; margin: 0; font-weight: 800; letter-spacing: 0.02em; }
+      .cat-logo span {
+        display: grid; place-items: center; width: 38px; height: 38px;
+        border: 1px solid var(--line); border-radius: 50%;
+        background: var(--panel); font-size: 0.78rem; color: var(--gold);
+      }
+      .is-miniapp .cat-header, .is-miniapp .cat-footer { display: none; }
+
+      .cat-head { padding: 22px 0 6px; }
+      .cat-head h1 {
+        margin: 0 0 8px; font-size: clamp(1.9rem, 6vw, 2.6rem); line-height: 1.08;
+        letter-spacing: -0.02em; font-weight: 860;
+      }
+      .cat-note { margin: 0; color: var(--muted); font-size: 0.95rem; }
+      .cat-status {
+        margin: 10px 0 0; min-height: 1.4em; color: var(--soft); font-size: 0.88rem;
+      }
+      .cat-status b { color: var(--gold); font-weight: 700; }
+
+      .cat-feed {
+        display: grid; grid-template-columns: 1fr; gap: 14px; margin: 18px 0 0;
+      }
+      .cat-card {
+        display: flex; flex-direction: column; overflow: hidden; min-width: 0;
+        border: 1px solid var(--line); border-radius: var(--radius);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.04));
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.26);
+      }
+      .cat-card:nth-child(n + 3) { content-visibility: auto; contain-intrinsic-size: auto 560px; }
+
+      .cat-media { position: relative; min-height: 0; aspect-ratio: 4 / 5; background: #15110e; }
+      .cat-rail {
+        display: flex; height: 100%; min-height: 0; overflow-x: auto; scroll-snap-type: x mandatory;
+        overscroll-behavior-x: contain; overflow-anchor: none; scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+      .cat-rail::-webkit-scrollbar { display: none; }
+      .cat-rail:focus-visible { outline: 2px solid var(--gold); outline-offset: -3px; }
+      .cat-slide { position: relative; flex: 0 0 100%; min-width: 0; height: 100%; scroll-snap-align: start; scroll-snap-stop: always; }
+      .cat-slide picture { display: block; height: 100%; }
+
+      .cat-badge {
+        position: absolute; top: 12px; left: 12px; z-index: 2;
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px;
+        background: rgba(11, 10, 9, 0.62); backdrop-filter: blur(8px);
+        font-size: 0.78rem; font-weight: 700; letter-spacing: 0.01em;
+      }
+      .cat-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
+      .cat-badge.is-off { color: var(--soft); }
+      .cat-badge.is-off::before { background: var(--soft); }
+
+      .cat-counter {
+        position: absolute; right: 12px; bottom: 12px; z-index: 2;
+        padding: 6px 11px; border: 1px solid var(--line); border-radius: 999px;
+        background: rgba(11, 10, 9, 0.62); backdrop-filter: blur(8px);
+        font-size: 0.75rem; font-variant-numeric: tabular-nums; color: var(--muted);
+      }
+      .cat-dots {
+        position: absolute; left: 0; right: 0; bottom: 12px; z-index: 2;
+        display: flex; justify-content: center; gap: 6px; pointer-events: none;
+      }
+      .cat-dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: rgba(255, 248, 236, 0.38); transition: background 180ms ease, width 180ms ease;
+      }
+      .cat-dot.is-active { width: 18px; border-radius: 999px; background: var(--gold); }
+
+      .cat-arrow {
+        position: absolute; top: 50%; z-index: 2; display: none;
+        width: 40px; height: 40px; margin-top: -20px; padding: 0;
+        border: 1px solid var(--line); border-radius: 50%;
+        background: rgba(11, 10, 9, 0.66); backdrop-filter: blur(8px);
+        font-size: 1.3rem; line-height: 1; cursor: pointer; opacity: 0; transition: opacity 160ms ease;
+      }
+      .cat-arrow-prev { left: 10px; }
+      .cat-arrow-next { right: 10px; }
+
+      .cat-body { display: flex; flex-direction: column; padding: 16px 16px 18px; }
+      .cat-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+      .cat-top h3 { margin: 0; font-size: clamp(1.25rem, 4.6vw, 1.5rem); font-weight: 820; letter-spacing: -0.01em; }
+      .cat-price-wrap { margin: 0; text-align: right; white-space: nowrap; }
+      .cat-price {
+        display: block; color: var(--gold); font-size: 1.08rem; font-weight: 820;
+        font-variant-numeric: tabular-nums;
+      }
+      .cat-unit { display: block; margin-top: 2px; color: var(--soft); font-size: 0.72rem; }
+      .cat-desc {
+        display: -webkit-box; overflow: hidden; margin: 10px 0 0;
+        -webkit-box-orient: vertical; -webkit-line-clamp: 3;
+        color: var(--muted); font-size: 0.94rem; line-height: 1.5;
+      }
+      .cat-tags { display: flex; flex-wrap: wrap; gap: 7px; margin: 14px 0 0; padding: 0; list-style: none; }
+      .cat-tags li {
+        padding: 6px 10px; border: 1px solid rgba(255, 248, 236, 0.13); border-radius: 999px;
+        background: rgba(255, 255, 255, 0.04); color: var(--muted); font-size: 0.78rem;
+      }
+      .cat-actions { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+      .cat-book {
+        display: inline-flex; flex: 1 1 auto; min-height: 52px; align-items: center; justify-content: center;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--gold), var(--amber) 56%, var(--rose));
+        color: #18100a; font-size: 0.98rem; font-weight: 820;
+        box-shadow: 0 10px 28px rgba(255, 158, 79, 0.22);
+      }
+      .cat-secondary {
+        display: inline-flex; min-height: 52px; align-items: center; padding: 0 16px;
+        border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: 0.92rem; font-weight: 600;
+      }
+      .cat-off-note { margin: 14px 0 0; color: var(--soft); font-size: 0.86rem; line-height: 1.45; }
+
+      /* Выключенная в таблице крыша: приглушаем только фото — цена остаётся информацией. */
+      .cat-card.is-off .cat-media { filter: grayscale(0.45) opacity(0.72); }
+      .cat-card.is-off .cat-actions { display: none; }
+      .cat-card.is-off .cat-off-note { display: block; }
+
+      .cat-divider {
+        margin: 34px 0 0; font-size: 1.05rem; font-weight: 760; letter-spacing: 0.01em; color: var(--muted);
+      }
+      .cat-more { margin: 26px 0 0; }
+      .cat-more h2 { margin: 0 0 12px; font-size: 1.05rem; font-weight: 760; color: var(--muted); }
+      .cat-more-row {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius);
+        background: var(--panel); margin-bottom: 8px;
+      }
+      .cat-more-row b { font-weight: 760; }
+      .cat-more-row span { color: var(--gold); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+      .cat-footnote { margin: 28px 0 0; color: var(--soft); font-size: 0.86rem; line-height: 1.6; }
+      .cat-archive { margin: 14px 0 0; color: var(--soft); font-size: 0.86rem; line-height: 1.8; }
+      .cat-archive a { color: var(--muted); border-bottom: 1px solid var(--line); }
+      .cat-footer { margin: 30px 0 0; padding-top: 18px; border-top: 1px solid var(--line); color: var(--soft); font-size: 0.84rem; }
+
+      /* Возврат в бота вне Telegram; внутри Mini App его заменяет системная MainButton. */
+      .cat-sticky {
+        position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+        padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+        background: linear-gradient(180deg, rgba(11, 10, 9, 0), rgba(11, 10, 9, 0.92) 42%);
+      }
+      .cat-sticky a {
+        display: flex; min-height: 54px; align-items: center; justify-content: center; gap: 8px;
+        width: min(1160px, calc(100vw - 32px)); margin: 0 auto; border-radius: 999px;
+        background: linear-gradient(135deg, var(--gold), var(--amber) 56%, var(--rose));
+        color: #18100a; font-weight: 820; box-shadow: 0 14px 40px rgba(0, 0, 0, 0.34);
+      }
+      /* Свою липкую кнопку прячем, только когда системная MainButton реально показана. */
+      .is-miniapp.has-main-button .cat-sticky { display: none; }
+
+      dialog.cat-lightbox {
+        width: min(96vw, 1100px); padding: 0; border: 1px solid var(--line); border-radius: var(--radius);
+        background: #0b0a09; color: var(--text);
+      }
+      dialog.cat-lightbox::backdrop { background: rgba(5, 4, 3, 0.88); }
+      .cat-lightbox picture { display: contents; }
+      .cat-lightbox img { max-height: 82vh; object-fit: contain; }
+      .cat-lightbox-bar {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        padding: 12px 14px; border-top: 1px solid var(--line); font-size: 0.88rem; color: var(--muted);
+      }
+      .cat-lightbox-bar button {
+        min-height: 40px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px;
+        background: var(--panel); cursor: pointer;
+      }
+
+      @media (min-width: 641px) {
+        .cat-feed { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+      }
+      @media (min-width: 981px) {
+        .cat-feed { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .cat-head { padding-top: 34px; }
+      }
+      @media (hover: hover) and (pointer: fine) {
+        .cat-arrow { display: block; }
+        .cat-media:hover .cat-arrow, .cat-arrow:focus-visible { opacity: 1; }
+        .cat-book:hover { box-shadow: 0 18px 52px rgba(255, 158, 79, 0.32); }
+        .cat-secondary:hover { border-color: rgba(255, 248, 236, 0.32); color: var(--text); }
+        .cat-slide picture { cursor: zoom-in; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+      }
+
+      /* ===== Страница одной крыши: галерея во всю ширину, без обрезки ===== */
+      .roof-top { padding: 18px 0 4px; }
+      .roof-back {
+        display: inline-flex; align-items: center; gap: 8px; min-height: 40px;
+        color: var(--muted); font-size: 0.92rem;
+      }
+      .roof-title-row {
+        display: flex; align-items: baseline; justify-content: space-between; gap: 14px; margin-top: 10px;
+      }
+      .roof-title-row h1 {
+        margin: 0; font-size: clamp(1.7rem, 6.5vw, 2.3rem); font-weight: 860; letter-spacing: -0.02em;
+      }
+      .roof-lead { margin: 10px 0 0; color: var(--muted); font-size: 0.98rem; line-height: 1.55; }
+      .roof-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 14px 0 0; }
+      /* Бейдж в ленте лежит поверх фото; здесь он обычный элемент строки. */
+      .roof-meta .cat-badge { position: static; }
+      .roof-meta .cat-tags { margin: 0; }
+      .roof-shots { display: grid; gap: 10px; margin: 18px 0 0; }
+      .roof-shot {
+        overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: #15110e;
+      }
+      /* Кадр показываем целиком: это галерея, а не витрина — обрезать нечестно. */
+      .roof-shot img { width: 100%; height: auto; object-fit: contain; }
+      .roof-cta { margin: 22px 0 0; }
+      .roof-cta .cat-book { width: 100%; }
+      .roof-note { margin: 16px 0 0; color: var(--soft); font-size: 0.86rem; line-height: 1.6; }
+      @media (min-width: 981px) {
+        .roof-shots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
