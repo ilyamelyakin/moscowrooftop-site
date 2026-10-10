@@ -17,3 +17,8 @@ custom_domain = true
 [[routes]]
 pattern = "www.moscowrooftop.ru"
 custom_domain = true
+
+# Служебное имя для прокси на сервере Timeweb (см. ORIGIN_HOST в src/index.js).
+[[routes]]
+pattern = "origin.moscowrooftop.ru"
+custom_domain = true

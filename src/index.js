@@ -15,6 +15,12 @@ const ALLOWED_ORIGINS = new Set([
   "http://localhost:8000",
   "http://127.0.0.1:8000",
 ]);
+// Мобильные операторы в России режут ответы с адресов Cloudflare, поэтому сайт
+// для посетителей отдаёт nginx на сервере Timeweb. Сам он берёт страницы здесь,
+// по служебному имени, и помечает свои запросы заголовком. Прямой заход на
+// служебное имя уводим на канонический адрес, чтобы не плодить дубли в поиске.
+const ORIGIN_HOST = "origin.moscowrooftop.ru";
+const PROXY_HEADER = "X-MRT-Proxy";
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
 // Цены за 1 человека приходят из гугл-таблицы «Список крыш Москвы» (та же,
 // что у Telegram-бота): колонки id,name,status,price_rub. Таблица открыта
@@ -622,6 +628,12 @@ async function handleLeadRequest(request, env, url, ctx) {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    if (url.hostname === ORIGIN_HOST) {
+      url.hostname = "moscowrooftop.ru";
+      if (request.headers.get(PROXY_HEADER) !== "1") {
+        return Response.redirect(url.toString(), 301);
+      }
+    }
     const forwardedProto = request.headers.get("x-forwarded-proto");
     const cfVisitor = request.headers.get("cf-visitor") || "";
     // Requests proxied by Cloudflare always carry cf-visitor/x-forwarded-proto;
