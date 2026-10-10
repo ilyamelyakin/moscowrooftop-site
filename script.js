@@ -525,7 +525,11 @@ function bindRoofCatalog() {
       const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches
         ? 'auto'
         : 'smooth';
-      booking.scrollIntoView({ behavior, block: 'start' });
+      // На телефоне докручиваем до самой формы, чтобы выбранная крыша была видна в поле.
+      const target = window.matchMedia('(max-width: 980px)').matches
+        ? booking.querySelector('.lead-form-shell') || booking
+        : booking;
+      target.scrollIntoView({ behavior, block: 'start' });
     }
   };
 
@@ -541,10 +545,10 @@ function bindRoofCatalog() {
 
     lightboxTitle.textContent = gallery.name;
     lightboxSource.srcset = `${image.base}-640.webp ${width640}w, ${image.base}-1280.webp ${width1280}w`;
-    lightboxSource.sizes = '(max-width: 640px) calc(100vw - 110px), 760px';
+    lightboxSource.sizes = '(max-width: 640px) 100vw, 760px';
     lightboxImage.src = `${image.base}-1280.jpg`;
     lightboxImage.srcset = `${image.base}-640.jpg ${width640}w, ${image.base}-1280.jpg ${width1280}w`;
-    lightboxImage.sizes = '(max-width: 640px) calc(100vw - 110px), 760px';
+    lightboxImage.sizes = '(max-width: 640px) 100vw, 760px';
     lightboxImage.alt = image.alt;
     lightboxCounter.textContent = `${activeImageIndex + 1} из ${gallery.images.length}`;
 
@@ -634,6 +638,31 @@ function bindRoofCatalog() {
   closeButton?.addEventListener('click', closeLightbox);
   previousButton?.addEventListener('click', () => changeLightboxImage(-1));
   nextButton?.addEventListener('click', () => changeLightboxImage(1));
+
+  // Свайп влево/вправо по фото листает кадры (на телефоне стрелки маленькие).
+  const lightboxStage = dialog?.querySelector('.roof-lightbox-stage');
+  let touchStartX = null;
+  let touchStartY = 0;
+  lightboxStage?.addEventListener('touchstart', (event) => {
+    if (event.touches.length !== 1) {
+      touchStartX = null;
+      return;
+    }
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
+  }, { passive: true });
+  lightboxStage?.addEventListener('touchend', (event) => {
+    if (touchStartX === null) {
+      return;
+    }
+    const touch = event.changedTouches[0];
+    const dx = touch.clientX - touchStartX;
+    const dy = touch.clientY - touchStartY;
+    touchStartX = null;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      changeLightboxImage(dx < 0 ? 1 : -1);
+    }
+  }, { passive: true });
   dialog?.addEventListener('click', (event) => {
     if (event.target === dialog) {
       closeLightbox();
@@ -1129,6 +1158,31 @@ function bindLeadForm() {
 
 function bindFAQ() {
   const trackedQuestions = new Set();
+
+  // Закрываем соседний ответ до раскрытия и компенсируем сдвиг, чтобы вопрос не «прыгал».
+  document.querySelectorAll('.faq summary').forEach((summary) => {
+    summary.addEventListener('click', () => {
+      const details = summary.parentElement;
+      if (details.open) {
+        return;
+      }
+      const before = summary.getBoundingClientRect().top;
+      document.querySelectorAll('.faq details[open]').forEach((item) => {
+        if (item !== details) {
+          item.removeAttribute('open');
+        }
+      });
+      const shift = summary.getBoundingClientRect().top - before;
+      if (shift) {
+        // Мгновенно: с html { scroll-behavior: smooth } вопрос сначала отскакивал, а потом
+        // плавно возвращался. scrollBy({ behavior: 'instant' }) старый Safari не принимает.
+        const root = document.documentElement;
+        root.style.scrollBehavior = 'auto';
+        window.scrollBy(0, shift);
+        root.style.scrollBehavior = '';
+      }
+    });
+  });
 
   document.querySelectorAll('.faq details').forEach((details) => {
     details.addEventListener('toggle', () => {

@@ -21,6 +21,8 @@
 }
 
 html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   scroll-behavior: smooth;
 }
 
@@ -85,6 +87,7 @@ button {
   border-radius: 999px;
   background: rgba(12, 10, 9, 0.62);
   box-shadow: 0 18px 55px rgba(0, 0, 0, 0.32);
+  -webkit-backdrop-filter: blur(22px);
   backdrop-filter: blur(22px);
   transform: translateX(-50%);
 }
@@ -310,6 +313,7 @@ h1 {
   border-color: rgba(255, 248, 236, 0.22);
   background: rgba(255, 255, 255, 0.08);
   color: var(--text);
+  -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
 }
 
@@ -370,6 +374,7 @@ h1 {
   border: 1px solid rgba(255, 248, 236, 0.14);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.07);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
 
@@ -404,6 +409,7 @@ h1 {
   min-height: 128px;
   padding: 22px;
   background: rgba(18, 16, 14, 0.9);
+  -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
 }
 
@@ -554,8 +560,14 @@ h1 {
 }
 
 .feature-card {
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   border-radius: var(--radius);
+}
+
+.feature-card picture {
+  display: block;
 }
 
 .feature-card:hover,
@@ -568,6 +580,7 @@ h1 {
 }
 
 .feature-card img {
+  height: auto;
   aspect-ratio: 4 / 5;
 }
 
@@ -718,6 +731,7 @@ h1 {
   color: var(--text);
   font-size: 0.76rem;
   font-weight: 760;
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
 
@@ -884,13 +898,14 @@ a.roof-gallery-button {
 
 .roof-lightbox::backdrop {
   background: rgba(4, 3, 2, 0.84);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
 
 .roof-lightbox-shell {
   display: grid;
   max-height: calc(100svh - 24px);
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
 }
 
 .roof-lightbox-header {
@@ -967,6 +982,7 @@ a.roof-gallery-button {
 
 .roof-lightbox-stage figure {
   display: grid;
+  grid-column: 2;
   min-width: 0;
   min-height: 0;
   margin: 0;
@@ -985,7 +1001,9 @@ a.roof-gallery-button {
   width: auto;
   max-width: 100%;
   height: auto;
-  max-height: calc(100svh - 174px);
+  /* Шапка, подпись «1 из N» и кнопка внизу — фото не должно на них заезжать. */
+  max-height: calc(100vh - 250px);
+  max-height: calc(100svh - 250px);
   border-radius: 6px;
   object-fit: contain;
 }
@@ -1794,6 +1812,18 @@ a.roof-gallery-button {
   padding-left: 20px;
 }
 
+.content-panel ul:not(:last-child),
+.side-panel ul:not(:last-child) {
+  margin-bottom: 16px;
+}
+
+/* h1 внутри текстовой панели (политика конфиденциальности): общий размер h1 до 7.4rem
+   рассчитан на героя, в панели «персональных» вылезало за край на 150px. */
+.content-panel > h1 {
+  font-size: clamp(2.2rem, 4.4vw, 3.6rem);
+  line-height: 1.02;
+}
+
 .facts-grid,
 .related-grid {
   display: grid;
@@ -1862,6 +1892,37 @@ a.roof-gallery-button {
   font-weight: 760;
 }
 
+/* Карточка крыши: главная кнопка во всю ширину, «Смотреть фото» и «Подробнее» — парой.
+   До 1180px: уже на iPad боком «Выбрать крышу» рядом с «Смотреть фото» переносилось на две строки. */
+@media (max-width: 1180px) {
+  .roof-card-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .roof-card-actions .roof-select-button {
+    grid-column: 1 / -1;
+  }
+
+  a.roof-gallery-button {
+    grid-column: auto;
+  }
+
+  .roof-gallery-button {
+    padding-inline: 10px;
+  }
+}
+
+/* Боковая колонка узкая (200-263px): заголовок «Записаться на крышу «Новокузнецкая»» в 48px
+   вылезал за карточку, а на ноутбуках и iPad боком давал прокрутку вбок. Размер подобран так,
+   чтобы самое длинное слово помещалось целиком на любой ширине от 981px. */
+@media (min-width: 981px) {
+  .side-panel h2 {
+    font-size: clamp(1.35rem, 2.2vw, 1.75rem);
+    line-height: 1.12;
+    overflow-wrap: anywhere;
+  }
+}
+
 @media (max-width: 980px) {
   :root {
     --container: min(100vw - 24px, 720px);
@@ -1886,7 +1947,11 @@ a.roof-gallery-button {
     background: rgba(12, 10, 9, 0.96);
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
     gap: 2px;
+    -webkit-backdrop-filter: blur(22px);
     backdrop-filter: blur(22px);
+    max-height: calc(100svh - 96px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   .site-header.is-nav-open .header-nav {
@@ -1948,7 +2013,7 @@ a.roof-gallery-button {
   }
 
   .page-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .side-panel {
@@ -1958,6 +2023,69 @@ a.roof-gallery-button {
   .facts-grid,
   .related-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Нечётная последняя карточка в 2 колонках — на всю ширину, без пустой ячейки. */
+  .trust-grid > :last-child:nth-child(odd),
+  .steps > :last-child:nth-child(odd),
+  .facts-grid > :last-child:nth-child(odd),
+  .related-grid > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  /* Галерея страниц крыш: кадры целиком, по два в ряд; одинокий последний — по центру,
+     без пустой ячейки рядом. */
+  .inner-page .gallery-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .inner-page .gallery-item {
+    flex: 0 1 calc(50% - 7px);
+  }
+
+  .inner-page .gallery-item img {
+    height: auto;
+    max-height: 85vh;
+    max-height: 85svh;
+    object-fit: contain;
+  }
+
+  .hero {
+    padding-inline: max(12px, calc((100vw - 720px) / 2));
+  }
+
+  .site-header {
+    justify-content: flex-start;
+  }
+
+  .header-actions {
+    margin-left: auto;
+  }
+
+  #catalog,
+  #booking {
+    scroll-margin-top: 12px;
+  }
+
+  .lead-form-shell {
+    scroll-margin-top: 80px;
+  }
+}
+
+/* iOS увеличивает страницу при фокусе на поле со шрифтом меньше 16px. */
+@media (max-width: 980px), (pointer: coarse) {
+  .form-field input,
+  .form-field select,
+  .form-field textarea,
+  .people-stepper input {
+    font-size: 16px;
+  }
+
+  .form-field input[type="date"]::-webkit-date-and-time-value {
+    text-align: left;
   }
 }
 
@@ -2024,17 +2152,16 @@ a.roof-gallery-button {
     padding-top: 10px;
   }
 
-  .trust-grid,
   .feature-grid,
   .steps,
-  .audience-grid,
   .gallery-grid,
   .roof-catalog-grid {
     grid-template-columns: 1fr;
   }
 
-  .roof-card-actions {
-    grid-template-columns: minmax(0, 1fr) auto;
+  .trust-grid,
+  .audience-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .selected-roof {
@@ -2044,40 +2171,83 @@ a.roof-gallery-button {
   }
 
   .roof-lightbox {
-    width: calc(100vw - 12px);
-    max-height: calc(100svh - 12px);
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
   }
 
   .roof-lightbox-shell {
-    max-height: calc(100svh - 12px);
+    height: 100%;
+    max-height: none;
+    grid-template-rows: auto minmax(0, 1fr) auto;
   }
 
   .roof-lightbox-header {
-    padding: 14px;
+    padding: 10px 12px 10px 16px;
+  }
+
+  .roof-lightbox-header .eyebrow {
+    margin-bottom: 2px;
   }
 
   .roof-lightbox-stage {
-    grid-template-columns: 42px minmax(0, 1fr) 42px;
-    gap: 3px;
-    padding: 10px 6px 12px;
+    position: relative;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding: 0;
   }
 
-  .roof-lightbox-control {
-    width: 38px;
-    height: 38px;
+  .roof-lightbox-stage figure {
+    grid-column: 1;
+    grid-row: 1;
   }
 
   .roof-lightbox-stage img {
-    max-height: calc(100svh - 154px);
+    width: 100%;
+    max-height: calc(100vh - 170px);
+    max-height: calc(100dvh - 170px);
+    border-radius: 0;
+  }
+
+  .roof-lightbox-control {
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+    width: 44px;
+    height: 44px;
+    transform: translateY(-50%);
+    background: rgba(10, 8, 7, 0.55);
+  }
+
+  .roof-lightbox-prev {
+    left: 8px;
+  }
+
+  .roof-lightbox-next {
+    right: 8px;
+  }
+
+  .roof-lightbox-stage figcaption {
+    margin-top: 8px;
+  }
+
+  .roof-lightbox-actions {
+    padding: 8px 16px 12px;
   }
 
   .trust-grid article {
-    min-height: 94px;
-    padding: 18px;
+    min-height: 0;
+    padding: 14px 16px;
   }
 
   .feature-card img {
-    aspect-ratio: 1.2 / 1;
+    aspect-ratio: 4 / 5;
   }
 
   .feature-card div {
@@ -2104,12 +2274,28 @@ a.roof-gallery-button {
     aspect-ratio: 1 / 1.2;
   }
 
+  /* Страницы крыш и фотосессии: по одному кадру в ряд, целиком. */
+  .inner-page .gallery-grid {
+    gap: 10px;
+  }
+
+  .inner-page .gallery-item {
+    flex-basis: 100%;
+    aspect-ratio: auto;
+  }
+
+  .inner-page .gallery-item img {
+    max-height: 82vh;
+    max-height: 82svh;
+  }
+
   .booking-panel,
   .final-cta {
     padding: 22px;
   }
 
   .booking-panel {
+    padding: 20px 16px;
     border-radius: 16px;
   }
 
@@ -2123,9 +2309,14 @@ a.roof-gallery-button {
     min-height: 62px;
   }
 
+  /* На телефоне форма без второй рамки: поля шире на 50px. */
   .lead-form-shell {
-    padding: 18px;
-    border-radius: 16px;
+    padding: 20px 0 0;
+    border: 0;
+    border-top: 1px solid rgba(255, 248, 236, 0.14);
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
   }
 
   .lead-form-grid {
@@ -2143,12 +2334,34 @@ a.roof-gallery-button {
   }
 
   .step-card {
+    display: grid;
     min-height: auto;
+    grid-template-columns: 42px minmax(0, 1fr);
+    column-gap: 14px;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .step-card span,
+  .step-card h3 {
+    margin-bottom: 0;
+  }
+
+  .step-card p {
+    grid-column: 1 / -1;
+    margin-top: 12px;
+  }
+
+  .audience-grid {
+    gap: 10px;
   }
 
   .audience-grid article,
   .audience-grid a {
-    min-height: 92px;
+    min-height: 76px;
+    padding: 14px;
+    font-size: 0.95rem;
+    line-height: 1.25;
   }
 
   .faq summary {
@@ -2161,27 +2374,267 @@ a.roof-gallery-button {
   }
 
   .site-footer {
-    align-items: flex-start;
-    flex-direction: column;
-    padding-bottom: 34px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 16px;
+    padding: 22px 0 34px;
+  }
+
+  .site-footer a,
+  .site-footer span {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .breadcrumbs a {
+    padding-block: 10px;
+    margin-block: -10px;
   }
 
   .inner-page {
     padding-top: 86px;
   }
 
+  /* Главное фото страницы — над текстом, без затемнения. */
   .page-hero,
   .page-hero-content {
-    min-height: 560px;
+    min-height: 0;
+  }
+
+  .page-hero picture {
+    display: block;
+  }
+
+  .page-hero img {
+    position: relative;
+    z-index: 0;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    max-height: 44vh;
+    max-height: 44svh;
+  }
+
+  .page-hero::before {
+    display: none;
   }
 
   .page-hero-content {
-    padding: 22px;
+    position: relative;
+    z-index: 1;
+    margin-top: -56px;
+    padding: 40px 18px 20px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    background: linear-gradient(180deg, rgba(18, 16, 14, 0), var(--bg-soft) 56px);
+  }
+
+  /* Фото, заголовок и кнопка записи должны уместиться в первый экран — описание идёт после кнопок.
+     Плашка «крышу сейчас не предлагаем» остаётся над кнопками. */
+  .page-hero-content > p:not(.eyebrow):not(.roof-unavailable) {
+    order: 1;
+  }
+
+  /* Статьи блога (крошки «Главная ../../ / Статьи ../»): длинный заголовок, а под ним часто
+     короткий ответ на вопрос — его читают до кнопок. Фото чуть ниже, порядок обычный. */
+  .inner-page:has(> .breadcrumbs a[href="../../"] + span + a[href="../"]) .page-hero img {
+    max-height: 36vh;
+    max-height: 36svh;
+  }
+
+  .inner-page:has(> .breadcrumbs a[href="../../"] + span + a[href="../"]) .page-hero-content > p:not(.eyebrow) {
+    order: 0;
+  }
+
+  /* Длинные слова не должны вылезать за край. */
+  h1,
+  h2,
+  h3 {
+    overflow-wrap: anywhere;
+  }
+
+  .page-hero h1 {
+    font-size: clamp(1.9rem, 9.6vw, 2.55rem);
+  }
+
+  .content-panel > h1 {
+    font-size: clamp(2rem, 9vw, 2.75rem);
+    line-height: 1;
+  }
+
+  /* Длинные названия крыш в «Поднимемся на крышу «…»?» — только на внутренних страницах. */
+  .inner-page .final-cta h2 {
+    font-size: clamp(1.6rem, 8vw, 2.1rem);
+  }
+
+  .content-panel,
+  .side-panel {
+    padding: 22px 18px;
+  }
+
+  .content-panel > h2:not(:first-child) {
+    margin-top: 32px;
   }
 
   .facts-grid,
   .related-grid {
     grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .mini-card {
+    min-height: 0;
+    padding: 14px 16px;
+  }
+
+  .mini-card strong {
+    margin-bottom: 4px;
+  }
+
+  .page-faq,
+  .page-section,
+  .related-grid,
+  .final-cta {
+    margin-top: 52px;
+  }
+
+  .page-section > .related-grid {
+    margin-top: 0;
+  }
+}
+
+/* Телефон боком: экран 320-430px в высоту. Нижняя граница ширины — чтобы блок не включался
+   у телефона стоя в режиме «два окна» (360x340 тоже формально landscape). */
+@media (min-width: 560px) and (max-width: 980px) and (orientation: landscape) and (max-height: 500px) {
+  .hero {
+    min-height: auto;
+    padding-top: 92px;
+    padding-bottom: 52px;
+  }
+
+  .hero h1,
+  .page-hero h1 {
+    font-size: clamp(2rem, 10vh, 3rem);
+  }
+
+  .hero-lead {
+    margin-bottom: 18px;
+  }
+
+  .inner-page {
+    padding-top: 84px;
+  }
+
+  .page-hero,
+  .page-hero-content {
+    min-height: auto;
+  }
+
+  /* Боком экран низкий: фото обратно под текст с затемнением, как на планшете.
+     Сбрасываем то, что поставил блок до 640px (телефоны 568-640px шириной попадают в оба). */
+  .page-hero img {
+    position: absolute;
+    inset: 0;
+    z-index: -3;
+    height: 100%;
+    aspect-ratio: auto;
+    max-height: none;
+  }
+
+  .page-hero::before {
+    display: block;
+  }
+
+  .page-hero-content {
+    margin-top: 0;
+    padding: 22px 24px;
+    gap: 14px;
+    background: none;
+  }
+
+  .page-hero-content > p:not(.eyebrow):not(.roof-unavailable) {
+    order: 0;
+  }
+
+  /* Галерея боком: карточка по размеру кадра, кадр целиком на экране. Размер задаём высотой —
+     ширину браузер берёт из width/height ещё до загрузки. */
+  .inner-page .gallery-item {
+    flex: 0 0 auto;
+    max-width: 100%;
+  }
+
+  .inner-page .gallery-item img {
+    width: auto;
+    max-width: 100%;
+    height: calc(100vh - 110px);
+    height: calc(100svh - 110px);
+    max-height: none;
+  }
+
+  .roof-lightbox {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    height: 100svh;
+    max-height: 100vh;
+    max-height: 100svh;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .roof-lightbox-shell {
+    position: relative;
+    height: 100%;
+    max-height: none;
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .roof-lightbox-header {
+    position: absolute;
+    inset: 0 0 auto 0;
+    z-index: 2;
+    padding: 8px 12px;
+    border: 0;
+    background: linear-gradient(rgba(12, 10, 9, 0.85), rgba(12, 10, 9, 0));
+    pointer-events: none;
+  }
+
+  .roof-lightbox-header > * {
+    pointer-events: auto;
+  }
+
+  .roof-lightbox-header .eyebrow {
+    display: none;
+  }
+
+  .roof-lightbox-stage {
+    height: 100%;
+    padding: 6px 8px;
+  }
+
+  /* Снизу справа висит «Выбрать эту крышу» (44px + 10px отступ), а фото с подписью
+     центрируются по высоте — запас 110px, чтобы кнопка не ложилась на угол кадра. */
+  .roof-lightbox-stage img {
+    max-height: calc(100vh - 110px);
+    max-height: calc(100svh - 110px);
+  }
+
+  .roof-lightbox-stage figcaption {
+    margin-top: 4px;
+  }
+
+  .roof-lightbox-actions {
+    position: absolute;
+    right: 12px;
+    bottom: 10px;
+    z-index: 2;
+    padding: 0;
+  }
+
+  .roof-lightbox-actions .btn {
+    width: auto;
+    min-height: 44px;
   }
 }
 
@@ -2195,6 +2648,10 @@ a.roof-gallery-button {
     padding-inline: 12px;
     font-size: 0.84rem;
   }
+
+  .roof-card-body {
+    padding: 18px;
+  }
 }
 
 /* Уже 340px логотип, меню и обе кнопки в строку не помещаются; логотип
@@ -2202,6 +2659,35 @@ a.roof-gallery-button {
 @media (max-width: 340px) {
   .site-header .brand {
     display: none;
+  }
+}
+
+/* Сенсорные экраны. */
+@media (hover: none) {
+  /* Пока окно с фото открыто, страница под ним не прокручивается. */
+  html:has(.roof-lightbox[open]) {
+    overflow: hidden;
+  }
+
+  /* :hover «залипает» после касания — не приподнимаем карточки. */
+  .btn:hover,
+  .social-btn:hover,
+  .feature-card:hover,
+  .gallery-item:hover,
+  .step-card:hover,
+  .audience-grid article:hover,
+  .audience-grid a:hover,
+  .related-grid a:hover,
+  .roof-card:hover,
+  .roof-card:focus-within,
+  .roof-card:hover .roof-card-media img {
+    transform: none;
+  }
+
+  .roof-card:not(.is-selected):hover,
+  .roof-card:not(.is-selected):focus-within {
+    border-color: var(--line);
+    box-shadow: 0 20px 64px rgba(0, 0, 0, 0.26);
   }
 }
 

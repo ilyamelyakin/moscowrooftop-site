@@ -16,7 +16,7 @@
       html { -webkit-text-size-adjust: 100%; }
       body {
         margin: 0;
-        padding: 0 0 96px;
+        padding: 0 0 calc(96px + env(safe-area-inset-bottom));
         background:
           radial-gradient(circle at 20% 0%, rgba(255, 158, 79, 0.16), transparent 32rem),
           radial-gradient(circle at 95% 8%, rgba(147, 197, 253, 0.11), transparent 26rem),
@@ -29,7 +29,7 @@
       a { color: inherit; text-decoration: none; }
       button { font: inherit; color: inherit; }
 
-      .wrap { width: min(1160px, calc(100vw - 32px)); margin: 0 auto; }
+      .wrap { width: min(1160px, calc(100vw - 2 * max(16px, env(safe-area-inset-left), env(safe-area-inset-right)))); margin: 0 auto; }
 
       /* Шапка и подвал — только вне Telegram: в Mini App своя шапка от клиента. */
       .cat-header {
@@ -81,7 +81,7 @@
         position: absolute; top: 12px; left: 12px; z-index: 2;
         display: inline-flex; align-items: center; gap: 7px;
         padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px;
-        background: rgba(11, 10, 9, 0.62); backdrop-filter: blur(8px);
+        background: rgba(11, 10, 9, 0.62); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
         font-size: 0.78rem; font-weight: 700; letter-spacing: 0.01em;
       }
       .cat-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
@@ -91,7 +91,7 @@
       .cat-counter {
         position: absolute; right: 12px; bottom: 12px; z-index: 2;
         padding: 6px 11px; border: 1px solid var(--line); border-radius: 999px;
-        background: rgba(11, 10, 9, 0.62); backdrop-filter: blur(8px);
+        background: rgba(11, 10, 9, 0.62); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
         font-size: 0.75rem; font-variant-numeric: tabular-nums; color: var(--muted);
       }
       .cat-dots {
@@ -108,7 +108,7 @@
         position: absolute; top: 50%; z-index: 2; display: none;
         width: 40px; height: 40px; margin-top: -20px; padding: 0;
         border: 1px solid var(--line); border-radius: 50%;
-        background: rgba(11, 10, 9, 0.66); backdrop-filter: blur(8px);
+        background: rgba(11, 10, 9, 0.66); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
         font-size: 1.3rem; line-height: 1; cursor: pointer; opacity: 0; transition: opacity 160ms ease;
       }
       .cat-arrow-prev { left: 10px; }
@@ -178,7 +178,7 @@
       }
       .cat-sticky a {
         display: flex; min-height: 54px; align-items: center; justify-content: center; gap: 8px;
-        width: min(1160px, calc(100vw - 32px)); margin: 0 auto; border-radius: 999px;
+        width: min(1160px, calc(100vw - 2 * max(16px, env(safe-area-inset-left), env(safe-area-inset-right)))); margin: 0 auto; border-radius: 999px;
         background: linear-gradient(135deg, var(--gold), var(--amber) 56%, var(--rose));
         color: #18100a; font-weight: 820; box-shadow: 0 14px 40px rgba(0, 0, 0, 0.34);
       }
@@ -222,7 +222,7 @@
       /* ===== Страница одной крыши: галерея во всю ширину, без обрезки ===== */
       .roof-top { padding: 18px 0 4px; }
       .roof-back {
-        display: inline-flex; align-items: center; gap: 8px; min-height: 40px;
+        display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
         color: var(--muted); font-size: 0.92rem;
       }
       .roof-title-row {
@@ -238,13 +238,31 @@
       .roof-meta .cat-tags { margin: 0; }
       .roof-shots { display: grid; gap: 10px; margin: 18px 0 0; }
       .roof-shot {
-        overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: #15110e;
+        margin: 0; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: #15110e;
       }
       /* Кадр показываем целиком: это галерея, а не витрина — обрезать нечестно. */
       .roof-shot img { width: 100%; height: auto; object-fit: contain; }
       .roof-cta { margin: 22px 0 0; }
       .roof-cta .cat-book { width: 100%; }
       .roof-note { margin: 16px 0 0; color: var(--soft); font-size: 0.86rem; line-height: 1.6; }
+      /* Планшет и шире: кадр целиком над липкой кнопкой «Записаться в боте» (iPad, ноутбук 1366x768).
+         Рамку прячем: если кадр упёрся в высоту, по бокам остались бы тёмные полосы. */
+      @media (min-width: 641px) {
+        .roof-shot { border-color: transparent; background: transparent; }
+        .roof-shot img { max-height: calc(100vh - 110px); max-height: calc(100svh - 110px - env(safe-area-inset-bottom)); }
+      }
       @media (min-width: 981px) {
         .roof-shots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+      /* Телефон боком: кадры рядом, каждый целиком над липкой кнопкой. Размер задаём высотой —
+         ширину браузер берёт из width/height кадра ещё до загрузки, и страница не прыгает. */
+      @media (min-width: 560px) and (max-width: 980px) and (orientation: landscape) and (max-height: 600px) {
+        .roof-shots { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+        .roof-shot { max-width: 100%; }
+        .roof-shot img {
+          width: auto; max-width: 100%;
+          height: calc(100vh - 112px);
+          height: calc(100svh - 112px - env(safe-area-inset-bottom));
+        }
+        .is-miniapp.has-main-button .roof-shot img { height: calc(100vh - 24px); height: calc(100svh - 24px); max-height: none; }
       }
