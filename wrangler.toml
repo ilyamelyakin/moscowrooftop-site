@@ -10,15 +10,11 @@ run_worker_first = true
 html_handling = "none"
 not_found_handling = "404-page"
 
-[[routes]]
-pattern = "moscowrooftop.ru"
-custom_domain = true
-
-[[routes]]
-pattern = "www.moscowrooftop.ru"
-custom_domain = true
-
-# Служебное имя для прокси на сервере Timeweb (см. ORIGIN_HOST в src/index.js).
+# moscowrooftop.ru и www смотрят в DNS на nginx на сервере Timeweb, а не на
+# воркер: мобильные операторы в России режут ответы с адресов Cloudflare.
+# Возвращать их сюда нельзя — выкладка упрётся в существующие A-записи.
+# Воркер доступен только под служебным именем, у которого nginx и забирает
+# страницы (см. ORIGIN_HOST в src/index.js).
 [[routes]]
 pattern = "origin.moscowrooftop.ru"
 custom_domain = true
