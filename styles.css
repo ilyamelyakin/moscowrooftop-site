@@ -430,7 +430,8 @@ h1 {
   box-shadow: 0 0 28px rgba(246, 197, 111, 0.85);
 }
 
-/* Дополнительные разделы не помещаются в шапку — они только в мобильном меню. */
+/* Дополнительные разделы: до 980px — в выпадающем меню, от 1200px — прямо в шапке
+   (блок @media (min-width: 1200px) ниже). На 981–1199px в строку не помещаются и скрыты. */
 .nav-extra {
   display: none;
 }
@@ -1920,6 +1921,200 @@ a.roof-gallery-button {
     font-size: clamp(1.35rem, 2.2vw, 1.75rem);
     line-height: 1.12;
     overflow-wrap: anywhere;
+  }
+}
+
+/* Компьютеры (от 981px). Телефоны и планшеты эти правила не затрагивают. */
+@media (min-width: 981px) {
+  /* Главная: заголовок, кнопки «Оставить заявку» / «Написать в Telegram» и строка с ценой
+     должны помещаться в первый экран ноутбука (1280x720, 1366x657, 1536x730). Героя делаем
+     ниже экрана на 110px — строка «от 2000 ₽ · 1 час · +500 ₽» заходит в первый экран.
+     Заголовок не крупнее 5.2rem: при 5.6rem на 1600-1920px он ломался на три строки. */
+  .hero {
+    min-height: calc(100vh - 110px);
+    min-height: calc(100svh - 110px);
+    padding-top: 108px;
+    padding-bottom: 56px;
+  }
+
+  .hero h1 {
+    max-width: none;
+    font-size: clamp(3rem, 5.4vw, 5.2rem);
+    text-wrap: balance;
+  }
+
+  .hero-content {
+    width: min(980px, 100%);
+    padding-bottom: 24px;
+  }
+
+  /* Внутренние страницы: шапка страницы по высоте экрана, кнопки записи — без прокрутки. */
+  .page-hero {
+    min-height: 0;
+  }
+
+  .page-hero h1 {
+    font-size: clamp(2.6rem, 4.4vw, 4.4rem);
+    line-height: 0.98;
+  }
+
+  .page-hero-content {
+    min-height: clamp(460px, calc(100vh - 190px), 620px);
+    min-height: clamp(460px, calc(100svh - 190px), 620px);
+    padding-block: clamp(28px, 4vw, 56px);
+  }
+
+  /* Страницы крыш: вертикальное фото справа целиком по высоте, текст слева на тёмном фоне.
+     Затемнение сплошное почти до края фото (57.5%) и быстро сходит на нет, поэтому шва
+     на стыке не видно, а солнце в углу кадра не превращается в серое пятно. */
+  [data-roof-page] .page-hero img {
+    left: auto;
+    width: 42%;
+  }
+
+  [data-roof-page] .page-hero::before {
+    background:
+      linear-gradient(90deg, rgb(8, 7, 6) 57.5%, rgba(8, 7, 6, 0.45) 59.5%, rgba(8, 7, 6, 0.12) 62%, rgba(8, 7, 6, 0) 65%),
+      linear-gradient(180deg, rgba(8, 7, 6, 0) 60%, rgba(8, 7, 6, 0.6));
+  }
+
+  /* Текст кончается на 57%, фото начинается с 58%: три кнопки героя от 1200px — в одну строку. */
+  [data-roof-page] .page-hero-content {
+    padding-right: 43%;
+  }
+
+  [data-roof-page] .page-hero h1 {
+    font-size: clamp(2.4rem, 3.6vw, 3.6rem);
+  }
+
+  [data-roof-page] .page-hero .hero-actions .btn {
+    padding-inline: 16px;
+  }
+
+  /* Галереи страниц крыш и фотосессии: кадры 3:4 целиком, по четыре в ряд,
+     неполный последний ряд — по центру. */
+  .inner-page .gallery-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .inner-page .gallery-item {
+    flex: 0 1 calc(25% - 11px);
+  }
+
+  .inner-page .gallery-item img {
+    height: auto;
+    aspect-ratio: 3 / 4;
+  }
+
+  /* Единственный горизонтальный кадр в галереях крыш: героиня справа, не режем её. */
+  .inner-page .gallery-item img[src*="fili-rooftop-02"] {
+    object-position: 100% 50%;
+  }
+
+  /* «Москва с высоты» на главной: шесть кадров закрывают сетку 4x3 без пустых ячеек. */
+  .gallery-section .gallery-grid > :nth-child(3) {
+    grid-row: span 2;
+  }
+
+  .gallery-section .gallery-grid > :nth-child(6) {
+    grid-column: span 2;
+  }
+
+  /* Шестой кадр — вертикальный закат, в широкой ячейке по центру от него оставались одни
+     крыши. Сдвигаем кадр выше: солнце и силуэт с Москва-Сити попадают в ячейку. */
+  .gallery-section .gallery-grid > :nth-child(6) img {
+    object-position: center 30%;
+  }
+
+  /* «Для кого»: шесть карточек — 3x2 вместо 5+1. */
+  .audience-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Блоки ссылок: по четыре в ряд, неполный последний ряд — по центру. */
+  .related-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .related-grid > * {
+    flex: 0 1 calc(25% - 9px);
+  }
+
+  /* Финальный блок: кнопки не сжимаются из-за длинного заголовка и стоят ровной колонкой
+     одной ширины. В строку по 450px «Оставить заявку» + «Открыть Telegram-бота» не влезали,
+     ломались лесенкой, а заголовок «Поднимемся на крышу «…»?» сжимался до четырёх строк. */
+  .final-actions {
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: stretch;
+    width: auto;
+  }
+
+  .side-panel .btn {
+    padding-inline: 14px;
+    font-size: 0.92rem;
+  }
+
+  /* Текст статей и страниц: крупнее и с воздухом — строка в колонке около 700px. */
+  .content-panel p:not(.eyebrow),
+  .content-panel li {
+    font-size: 1.125rem;
+    line-height: 1.7;
+  }
+
+  /* Подвал в две строки: ссылки подряд слева, подпись страницы — справа. */
+  .site-footer {
+    justify-content: flex-start;
+    column-gap: 28px;
+  }
+
+  .site-footer span {
+    margin-left: auto;
+  }
+}
+
+/* Узкие ноутбуки: боковая колонка 260-300px — «Открыть Telegram» с иконкой в одну строку. */
+@media (min-width: 981px) and (max-width: 1179px) {
+  .side-panel {
+    padding-inline: 20px;
+  }
+
+  .side-panel .btn {
+    gap: 8px;
+    padding-inline: 12px;
+  }
+}
+
+/* От 1200px в шапку помещаются все разделы, включая «Крыши Москвы», «Закаты», «Статьи», FAQ. */
+@media (min-width: 1200px) {
+  .nav-extra {
+    display: inline;
+  }
+
+  .header-nav {
+    gap: clamp(12px, 1.4vw, 18px);
+  }
+
+  .header-nav a {
+    white-space: nowrap;
+  }
+}
+
+/* Невысокие экраны ноутбуков: длинные заголовки статей не выталкивают кнопки записи
+   за первый экран. Страницы крыш сохраняют свой, более конкретный размер заголовка. */
+@media (min-width: 981px) and (max-height: 820px) {
+  .page-hero-content {
+    padding-block: 32px;
+    gap: 18px;
+  }
+
+  .page-hero h1 {
+    max-width: 1000px;
+    font-size: clamp(2.4rem, 3.8vw, 3.8rem);
   }
 }
 
