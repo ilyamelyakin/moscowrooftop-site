@@ -128,6 +128,113 @@ const ROOF_GALLERIES = {
   },
 };
 
+const LIGHTBOX_SIZES = '(max-width: 640px) 100vw, 760px';
+const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
+
+function prefersReducedMotion() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+// Мгновенно, несмотря на html { scroll-behavior: smooth }.
+function jumpScroll(scroll) {
+  const root = document.documentElement;
+  root.style.scrollBehavior = 'auto';
+  scroll();
+  root.style.scrollBehavior = '';
+}
+
+// Дальше полутора экранов — прыжок почти к цели, остаток плавно.
+function glideTo(target) {
+  const root = document.documentElement;
+  const margin = parseFloat(window.getComputedStyle(target).scrollMarginTop) || 0;
+  const maxY = Math.max(0, root.scrollHeight - window.innerHeight);
+  const targetY = Math.min(maxY, Math.max(0, target.getBoundingClientRect().top + window.scrollY - margin));
+  const distance = targetY - window.scrollY;
+
+  if (prefersReducedMotion()) {
+    jumpScroll(() => window.scrollTo(0, targetY));
+    return;
+  }
+
+  if (Math.abs(distance) > window.innerHeight * 1.5) {
+    jumpScroll(() => window.scrollTo(0, targetY - Math.sign(distance) * window.innerHeight * 0.6));
+  }
+
+  window.scrollTo({ top: targetY, behavior: 'smooth' });
+}
+
+// callback — когда прокрутка встала (6 кадров без движения), но не позже 2.5 с.
+function whenScrollSettles(callback) {
+  const startedAt = performance.now();
+  let lastY = window.scrollY;
+  let stillFrames = 0;
+  let frame = 0;
+
+  const tick = (now) => {
+    frame += 1;
+    if (window.scrollY === lastY) {
+      stillFrames += 1;
+    } else {
+      stillFrames = 0;
+      lastY = window.scrollY;
+    }
+
+    if ((frame > 3 && stillFrames >= 6) || now - startedAt > 2500) {
+      callback();
+      return;
+    }
+
+    window.requestAnimationFrame(tick);
+  };
+
+  window.requestAnimationFrame(tick);
+}
+
+// Якоря — через glideTo. Фокус на раздел, не на поле: иначе ложный lead_form_start.
+function bindAnchorLinks() {
+  document.addEventListener('click', (event) => {
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
+    const link = event.target.closest('a[href^="#"]');
+    const hash = link?.getAttribute('href') || '';
+    if (hash.length < 2) {
+      return;
+    }
+
+    let target = null;
+    try {
+      target = document.getElementById(decodeURIComponent(hash.slice(1)));
+    } catch (error) {
+      return;
+    }
+    if (!target) {
+      return;
+    }
+
+    event.preventDefault();
+    if (window.location.hash === hash) {
+      window.history.replaceState(null, '', hash);
+    } else {
+      window.history.pushState(null, '', hash);
+    }
+
+    glideTo(target);
+    if (!target.hasAttribute('tabindex')) {
+      target.setAttribute('tabindex', '-1');
+    }
+    target.focus({ preventScroll: true });
+  });
+}
+
 // Так же нормализует имена воркер (/api/roofs) — написания должны совпадать.
 function normalizeRoofName(value) {
   return String(value || '')
@@ -501,6 +608,11 @@ function bindRoofCatalog() {
   let activeRoofId = '';
   let activeImageIndex = 0;
   let hasTrackedCatalogView = false;
+  // Ответы для быстро пролистанных кадров отбрасываем по номеру запроса.
+  let lightboxToken = 0;
+  const preloadedImages = new Set();
+  // Незавершённые подгрузки: base → { roofId, index, img }.
+  const inflightPreloads = new Map();
 
   const getCard = (roofId) => cards.find((card) => card.dataset.roofId === roofId);
 
@@ -543,18 +655,69 @@ function bindRoofCatalog() {
     }
 
     if (scroll && booking) {
-      const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        ? 'auto'
-        : 'smooth';
-      // На телефоне докручиваем до самой формы, чтобы выбранная крыша была видна в поле.
-      const target = window.matchMedia('(max-width: 980px)').matches
-        ? booking.querySelector('.lead-form-shell') || booking
+      // Докручиваем до самой формы, если иначе поле с выбранной крышей окажется под краем
+      // экрана: всегда на телефоне, на ноутбуках с невысоким экраном (1366x657 и ниже).
+      const shell = booking.querySelector('.lead-form-shell') || booking;
+      const bookingMargin = parseFloat(window.getComputedStyle(booking).scrollMarginTop) || 0;
+      const fieldBottom = roofInput.getBoundingClientRect().bottom - booking.getBoundingClientRect().top + bookingMargin;
+      const target = window.matchMedia('(max-width: 980px)').matches || fieldBottom > window.innerHeight - 16
+        ? shell
         : booking;
-      target.scrollIntoView({ behavior, block: 'start' });
+      glideTo(target);
+      // Доехали — поле «Крыша» один раз вспыхивает.
+      whenScrollSettles(() => {
+        roofInput.classList.remove('is-confirmed');
+        void roofInput.offsetWidth;
+        roofInput.classList.add('is-confirmed');
+      });
     }
   };
 
-  const updateLightbox = () => {
+  ['focus', 'change'].forEach((type) => {
+    roofInput.addEventListener(type, () => roofInput.classList.remove('is-confirmed'));
+  });
+
+  const getWebpSrcset = (image) => {
+    const [width640, width1280] = image.w || [480, 960];
+    return `${image.base}-640.webp ${width640}w, ${image.base}-1280.webp ${width1280}w`;
+  };
+
+  // Следующий кадр — заранее; при экономии трафика не грузим.
+  const preloadLightboxImage = (index) => {
+    const image = ROOF_GALLERIES[activeRoofId]?.images[index];
+
+    if (!image || preloadedImages.has(image.base) || navigator.connection?.saveData) {
+      return;
+    }
+
+    preloadedImages.add(image.base);
+    const preload = new Image();
+    preload.decoding = 'async';
+    if ('fetchPriority' in preload) {
+      preload.fetchPriority = 'low';
+    }
+    preload.sizes = LIGHTBOX_SIZES;
+    preload.srcset = getWebpSrcset(image);
+    inflightPreloads.set(image.base, { roofId: activeRoofId, index, img: preload });
+    const settle = () => inflightPreloads.delete(image.base);
+    preload.addEventListener('load', settle, { once: true });
+    preload.addEventListener('error', settle, { once: true });
+  };
+
+  // Пролистали кадр, не дождавшись, — его подгрузка не должна отнимать скорость у нужного.
+  const cancelStalePreloads = () => {
+    inflightPreloads.forEach((entry, base) => {
+      if (entry.roofId !== activeRoofId || entry.index !== activeImageIndex) {
+        entry.img.removeAttribute('srcset');
+        entry.img.removeAttribute('src');
+        inflightPreloads.delete(base);
+        preloadedImages.delete(base);
+      }
+    });
+  };
+
+  // direction: 1 — вперёд, -1 — назад, 0 — окно только открыли.
+  const updateLightbox = ({ direction = 0, viaKeyboard = false } = {}) => {
     const gallery = ROOF_GALLERIES[activeRoofId];
     const image = gallery?.images[activeImageIndex];
 
@@ -563,30 +726,78 @@ function bindRoofCatalog() {
     }
 
     const [width640, width1280] = image.w || [480, 960];
+    cancelStalePreloads();
+    const token = ++lightboxToken;
+    const counterText = `${activeImageIndex + 1} из ${gallery.images.length}`;
 
     lightboxTitle.textContent = gallery.name;
-    lightboxSource.srcset = `${image.base}-640.webp ${width640}w, ${image.base}-1280.webp ${width1280}w`;
-    lightboxSource.sizes = '(max-width: 640px) 100vw, 760px';
+    if (direction === 0) {
+      // Пока кадр не готов, не показываем фото прошлой крыши.
+      lightboxImage.classList.add('is-pending');
+      lightboxCounter.textContent = counterText;
+    }
+    lightboxSource.srcset = getWebpSrcset(image);
+    lightboxSource.sizes = LIGHTBOX_SIZES;
     lightboxImage.src = `${image.base}-1280.jpg`;
     lightboxImage.srcset = `${image.base}-640.jpg ${width640}w, ${image.base}-1280.jpg ${width1280}w`;
-    lightboxImage.sizes = '(max-width: 640px) 100vw, 760px';
+    lightboxImage.sizes = LIGHTBOX_SIZES;
     lightboxImage.alt = image.alt;
-    lightboxCounter.textContent = `${activeImageIndex + 1} из ${gallery.images.length}`;
 
     const hasMultipleImages = gallery.images.length > 1;
     previousButton.hidden = !hasMultipleImages;
     nextButton.hidden = !hasMultipleImages;
+
+    // Пока грузится новый кадр, на экране прежний (через 120 мс гаснет); номер — вместе с фото.
+    const decoded = typeof lightboxImage.decode === 'function'
+      ? lightboxImage.decode().catch(() => {})
+      : Promise.resolve();
+    const slowTimer = window.setTimeout(() => {
+      if (token === lightboxToken) {
+        lightboxImage.classList.add('is-loading');
+      }
+    }, 120);
+
+    decoded.then(() => {
+      window.clearTimeout(slowTimer);
+      if (token !== lightboxToken) {
+        return;
+      }
+
+      lightboxImage.classList.remove('is-loading', 'is-pending');
+      lightboxCounter.textContent = counterText;
+
+      if (direction !== 0 && typeof lightboxImage.animate === 'function') {
+        lightboxImage.getAnimations().forEach((animation) => animation.cancel());
+        const slide = !prefersReducedMotion() && !viaKeyboard;
+        lightboxImage.animate(
+          slide
+            ? [
+                { opacity: 0.4, transform: `translateX(${direction * 24}px)` },
+                { opacity: 1, transform: 'none' },
+              ]
+            : [{ opacity: 0.4 }, { opacity: 1 }],
+          { duration: slide ? 240 : 120, easing: EASE_OUT }
+        );
+      }
+
+      const count = gallery.images.length;
+      preloadLightboxImage((activeImageIndex + 1) % count);
+      if (direction < 0) {
+        preloadLightboxImage((activeImageIndex - 1 + count) % count);
+      }
+    });
   };
 
-  const changeLightboxImage = (direction) => {
+  const changeLightboxImage = (direction, { viaKeyboard = false } = {}) => {
     const gallery = ROOF_GALLERIES[activeRoofId];
 
-    if (!gallery?.images.length) {
+    // Одно фото — листать некуда, кадр не должен «дёргаться».
+    if (!gallery || gallery.images.length < 2) {
       return;
     }
 
     activeImageIndex = (activeImageIndex + direction + gallery.images.length) % gallery.images.length;
-    updateLightbox();
+    updateLightbox({ direction, viaKeyboard });
   };
 
   const openLightbox = (roofId) => {
@@ -680,6 +891,10 @@ function bindRoofCatalog() {
     const dx = touch.clientX - touchStartX;
     const dy = touch.clientY - touchStartY;
     touchStartX = null;
+    // Фото увеличено двумя пальцами — не листаем.
+    if ((window.visualViewport?.scale || 1) > 1.01) {
+      return;
+    }
     if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) {
       changeLightboxImage(dx < 0 ? 1 : -1);
     }
@@ -691,10 +906,10 @@ function bindRoofCatalog() {
   });
   dialog?.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowLeft') {
-      changeLightboxImage(-1);
+      changeLightboxImage(-1, { viaKeyboard: true });
     }
     if (event.key === 'ArrowRight') {
-      changeLightboxImage(1);
+      changeLightboxImage(1, { viaKeyboard: true });
     }
   });
 
@@ -1145,7 +1360,9 @@ function bindLeadForm() {
       trackEvent('lead_form_success', analyticsParams);
       form.hidden = true;
       successPanel.hidden = false;
-      successPanel.focus?.();
+      // Форма исчезла и страница укоротилась — иначе на телефоне панель оказывалась выше экрана.
+      jumpScroll(() => successPanel.scrollIntoView({ block: 'center' }));
+      successPanel.focus({ preventScroll: true });
     } catch (error) {
       const message = error.name === 'AbortError'
         ? 'Сервер отвечает слишком долго. Попробуйте ещё раз.'
@@ -1197,10 +1414,7 @@ function bindFAQ() {
       if (shift) {
         // Мгновенно: с html { scroll-behavior: smooth } вопрос сначала отскакивал, а потом
         // плавно возвращался. scrollBy({ behavior: 'instant' }) старый Safari не принимает.
-        const root = document.documentElement;
-        root.style.scrollBehavior = 'auto';
-        window.scrollBy(0, shift);
-        root.style.scrollBehavior = '';
+        jumpScroll(() => window.scrollBy(0, shift));
       }
     });
   });
@@ -1230,10 +1444,13 @@ function bindFAQ() {
 }
 
 function initSite() {
+  // Без touchstart-обработчика iOS Safari не показывает :active.
+  document.addEventListener('touchstart', () => {}, { passive: true });
   saveUTMParams();
   initYandexMetrika();
   initGoogleAnalytics();
   updateTelegramLinks();
+  bindAnchorLinks();
   bindMobileNav();
   bindTrackedLinks();
   bindGalleryView();

@@ -14,10 +14,72 @@
   --shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
   --radius: 8px;
   --container: min(1160px, calc(100vw - 32px));
+  /* Движение: --ease-drawer — для окон, выезжающих снизу. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --dur-press: 100ms;
+  --dur-ui: 200ms;
+  color-scheme: dark;
+  accent-color: var(--gold);
 }
 
 * {
   box-sizing: border-box;
+}
+
+::selection {
+  background: rgba(246, 197, 111, 0.32);
+  color: var(--text);
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+/* Фокус на разделе после ссылки-якоря (script.js) — без рамки. */
+[tabindex="-1"]:focus {
+  outline: none;
+}
+
+/* Отклик под пальцем — свой (:active), без голубой вспышки Android. */
+.btn,
+.header-cta,
+.header-tg,
+.nav-toggle,
+.roof-card-media,
+.roof-gallery-button,
+.roof-lightbox-close,
+.roof-lightbox-control,
+.stepper-button,
+.social-btn,
+.contact-methods label,
+.faq summary,
+.related-grid a,
+.audience-grid a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a,
+button,
+summary,
+label {
+  touch-action: manipulation;
+}
+
+button,
+.btn {
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 html {
@@ -36,17 +98,6 @@ body {
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   letter-spacing: 0;
-}
-
-body::before {
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  pointer-events: none;
-  content: "";
-  background-image: linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px);
-  background-size: 100% 72px;
-  opacity: 0.28;
 }
 
 img,
@@ -138,9 +189,11 @@ button {
     opacity 180ms ease;
 }
 
-.header-nav a:hover,
-.site-footer a:hover {
-  color: var(--gold);
+@media (hover: hover) {
+  .header-nav a:hover,
+  .site-footer a:hover {
+    color: var(--gold);
+  }
 }
 
 .header-cta {
@@ -155,6 +208,7 @@ button {
   font-size: 0.9rem;
   font-weight: 750;
   white-space: nowrap;
+  transition: transform var(--dur-ui) var(--ease-out);
 }
 
 .header-actions {
@@ -172,12 +226,19 @@ button {
   border-radius: 50%;
   background: #1677b8;
   color: #fff;
-  transition: background 180ms ease;
+  transition:
+    background 180ms ease,
+    transform var(--dur-ui) var(--ease-out);
 }
 
-.header-tg:hover,
 .header-tg:focus-visible {
   background: #1570b0;
+}
+
+@media (hover: hover) {
+  .header-tg:hover {
+    background: #1570b0;
+  }
 }
 
 .header-tg svg {
@@ -284,29 +345,51 @@ h1 {
   font-size: 0.98rem;
   font-weight: 820;
   transition:
-    transform 180ms ease,
+    transform 180ms var(--ease-out),
     box-shadow 180ms ease,
     border-color 180ms ease,
     background 180ms ease;
 }
 
-.btn:hover,
-.social-btn:hover,
-.feature-card:hover,
-.gallery-item:hover,
-.step-card:hover,
-.audience-grid article:hover,
-.audience-grid a:hover {
-  transform: translateY(-3px);
+/* :hover — только с мышью: на телефоне он «залипает» после касания. */
+@media (hover: hover) {
+  .btn:hover,
+  .social-btn:hover,
+  .feature-card:hover,
+  .audience-grid a:hover {
+    transform: translateY(-3px);
+  }
+}
+
+.btn:active,
+.header-cta:active,
+.header-tg:active,
+.roof-gallery-button:active,
+.social-btn:active {
+  transform: scale(0.97);
+  transition-duration: var(--dur-press);
+}
+
+.stepper-button:active,
+.nav-toggle:active,
+.roof-lightbox-close:active,
+.roof-lightbox-control:active {
+  transform: scale(0.92);
+  transition-duration: var(--dur-press);
+}
+
+.btn:focus-visible,
+.social-btn:focus-visible,
+.header-cta:focus-visible,
+.mini-card:focus-visible,
+.audience-grid a:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
 }
 
 .btn-primary {
   background: linear-gradient(135deg, var(--gold), var(--amber) 56%, var(--rose));
   color: #18100a;
-}
-
-.btn-primary:hover {
-  box-shadow: 0 18px 52px rgba(255, 158, 79, 0.32);
 }
 
 .btn-secondary {
@@ -317,20 +400,26 @@ h1 {
   backdrop-filter: blur(16px);
 }
 
-.btn-secondary:hover {
-  border-color: rgba(246, 197, 111, 0.55);
-  background: rgba(255, 255, 255, 0.13);
-}
-
 /* Telegram — вторая главная кнопка рядом с заявкой: тот же вес, свой цвет. */
 .btn-telegram {
   background: #1677b8;
   color: #fff;
 }
 
-.btn-telegram:hover {
-  background: #1570b0;
-  box-shadow: 0 18px 52px rgba(22, 119, 184, 0.34);
+@media (hover: hover) {
+  .btn-primary:hover {
+    box-shadow: 0 18px 52px rgba(255, 158, 79, 0.32);
+  }
+
+  .btn-secondary:hover {
+    border-color: rgba(246, 197, 111, 0.55);
+    background: rgba(255, 255, 255, 0.13);
+  }
+
+  .btn-telegram:hover {
+    background: #1570b0;
+    box-shadow: 0 18px 52px rgba(22, 119, 184, 0.34);
+  }
 }
 
 .btn-icon {
@@ -451,6 +540,7 @@ h1 {
   color: var(--text);
   cursor: pointer;
   place-items: center;
+  transition: transform var(--dur-ui) var(--ease-out);
 }
 
 .nav-toggle span {
@@ -472,7 +562,7 @@ h1 {
   border-radius: 2px;
   background: currentColor;
   content: "";
-  transition: transform 180ms ease;
+  transition: transform var(--dur-ui) var(--ease-out);
 }
 
 .nav-toggle span::before {
@@ -571,13 +661,19 @@ h1 {
   display: block;
 }
 
-.feature-card:hover,
-.step-card:hover,
-.audience-grid article:hover,
-.audience-grid a:hover,
-.faq details[open] {
+.faq details[open],
+.audience-grid a:active {
   border-color: rgba(246, 197, 111, 0.36);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+}
+
+@media (hover: hover) {
+  .feature-card:hover,
+  .step-card:hover,
+  .audience-grid a:hover {
+    border-color: rgba(246, 197, 111, 0.36);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+  }
 }
 
 .feature-card img {
@@ -632,8 +728,10 @@ h1 {
     border-color 180ms ease;
 }
 
-.gallery-item:hover {
-  border-color: rgba(246, 197, 111, 0.35);
+@media (hover: hover) {
+  .gallery-item:hover {
+    border-color: rgba(246, 197, 111, 0.35);
+  }
 }
 
 #catalog {
@@ -665,11 +763,17 @@ h1 {
   display: none;
 }
 
-.roof-card:hover,
-.roof-card:focus-within {
+.roof-card:has(:focus-visible) {
   border-color: rgba(246, 197, 111, 0.38);
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
-  transform: translateY(-3px);
+}
+
+@media (hover: hover) {
+  .roof-card:hover {
+    border-color: rgba(246, 197, 111, 0.38);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+    transform: translateY(-3px);
+  }
 }
 
 .roof-card.is-selected {
@@ -705,12 +809,24 @@ h1 {
 }
 
 .roof-card-media img {
-  transition: transform 320ms ease;
+  transition:
+    transform 320ms ease,
+    filter 160ms ease;
 }
 
-.roof-card:hover .roof-card-media img,
 .roof-card-media:focus-visible img {
   transform: scale(1.035);
+}
+
+@media (hover: hover) {
+  .roof-card:hover .roof-card-media img {
+    transform: scale(1.035);
+  }
+}
+
+/* Карточку целиком не уменьшаем: дёргалась бы при каждой прокрутке. */
+.roof-card-media:active img {
+  filter: brightness(0.88);
 }
 
 .roof-card-media:focus-visible,
@@ -817,7 +933,8 @@ h1 {
   cursor: zoom-in;
   transition:
     border-color 160ms ease,
-    background 160ms ease;
+    background 160ms ease,
+    transform var(--dur-ui) var(--ease-out);
 }
 
 a.roof-gallery-button {
@@ -826,9 +943,11 @@ a.roof-gallery-button {
   cursor: pointer;
 }
 
-.roof-gallery-button:hover {
-  border-color: rgba(246, 197, 111, 0.55);
-  background: rgba(246, 197, 111, 0.1);
+@media (hover: hover) {
+  .roof-gallery-button:hover {
+    border-color: rgba(246, 197, 111, 0.55);
+    background: rgba(246, 197, 111, 0.1);
+  }
 }
 
 .roof-catalog-note {
@@ -895,12 +1014,61 @@ a.roof-gallery-button {
   background: #0c0a08;
   color: var(--text);
   box-shadow: 0 30px 120px rgba(0, 0, 0, 0.72);
+  opacity: 0;
+  transform: scale(0.96);
+  transition:
+    opacity 150ms var(--ease-out),
+    transform 150ms var(--ease-out);
+}
+
+.roof-lightbox[open] {
+  opacity: 1;
+  transform: none;
+  transition-duration: 260ms;
+}
+
+@starting-style {
+  .roof-lightbox[open] {
+    opacity: 0;
+    transform: scale(0.96);
+  }
 }
 
 .roof-lightbox::backdrop {
   background: rgba(4, 3, 2, 0.84);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 150ms var(--ease-out);
+}
+
+.roof-lightbox[open]::backdrop {
+  opacity: 1;
+  transition-duration: 260ms;
+}
+
+@starting-style {
+  .roof-lightbox[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+/* Плавное закрытие — только с overlay (Chrome), иначе в Safari мелькает «призрак» окна. */
+@supports (overlay: auto) {
+  .roof-lightbox {
+    transition:
+      opacity 150ms var(--ease-out),
+      transform 150ms var(--ease-out),
+      overlay 150ms allow-discrete,
+      display 150ms allow-discrete;
+  }
+
+  .roof-lightbox::backdrop {
+    transition:
+      opacity 150ms var(--ease-out),
+      overlay 150ms allow-discrete,
+      display 150ms allow-discrete;
+  }
 }
 
 .roof-lightbox-shell {
@@ -940,7 +1108,8 @@ a.roof-gallery-button {
   cursor: pointer;
   transition:
     border-color 160ms ease,
-    background 160ms ease;
+    background 160ms ease,
+    transform var(--dur-ui) var(--ease-out);
 }
 
 .roof-lightbox-close {
@@ -956,10 +1125,12 @@ a.roof-gallery-button {
   font-size: 1.25rem;
 }
 
-.roof-lightbox-close:hover,
-.roof-lightbox-control:hover {
-  border-color: rgba(246, 197, 111, 0.65);
-  background: rgba(246, 197, 111, 0.12);
+@media (hover: hover) {
+  .roof-lightbox-close:hover,
+  .roof-lightbox-control:hover {
+    border-color: rgba(246, 197, 111, 0.65);
+    background: rgba(246, 197, 111, 0.12);
+  }
 }
 
 .roof-lightbox-control[hidden] {
@@ -1007,6 +1178,16 @@ a.roof-gallery-button {
   max-height: calc(100svh - 250px);
   border-radius: 6px;
   object-fit: contain;
+  transition: opacity 150ms var(--ease-out);
+}
+
+/* Следующий кадр грузится / окно только открыли (script.js, updateLightbox). */
+.roof-lightbox-stage img.is-loading {
+  opacity: 0.55;
+}
+
+.roof-lightbox-stage img.is-pending {
+  opacity: 0;
 }
 
 .roof-lightbox-stage figcaption {
@@ -1093,6 +1274,7 @@ a.roof-gallery-button {
   min-width: 0;
   max-width: 920px;
   margin-top: 30px;
+  scroll-margin-top: 92px;
   padding: clamp(24px, 4vw, 32px);
   border: 1px solid rgba(255, 248, 236, 0.14);
   border-radius: 18px;
@@ -1223,6 +1405,17 @@ a.roof-gallery-button {
   display: block;
 }
 
+.field-error:not(:empty),
+.form-status:not(:empty) {
+  animation: mr-fade-down 180ms var(--ease-out);
+}
+
+/* Крышу выбрали в каталоге: поле один раз вспыхивает (script.js, applySelection). */
+.form-field select.is-confirmed {
+  border-color: var(--gold);
+  animation: mr-confirm 900ms var(--ease-out);
+}
+
 .people-stepper {
   display: grid;
   width: fit-content;
@@ -1263,15 +1456,26 @@ a.roof-gallery-button {
   line-height: 1;
   transition:
     color 160ms ease,
-    background 160ms ease;
+    background 160ms ease,
+    border-color 160ms ease,
+    outline-color 160ms ease,
+    transform var(--dur-ui) var(--ease-out);
 }
 
-.stepper-button:hover,
 .stepper-button:focus-visible {
   border-color: rgba(246, 197, 111, 0.7);
   outline: 3px solid rgba(246, 197, 111, 0.12);
   background: rgba(246, 197, 111, 0.12);
   color: var(--gold);
+}
+
+@media (hover: hover) {
+  .stepper-button:hover {
+    border-color: rgba(246, 197, 111, 0.7);
+    outline: 3px solid rgba(246, 197, 111, 0.12);
+    background: rgba(246, 197, 111, 0.12);
+    color: var(--gold);
+  }
 }
 
 .contact-fieldset {
@@ -1320,6 +1524,10 @@ a.roof-gallery-button {
     border-color 160ms ease,
     background 160ms ease,
     color 160ms ease;
+}
+
+.contact-methods label:active {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .contact-methods input:checked + label {
@@ -1451,15 +1659,38 @@ a.roof-gallery-button {
     box-shadow 180ms ease;
 }
 
-.lead-submit:hover,
 .lead-submit:focus-visible {
   filter: brightness(1.06);
   box-shadow: 0 18px 52px rgba(255, 158, 79, 0.3);
 }
 
+@media (hover: hover) {
+  .lead-submit:hover {
+    filter: brightness(1.06);
+    box-shadow: 0 18px 52px rgba(255, 158, 79, 0.3);
+  }
+}
+
 .lead-submit:disabled {
   cursor: wait;
   opacity: 0.72;
+}
+
+.submit-loading:not([hidden]) {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.submit-loading::before {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  content: "";
+  animation: mr-spin 700ms linear infinite;
 }
 
 /* Telegram под формой, но не внутри неё: фокус внутри формы засчитывается
@@ -1485,6 +1716,30 @@ a.roof-gallery-button {
   display: none;
 }
 
+/* Центрируем ниже фиксированной шапки сайта. */
+.lead-success {
+  scroll-margin-top: 80px;
+}
+
+.lead-success:not([hidden]) {
+  animation: mr-rise 360ms var(--ease-out) both;
+}
+
+@media (max-height: 500px) {
+  .lead-success,
+  .lead-success:not([hidden]) {
+    min-height: 0;
+  }
+
+  .lead-success:not([hidden]) .success-mark {
+    margin-bottom: 12px;
+  }
+
+  .lead-success:not([hidden]) p {
+    margin-bottom: 14px;
+  }
+}
+
 .success-mark {
   display: grid;
   width: 54px;
@@ -1497,6 +1752,23 @@ a.roof-gallery-button {
   color: var(--gold);
   font-size: 1.5rem;
   font-weight: 850;
+  animation: mr-pop 320ms var(--ease-out) 80ms both;
+}
+
+.success-mark svg {
+  width: 26px;
+  height: 26px;
+}
+
+.success-mark path {
+  fill: none;
+  stroke: currentColor;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.6;
+  animation: mr-draw 420ms var(--ease-out) 260ms forwards;
 }
 
 .lead-success h3 {
@@ -1590,20 +1862,35 @@ a.roof-gallery-button {
   display: none;
 }
 
+.faq summary:active {
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Плюс из двух полосок: символ «+» при повороте смещался бы. */
 .faq summary::after {
-  flex: 0 0 auto;
-  color: var(--gold);
-  content: "+";
-  font-size: 1.5rem;
-  line-height: 1;
+  display: block;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  background:
+    linear-gradient(var(--gold), var(--gold)) center / 14px 2px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) center / 2px 14px no-repeat;
+  content: "";
+  transition: transform var(--dur-ui) var(--ease-out);
 }
 
 .faq details[open] summary::after {
-  content: "−";
+  transform: rotate(45deg);
 }
 
 .faq details p {
   padding: 0 22px 22px;
+}
+
+/* Высоту не анимируем: сломается компенсация прокрутки в bindFAQ. */
+.faq details[open] > p {
+  animation: faq-in 220ms var(--ease-out);
 }
 
 .final-cta {
@@ -1634,6 +1921,23 @@ a.roof-gallery-button {
   z-index: -1;
   content: "";
   background: linear-gradient(90deg, rgba(8, 7, 6, 0.88), rgba(8, 7, 6, 0.48));
+}
+
+/* Страницы крыш: фото этой крыши из шапки (style="--cta-photo"), под текстом не светлее .84. */
+.final-cta[style*="--cta-photo"] {
+  background:
+    linear-gradient(120deg, rgba(255, 158, 79, 0.16), rgba(255, 111, 97, 0.06) 42%, transparent),
+    var(--cta-photo) center / cover no-repeat;
+}
+
+.final-cta[style*="--cta-photo"]::before {
+  background: linear-gradient(90deg, rgba(8, 7, 6, 0.9), rgba(8, 7, 6, 0.84) 58%, rgba(8, 7, 6, 0.55));
+}
+
+@media (max-width: 980px) {
+  .final-cta[style*="--cta-photo"]::before {
+    background: linear-gradient(180deg, rgba(8, 7, 6, 0.88), rgba(8, 7, 6, 0.84) 55%, rgba(8, 7, 6, 0.66));
+  }
 }
 
 .final-cta h2 {
@@ -1667,9 +1971,11 @@ a.roof-gallery-button {
     background 180ms ease;
 }
 
-.social-btn:hover {
-  border-color: rgba(246, 197, 111, 0.45);
-  background: rgba(255, 255, 255, 0.14);
+@media (hover: hover) {
+  .social-btn:hover {
+    border-color: rgba(246, 197, 111, 0.45);
+    background: rgba(255, 255, 255, 0.14);
+  }
 }
 
 .site-footer {
@@ -1706,8 +2012,10 @@ a.roof-gallery-button {
   color: var(--muted);
 }
 
-.breadcrumbs a:hover {
-  color: var(--gold);
+@media (hover: hover) {
+  .breadcrumbs a:hover {
+    color: var(--gold);
+  }
 }
 
 .breadcrumbs [aria-current="page"] {
@@ -1876,10 +2184,17 @@ a.roof-gallery-button {
     background 180ms ease;
 }
 
-.related-grid a:hover {
+.related-grid a:active {
   border-color: rgba(246, 197, 111, 0.36);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
-  transform: translateY(-3px);
+}
+
+@media (hover: hover) {
+  .related-grid a:hover {
+    border-color: rgba(246, 197, 111, 0.36);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+    transform: translateY(-3px);
+  }
 }
 
 .page-faq,
@@ -1948,9 +2263,26 @@ a.roof-gallery-button {
     padding-bottom: 24px;
   }
 
+  /* Затемнение только под текстом и снизу: небо и Сити остаются яркими. */
+  .hero-overlay {
+    background:
+      linear-gradient(90deg, rgba(8, 7, 6, 0.8) 0, rgba(8, 7, 6, 0.45) 40%, transparent 68%),
+      linear-gradient(180deg, rgba(8, 7, 6, 0.35) 0, transparent 20%, transparent 55%, rgba(8, 7, 6, 0.92) 100%);
+  }
+
+  .hero-image {
+    object-position: 50% 40%;
+  }
+
   /* Внутренние страницы: шапка страницы по высоте экрана, кнопки записи — без прокрутки. */
   .page-hero {
     min-height: 0;
+  }
+
+  .page-hero::before {
+    background:
+      linear-gradient(90deg, rgba(8, 7, 6, 0.82), rgba(8, 7, 6, 0.35) 55%, rgba(8, 7, 6, 0.15)),
+      linear-gradient(180deg, transparent 40%, rgba(8, 7, 6, 0.7));
   }
 
   .page-hero h1 {
@@ -2133,7 +2465,7 @@ a.roof-gallery-button {
     top: calc(100% + 8px);
     right: 0;
     left: 0;
-    display: none;
+    display: flex;
     flex-direction: column;
     align-items: stretch;
     padding: 8px;
@@ -2147,10 +2479,27 @@ a.roof-gallery-button {
     max-height: calc(100svh - 96px);
     overflow-y: auto;
     overscroll-behavior: contain;
+    /* visibility вместо display: переход успевает проиграться, закрытое меню вне Tab. */
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-6px) scale(0.98);
+    transform-origin: 50% 0;
+    transition:
+      opacity 140ms var(--ease-out),
+      transform 140ms var(--ease-out),
+      visibility 0s linear 140ms;
   }
 
   .site-header.is-nav-open .header-nav {
-    display: flex;
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+    transition:
+      opacity var(--dur-ui) var(--ease-out),
+      transform var(--dur-ui) var(--ease-out),
+      visibility 0s;
   }
 
   .nav-extra {
@@ -2166,9 +2515,15 @@ a.roof-gallery-button {
     font-weight: 700;
   }
 
-  .header-nav a:hover,
-  .header-nav a:focus-visible {
+  .header-nav a:focus-visible,
+  .header-nav a:active {
     background: rgba(255, 255, 255, 0.07);
+  }
+
+  @media (hover: hover) {
+    .header-nav a:hover {
+      background: rgba(255, 255, 255, 0.07);
+    }
   }
 
   .hero {
@@ -2321,8 +2676,34 @@ a.roof-gallery-button {
     padding: 104px 12px 34px;
   }
 
+  /* Стопы подобраны замером: контраст подписи и H1 не ниже 4.5:1 на 360–390px. */
+  .hero-overlay {
+    background: linear-gradient(
+      180deg,
+      rgba(8, 7, 6, 0.3) 0,
+      rgba(8, 7, 6, 0.22) 10%,
+      rgba(8, 7, 6, 0.5) 15%,
+      rgba(8, 7, 6, 0.7) 28%,
+      rgba(8, 7, 6, 0.84) 50%,
+      rgba(8, 7, 6, 0.96) 100%
+    );
+  }
+
+  .hero h1 {
+    text-shadow: 0 2px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  .hero .eyebrow {
+    color: rgba(255, 248, 236, 0.85);
+    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
+  }
+
   h1 {
     margin-bottom: 16px;
+  }
+
+  .btn:active {
+    transform: scale(0.98);
   }
 
   .hero-lead {
@@ -2418,6 +2799,31 @@ a.roof-gallery-button {
     height: 44px;
     transform: translateY(-50%);
     background: rgba(10, 8, 7, 0.55);
+  }
+
+  .roof-lightbox-control:active {
+    transform: translateY(-50%) scale(0.92);
+  }
+
+  /* Полноэкранное окно приезжает снизу; размытие под ним не видно. */
+  .roof-lightbox {
+    transform: translateY(20px);
+  }
+
+  .roof-lightbox[open] {
+    transition-duration: 280ms;
+    transition-timing-function: var(--ease-drawer);
+  }
+
+  @starting-style {
+    .roof-lightbox[open] {
+      transform: translateY(20px);
+    }
+  }
+
+  .roof-lightbox::backdrop {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 
   .roof-lightbox-prev {
@@ -2599,6 +3005,7 @@ a.roof-gallery-button {
 
   .page-hero picture {
     display: block;
+    overflow: hidden;
   }
 
   .page-hero img {
@@ -2863,35 +3270,97 @@ a.roof-gallery-button {
   html:has(.roof-lightbox[open]) {
     overflow: hidden;
   }
+}
 
-  /* :hover «залипает» после касания — не приподнимаем карточки. */
-  .btn:hover,
-  .social-btn:hover,
-  .feature-card:hover,
-  .gallery-item:hover,
-  .step-card:hover,
-  .audience-grid article:hover,
-  .audience-grid a:hover,
-  .related-grid a:hover,
-  .roof-card:hover,
-  .roof-card:focus-within,
-  .roof-card:hover .roof-card-media img {
-    transform: none;
+/* Медленный «наезд» на фото шапки, один раз. Только transform: opacity у LCP не трогаем. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-image {
+    animation: hero-drift 10s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
-  .roof-card:not(.is-selected):hover,
-  .roof-card:not(.is-selected):focus-within {
-    border-color: var(--line);
-    box-shadow: 0 20px 64px rgba(0, 0, 0, 0.26);
+  /* Посадочные и крыши (.page-layout), кроме статей блога (крошки, как в блоке до 640px). */
+  .inner-page:has(.page-layout):not(:has(> .breadcrumbs a[href="../../"] + span + a[href="../"])) .page-hero img {
+    transform-origin: center 45%;
+    animation: page-hero-drift 12s cubic-bezier(0.2, 0.6, 0.3, 1) forwards;
   }
 }
 
+@keyframes hero-drift {
+  from {
+    transform: scale(1.06);
+  }
+
+  to {
+    transform: scale(1.02);
+  }
+}
+
+@keyframes page-hero-drift {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes mr-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes mr-pop {
+  from {
+    transform: scale(0.9);
+  }
+}
+
+@keyframes mr-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes mr-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes mr-fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes mr-confirm {
+  from {
+    box-shadow: 0 0 0 0 rgba(246, 197, 111, 0.55);
+  }
+
+  to {
+    box-shadow: 0 0 0 12px rgba(246, 197, 111, 0);
+  }
+}
+
+@keyframes faq-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+/* «Уменьшить движение»: без сдвигов, но цвет и проявление — плавно. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
+    transition-property: color, background-color, border-color, outline-color, box-shadow, opacity, filter !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
