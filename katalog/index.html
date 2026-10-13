@@ -132,31 +132,19 @@
       .cat-badge.is-off { color: var(--soft); }
       .cat-badge.is-off::before { background: var(--soft); }
 
-      .cat-counter {
-        position: absolute; right: 12px; bottom: 12px; z-index: 2;
-        padding: 6px 11px; border: 1px solid var(--line); border-radius: 999px;
-        background: rgba(11, 10, 9, 0.62); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-        font-size: 0.75rem; font-variant-numeric: tabular-nums; color: var(--muted);
-      }
+      /* Полоски по числу кадров — как в карточках на сайте; под ними лёгкое затемнение,
+         чтобы их было видно на светлом небе. */
       .cat-dots {
-        position: absolute; left: 0; right: 0; bottom: 12px; z-index: 2;
-        display: flex; justify-content: center; gap: 6px; pointer-events: none;
+        position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+        display: flex; gap: 4px; padding: 28px 12px 12px;
+        background: linear-gradient(transparent, rgba(8, 7, 6, 0.45));
+        pointer-events: none;
       }
-      .cat-dot {
-        width: 6px; height: 6px; border-radius: 50%;
-        background: rgba(255, 248, 236, 0.38); transition: background 180ms ease, width 180ms ease;
+      .cat-dots i {
+        flex: 1; height: 3px; border-radius: 2px;
+        background: rgba(255, 248, 236, 0.4); transition: background-color 160ms ease;
       }
-      .cat-dot.is-active { width: 18px; border-radius: 999px; background: var(--gold); }
-
-      .cat-arrow {
-        position: absolute; top: 50%; z-index: 2; display: none;
-        width: 40px; height: 40px; margin-top: -20px; padding: 0;
-        border: 1px solid var(--line); border-radius: 50%;
-        background: rgba(11, 10, 9, 0.66); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-        font-size: 1.3rem; line-height: 1; cursor: pointer; opacity: 0; transition: opacity 160ms ease;
-      }
-      .cat-arrow-prev { left: 10px; }
-      .cat-arrow-next { right: 10px; }
+      .cat-dots i.is-active { background: #fff8ec; }
 
       .cat-body { display: flex; flex-direction: column; padding: 16px 16px 18px; }
       .cat-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
@@ -191,14 +179,6 @@
       }
       .cat-off-note { margin: 14px 0 0; color: var(--soft); font-size: 0.86rem; line-height: 1.45; }
 
-      /* Выключенная в таблице крыша: приглушаем только фото — цена остаётся информацией. */
-      .cat-card.is-off .cat-media { filter: grayscale(0.45) opacity(0.72); }
-      .cat-card.is-off .cat-actions { display: none; }
-      .cat-card.is-off .cat-off-note { display: block; }
-
-      .cat-divider {
-        margin: 34px 0 0; font-size: 1.05rem; font-weight: 760; letter-spacing: 0.01em; color: var(--muted);
-      }
       .cat-more { margin: 26px 0 0; }
       .cat-more h2 { margin: 0 0 12px; font-size: 1.05rem; font-weight: 760; color: var(--muted); }
       .cat-more-row {
@@ -253,8 +233,6 @@
         .cat-head { padding-top: 34px; }
       }
       @media (hover: hover) and (pointer: fine) {
-        .cat-arrow { display: block; }
-        .cat-media:hover .cat-arrow, .cat-arrow:focus-visible { opacity: 1; }
         .cat-book:hover { box-shadow: 0 18px 52px rgba(255, 158, 79, 0.32); }
         .cat-secondary:hover { border-color: rgba(255, 248, 236, 0.32); color: var(--text); }
         .cat-slide picture { cursor: zoom-in; }
@@ -323,18 +301,17 @@
       <main>
         <div class="cat-head">
           <h1>Крыши Москвы</h1>
-          <p class="cat-note">11 крыш · цена за человека · час на площадке</p>
-          <p class="cat-status" id="cat-status" aria-live="polite">Сейчас в расписании <b>8</b> из 11 крыш</p>
+          <p class="cat-note">Цена за человека · час на площадке</p>
+          <p class="cat-status" id="cat-status" aria-live="polite">Сейчас в расписании <b>8</b> крыш</p>
         </div>
 
+        <!-- Только крыши, включённые в таблице: выключенные лежат здесь же с hidden. -->
         <div class="cat-feed" id="cat-feed">
-        <article class="cat-card" data-roof-id="marksistskaya-high-rise" data-order="0" data-roof-name="Марксистская" data-slug="marksistskaya">
+        <article class="cat-card" data-roof-id="marksistskaya-high-rise" data-roof-name="Марксистская" data-slug="marksistskaya">
           <div class="cat-media">
             <div class="cat-rail" role="group" aria-roledescription="галерея" aria-label="Фотографии: Марксистская" tabindex="0"><div class="cat-slide" role="group" aria-label="Фото 1 из 9"><picture><source type="image/avif" srcset="../assets/locations/marksistskaya-high-rise-04-640.avif 480w, ../assets/locations/marksistskaya-high-rise-04-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" srcset="../assets/locations/marksistskaya-high-rise-04-640.webp 480w, ../assets/locations/marksistskaya-high-rise-04-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img src="../assets/locations/marksistskaya-high-rise-04-640.jpg" srcset="../assets/locations/marksistskaya-high-rise-04-640.jpg 480w, ../assets/locations/marksistskaya-high-rise-04-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Силуэт высотки на Котельнической набережной против закатного солнца" loading="eager" fetchpriority="high" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 2 из 9"><picture><source type="image/avif" data-srcset="../assets/locations/marksistskaya-high-rise-03-640.avif 480w, ../assets/locations/marksistskaya-high-rise-03-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/marksistskaya-high-rise-03-640.webp 480w, ../assets/locations/marksistskaya-high-rise-03-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/marksistskaya-high-rise-03-640.jpg" data-srcset="../assets/locations/marksistskaya-high-rise-03-640.jpg 480w, ../assets/locations/marksistskaya-high-rise-03-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Башня со шпилем и строительный кран на фоне вечернего неба" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 3 из 9"><picture><source type="image/avif" data-srcset="../assets/locations/marksistskaya-high-rise-02-640.avif 480w, ../assets/locations/marksistskaya-high-rise-02-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/marksistskaya-high-rise-02-640.webp 480w, ../assets/locations/marksistskaya-high-rise-02-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/marksistskaya-high-rise-02-640.jpg" data-srcset="../assets/locations/marksistskaya-high-rise-02-640.jpg 480w, ../assets/locations/marksistskaya-high-rise-02-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Купол храма и сталинская высотка в золотой дымке над крышами центра" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 4 из 9"><picture><source type="image/avif" data-srcset="../assets/locations/marksistskaya-high-rise-08-640.avif 480w, ../assets/locations/marksistskaya-high-rise-08-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/marksistskaya-high-rise-08-640.webp 480w, ../assets/locations/marksistskaya-high-rise-08-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/marksistskaya-high-rise-08-640.jpg" data-srcset="../assets/locations/marksistskaya-high-rise-08-640.jpg 480w, ../assets/locations/marksistskaya-high-rise-08-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Останкинская телебашня и городские крыши в розовых сумерках" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 5 из 9"><picture><source type="image/avif" data-srcset="../assets/locations/marksistskaya-high-rise-01-640.avif 480w, ../assets/locations/marksistskaya-high-rise-01-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/marksistskaya-high-rise-01-640.webp 480w, ../assets/locations/marksistskaya-high-rise-01-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/marksistskaya-high-rise-01-640.jpg" data-srcset="../assets/locations/marksistskaya-high-rise-01-640.jpg 480w, ../assets/locations/marksistskaya-high-rise-01-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Сталинская высотка и вечерний город под красным небом" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 6 из 9"><picture><source type="image/avif" data-srcset="../assets/locations/marksistskaya-high-rise-09-640.avif 480w, ../assets/locations/marksistskaya-high-rise-09-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/marksistskaya-high-rise-09-640.webp 480w, ../assets/locations/marksistskaya-high-rise-09-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/marksistskaya-high-rise-09-640.jpg" data-srcset="../assets/locations/marksistskaya-high-rise-09-640.jpg 480w, ../assets/locations/marksistskaya-high-rise-09-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Башни Москва-Сити в дымке и золотой купол храма над жилыми домами" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 7 из 9"><picture><source type="image/avif" data-srcset="../assets/locations/marksistskaya-high-rise-07-640.avif 480w, ../assets/locations/marksistskaya-high-rise-07-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/marksistskaya-high-rise-07-640.webp 480w, ../assets/locations/marksistskaya-high-rise-07-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/marksistskaya-high-rise-07-640.jpg" data-srcset="../assets/locations/marksistskaya-high-rise-07-640.jpg 480w, ../assets/locations/marksistskaya-high-rise-07-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Высотка на Котельнической набережной под розово-оранжевым небом" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 8 из 9"><picture><source type="image/avif" data-srcset="../assets/locations/marksistskaya-high-rise-06-640.avif 480w, ../assets/locations/marksistskaya-high-rise-06-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/marksistskaya-high-rise-06-640.webp 480w, ../assets/locations/marksistskaya-high-rise-06-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/marksistskaya-high-rise-06-640.jpg" data-srcset="../assets/locations/marksistskaya-high-rise-06-640.jpg 480w, ../assets/locations/marksistskaya-high-rise-06-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Фотосессия на крыше у парапета, внизу купола и кварталы центра" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 9 из 9"><picture><source type="image/avif" data-srcset="../assets/locations/marksistskaya-high-rise-05-640.avif 480w, ../assets/locations/marksistskaya-high-rise-05-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/marksistskaya-high-rise-05-640.webp 480w, ../assets/locations/marksistskaya-high-rise-05-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/marksistskaya-high-rise-05-640.jpg" data-srcset="../assets/locations/marksistskaya-high-rise-05-640.jpg 480w, ../assets/locations/marksistskaya-high-rise-05-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Девушка на крыше в закатном свете, за спиной сталинская высотка" loading="lazy" decoding="async" /></picture></div></div>
             <span class="cat-badge">В расписании</span>
-            <span class="cat-counter" data-total="9" aria-hidden="true">1 / 9</span>
-            
-            <button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button><button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>
+            <div class="cat-dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
           </div>
           <div class="cat-body">
             <div class="cat-top">
@@ -347,16 +324,13 @@
               <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_marksistskaya">Записаться в боте</a>
               <a class="cat-secondary" href="marksistskaya/">Все фото</a>
             </div>
-            <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
           </div>
         </article>
-        <article class="cat-card" data-roof-id="taganskaya-golden-hour" data-order="1" data-roof-name="Таганская" data-slug="taganskaya">
+        <article class="cat-card" data-roof-id="taganskaya-golden-hour" data-roof-name="Таганская" data-slug="taganskaya">
           <div class="cat-media">
             <div class="cat-rail" role="group" aria-roledescription="галерея" aria-label="Фотографии: Таганская" tabindex="0"><div class="cat-slide" role="group" aria-label="Фото 1 из 10"><picture><source type="image/avif" data-srcset="../assets/locations/taganskaya-golden-hour-03-640.avif 480w, ../assets/locations/taganskaya-golden-hour-03-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/taganskaya-golden-hour-03-640.webp 480w, ../assets/locations/taganskaya-golden-hour-03-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-golden-hour-03-640.jpg" data-srcset="../assets/locations/taganskaya-golden-hour-03-640.jpg 480w, ../assets/locations/taganskaya-golden-hour-03-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Солнце и силуэты центра Москвы в золотом вечернем свете" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 2 из 10"><picture><source type="image/avif" data-srcset="../assets/locations/taganskaya-golden-hour-07-640.avif 480w, ../assets/locations/taganskaya-golden-hour-07-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/taganskaya-golden-hour-07-640.webp 480w, ../assets/locations/taganskaya-golden-hour-07-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-golden-hour-07-640.jpg" data-srcset="../assets/locations/taganskaya-golden-hour-07-640.jpg 480w, ../assets/locations/taganskaya-golden-hour-07-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Высотка на Котельнической набережной в вечерней подсветке" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 3 из 10"><picture><source type="image/avif" data-srcset="../assets/locations/taganskaya-golden-hour-02-640.avif 480w, ../assets/locations/taganskaya-golden-hour-02-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/taganskaya-golden-hour-02-640.webp 480w, ../assets/locations/taganskaya-golden-hour-02-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-golden-hour-02-640.jpg" data-srcset="../assets/locations/taganskaya-golden-hour-02-640.jpg 480w, ../assets/locations/taganskaya-golden-hour-02-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Городские здания и высотка в лучах золотого часа" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 4 из 10"><picture><source type="image/avif" data-srcset="../assets/locations/taganskaya-golden-hour-09-640.avif 480w, ../assets/locations/taganskaya-golden-hour-09-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/taganskaya-golden-hour-09-640.webp 480w, ../assets/locations/taganskaya-golden-hour-09-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-golden-hour-09-640.jpg" data-srcset="../assets/locations/taganskaya-golden-hour-09-640.jpg 480w, ../assets/locations/taganskaya-golden-hour-09-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Москва-река, мост и вечерние огни города с высоты" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 5 из 10"><picture><source type="image/avif" data-srcset="../assets/locations/taganskaya-golden-hour-10-640.avif 480w, ../assets/locations/taganskaya-golden-hour-10-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/taganskaya-golden-hour-10-640.webp 480w, ../assets/locations/taganskaya-golden-hour-10-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-golden-hour-10-640.jpg" data-srcset="../assets/locations/taganskaya-golden-hour-10-640.jpg 480w, ../assets/locations/taganskaya-golden-hour-10-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Закат над городом с силуэтами Москва-Сити на горизонте" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 6 из 10"><picture><source type="image/avif" data-srcset="../assets/locations/taganskaya-golden-hour-01-640.avif 480w, ../assets/locations/taganskaya-golden-hour-01-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/taganskaya-golden-hour-01-640.webp 480w, ../assets/locations/taganskaya-golden-hour-01-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-golden-hour-01-640.jpg" data-srcset="../assets/locations/taganskaya-golden-hour-01-640.jpg 480w, ../assets/locations/taganskaya-golden-hour-01-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Панорама центра Москвы в тёплом вечернем свете" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 7 из 10"><picture><source type="image/avif" data-srcset="../assets/locations/taganskaya-golden-hour-08-640.avif 480w, ../assets/locations/taganskaya-golden-hour-08-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/taganskaya-golden-hour-08-640.webp 480w, ../assets/locations/taganskaya-golden-hour-08-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-golden-hour-08-640.jpg" data-srcset="../assets/locations/taganskaya-golden-hour-08-640.jpg 480w, ../assets/locations/taganskaya-golden-hour-08-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Стеклянный купол Дома музыки и вечерние небоскрёбы" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 8 из 10"><picture><source type="image/avif" data-srcset="../assets/locations/taganskaya-golden-hour-04-640.avif 480w, ../assets/locations/taganskaya-golden-hour-04-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/taganskaya-golden-hour-04-640.webp 480w, ../assets/locations/taganskaya-golden-hour-04-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-golden-hour-04-640.jpg" data-srcset="../assets/locations/taganskaya-golden-hour-04-640.jpg 480w, ../assets/locations/taganskaya-golden-hour-04-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Вечерняя панорама города с силуэтом сталинской высотки на горизонте" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 9 из 10"><picture><source type="image/avif" data-srcset="../assets/locations/taganskaya-golden-hour-06-640.avif 480w, ../assets/locations/taganskaya-golden-hour-06-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/taganskaya-golden-hour-06-640.webp 480w, ../assets/locations/taganskaya-golden-hour-06-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-golden-hour-06-640.jpg" data-srcset="../assets/locations/taganskaya-golden-hour-06-640.jpg 480w, ../assets/locations/taganskaya-golden-hour-06-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Вид с крыши на Кремль и собор Василия Блаженного в закатном небе" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 10 из 10"><picture><source type="image/avif" data-srcset="../assets/locations/taganskaya-golden-hour-05-640.avif 480w, ../assets/locations/taganskaya-golden-hour-05-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/taganskaya-golden-hour-05-640.webp 480w, ../assets/locations/taganskaya-golden-hour-05-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-golden-hour-05-640.jpg" data-srcset="../assets/locations/taganskaya-golden-hour-05-640.jpg 480w, ../assets/locations/taganskaya-golden-hour-05-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Крыша, Москва-река и высотка на Котельнической на закате" loading="lazy" decoding="async" /></picture></div></div>
             <span class="cat-badge">В расписании</span>
-            <span class="cat-counter" data-total="10" aria-hidden="true">1 / 10</span>
-            
-            <button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button><button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>
+            <div class="cat-dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
           </div>
           <div class="cat-body">
             <div class="cat-top">
@@ -369,16 +343,13 @@
               <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_taganskaya">Записаться в боте</a>
               <a class="cat-secondary" href="taganskaya/">Все фото</a>
             </div>
-            <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
           </div>
         </article>
-        <article class="cat-card" data-roof-id="fili-rooftop" data-order="2" data-roof-name="Фили" data-slug="fili">
+        <article class="cat-card" data-roof-id="fili-rooftop" data-roof-name="Фили" data-slug="fili">
           <div class="cat-media">
             <div class="cat-rail" role="group" aria-roledescription="галерея" aria-label="Фотографии: Фили" tabindex="0"><div class="cat-slide" role="group" aria-label="Фото 1 из 6"><picture><source type="image/avif" data-srcset="../assets/locations/fili-rooftop-04-640.avif 480w, ../assets/locations/fili-rooftop-04-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/fili-rooftop-04-640.webp 480w, ../assets/locations/fili-rooftop-04-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-rooftop-04-640.jpg" data-srcset="../assets/locations/fili-rooftop-04-640.jpg 480w, ../assets/locations/fili-rooftop-04-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Башни Москва-Сити в розовом закатном свете, внизу крыша и набережная" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 2 из 6"><picture><source type="image/avif" data-srcset="../assets/locations/fili-rooftop-05-640.avif 480w, ../assets/locations/fili-rooftop-05-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/fili-rooftop-05-640.webp 480w, ../assets/locations/fili-rooftop-05-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-rooftop-05-640.jpg" data-srcset="../assets/locations/fili-rooftop-05-640.jpg 480w, ../assets/locations/fili-rooftop-05-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Закатное солнце за тёмной башней и силуэты городских кварталов" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 3 из 6"><picture><source type="image/avif" data-srcset="../assets/locations/fili-rooftop-06-640.avif 480w, ../assets/locations/fili-rooftop-06-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/fili-rooftop-06-640.webp 480w, ../assets/locations/fili-rooftop-06-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-rooftop-06-640.jpg" data-srcset="../assets/locations/fili-rooftop-06-640.jpg 480w, ../assets/locations/fili-rooftop-06-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Вечерняя панорама: золотые купола храма и высотки на горизонте" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 4 из 6"><picture><source type="image/avif" data-srcset="../assets/locations/fili-rooftop-03-640.avif 480w, ../assets/locations/fili-rooftop-03-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/fili-rooftop-03-640.webp 480w, ../assets/locations/fili-rooftop-03-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-rooftop-03-640.jpg" data-srcset="../assets/locations/fili-rooftop-03-640.jpg 480w, ../assets/locations/fili-rooftop-03-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Молодой человек на крыше на фоне панорамы Москва-Сити" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 5 из 6"><picture><source type="image/avif" data-srcset="../assets/locations/fili-rooftop-02-640.avif 640w, ../assets/locations/fili-rooftop-02-960.avif 960w, ../assets/locations/fili-rooftop-02-1280.avif 1280w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/fili-rooftop-02-640.webp 640w, ../assets/locations/fili-rooftop-02-960.webp 960w, ../assets/locations/fili-rooftop-02-1280.webp 1280w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-rooftop-02-640.jpg" data-srcset="../assets/locations/fili-rooftop-02-640.jpg 640w, ../assets/locations/fili-rooftop-02-1280.jpg 1280w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="1280" height="960" alt="Девушка на крыше на фоне башен Москва-Сити в закатном свете" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 6 из 6"><picture><source type="image/avif" data-srcset="../assets/locations/fili-rooftop-01-640.avif 480w, ../assets/locations/fili-rooftop-01-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/fili-rooftop-01-640.webp 480w, ../assets/locations/fili-rooftop-01-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-rooftop-01-640.jpg" data-srcset="../assets/locations/fili-rooftop-01-640.jpg 480w, ../assets/locations/fili-rooftop-01-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Вид с крыши на башни Москва-Сити, реку и жилые кварталы вечером" loading="lazy" decoding="async" /></picture></div></div>
             <span class="cat-badge">В расписании</span>
-            <span class="cat-counter" data-total="6" aria-hidden="true">1 / 6</span>
-            
-            <button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button><button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>
+            <div class="cat-dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i><i></i><i></i><i></i></div>
           </div>
           <div class="cat-body">
             <div class="cat-top">
@@ -391,16 +362,13 @@
               <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_fili">Записаться в боте</a>
               <a class="cat-secondary" href="fili/">Все фото</a>
             </div>
-            <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
           </div>
         </article>
-        <article class="cat-card" data-roof-id="kievskaya-skatnaya" data-order="3" data-roof-name="Киевская Скатная" data-slug="kievskaya-skatnaya">
+        <article class="cat-card" data-roof-id="kievskaya-skatnaya" data-roof-name="Киевская Скатная" data-slug="kievskaya-skatnaya">
           <div class="cat-media">
             <div class="cat-rail" role="group" aria-roledescription="галерея" aria-label="Фотографии: Киевская Скатная" tabindex="0"><div class="cat-slide" role="group" aria-label="Фото 1 из 4"><picture><source type="image/avif" data-srcset="../assets/locations/kievskaya-skatnaya-01-640.avif 360w, ../assets/locations/kievskaya-skatnaya-01-960.avif 540w, ../assets/locations/kievskaya-skatnaya-01-1280.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/kievskaya-skatnaya-01-640.webp 360w, ../assets/locations/kievskaya-skatnaya-01-960.webp 540w, ../assets/locations/kievskaya-skatnaya-01-1280.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/kievskaya-skatnaya-01-640.jpg" data-srcset="../assets/locations/kievskaya-skatnaya-01-640.jpg 360w, ../assets/locations/kievskaya-skatnaya-01-1280.jpg 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="720" height="1280" alt="Гостиница «Украина» на фоне алого закатного неба" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 2 из 4"><picture><source type="image/avif" data-srcset="../assets/locations/kievskaya-skatnaya-03-640.avif 480w, ../assets/locations/kievskaya-skatnaya-03-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/kievskaya-skatnaya-03-640.webp 480w, ../assets/locations/kievskaya-skatnaya-03-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/kievskaya-skatnaya-03-640.jpg" data-srcset="../assets/locations/kievskaya-skatnaya-03-640.jpg 480w, ../assets/locations/kievskaya-skatnaya-03-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Девушка на скатной крыше на фоне гостиницы «Украина» вечером" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 3 из 4"><picture><source type="image/avif" data-srcset="../assets/locations/kievskaya-skatnaya-04-640.avif 480w, ../assets/locations/kievskaya-skatnaya-04-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/kievskaya-skatnaya-04-640.webp 480w, ../assets/locations/kievskaya-skatnaya-04-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/kievskaya-skatnaya-04-640.jpg" data-srcset="../assets/locations/kievskaya-skatnaya-04-640.jpg 480w, ../assets/locations/kievskaya-skatnaya-04-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Вид со скатной крыши на башни Москва-Сити на закате" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 4 из 4"><picture><source type="image/avif" data-srcset="../assets/locations/kievskaya-skatnaya-02-640.avif 480w, ../assets/locations/kievskaya-skatnaya-02-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/kievskaya-skatnaya-02-640.webp 480w, ../assets/locations/kievskaya-skatnaya-02-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/kievskaya-skatnaya-02-640.jpg" data-srcset="../assets/locations/kievskaya-skatnaya-02-640.jpg 480w, ../assets/locations/kievskaya-skatnaya-02-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Фотосессия на скатной крыше у подсвеченной башни Киевского вокзала" loading="lazy" decoding="async" /></picture></div></div>
             <span class="cat-badge">В расписании</span>
-            <span class="cat-counter" data-total="4" aria-hidden="true">1 / 4</span>
-            <div class="cat-dots" aria-hidden="true"><span class="cat-dot is-active"></span><span class="cat-dot"></span><span class="cat-dot"></span><span class="cat-dot"></span></div>
-            <button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button><button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>
+            <div class="cat-dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i><i></i></div>
           </div>
           <div class="cat-body">
             <div class="cat-top">
@@ -413,16 +381,13 @@
               <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_kievskaya_skatnaya">Записаться в боте</a>
               <a class="cat-secondary" href="kievskaya-skatnaya/">Все фото</a>
             </div>
-            <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
           </div>
         </article>
-        <article class="cat-card" data-roof-id="novokuznetskaya" data-order="4" data-roof-name="Новокузнецкая" data-slug="novokuznetskaya">
+        <article class="cat-card" data-roof-id="novokuznetskaya" data-roof-name="Новокузнецкая" data-slug="novokuznetskaya">
           <div class="cat-media">
             <div class="cat-rail" role="group" aria-roledescription="галерея" aria-label="Фотографии: Новокузнецкая" tabindex="0"><div class="cat-slide" role="group" aria-label="Фото 1 из 2"><picture><source type="image/avif" data-srcset="../assets/locations/novokuznetskaya-02-640.avif 480w, ../assets/locations/novokuznetskaya-02-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/novokuznetskaya-02-640.webp 480w, ../assets/locations/novokuznetskaya-02-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/novokuznetskaya-02-640.jpg" data-srcset="../assets/locations/novokuznetskaya-02-640.jpg 480w, ../assets/locations/novokuznetskaya-02-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Подсвеченная высотка на Котельнической набережной над Москва-рекой вечером" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 2 из 2"><picture><source type="image/avif" data-srcset="../assets/locations/novokuznetskaya-01-640.avif 480w, ../assets/locations/novokuznetskaya-01-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/novokuznetskaya-01-640.webp 480w, ../assets/locations/novokuznetskaya-01-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/novokuznetskaya-01-640.jpg" data-srcset="../assets/locations/novokuznetskaya-01-640.jpg 480w, ../assets/locations/novokuznetskaya-01-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Высотка на Котельнической набережной и теплоход на Москва-реке днём" loading="lazy" decoding="async" /></picture></div></div>
             <span class="cat-badge">В расписании</span>
-            <span class="cat-counter" data-total="2" aria-hidden="true">1 / 2</span>
-            <div class="cat-dots" aria-hidden="true"><span class="cat-dot is-active"></span><span class="cat-dot"></span></div>
-            <button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button><button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>
+            <div class="cat-dots" aria-hidden="true"><i class="is-active"></i><i></i></div>
           </div>
           <div class="cat-body">
             <div class="cat-top">
@@ -435,16 +400,13 @@
               <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_novokuznetskaya">Записаться в боте</a>
               <a class="cat-secondary" href="novokuznetskaya/">Все фото</a>
             </div>
-            <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
           </div>
         </article>
-        <article class="cat-card" data-roof-id="smolenskaya" data-order="5" data-roof-name="Смоленская" data-slug="smolenskaya">
+        <article class="cat-card" data-roof-id="smolenskaya" data-roof-name="Смоленская" data-slug="smolenskaya">
           <div class="cat-media">
             <div class="cat-rail" role="group" aria-roledescription="галерея" aria-label="Фотографии: Смоленская" tabindex="0"><div class="cat-slide" role="group" aria-label="Фото 1 из 8"><picture><source type="image/avif" data-srcset="../assets/locations/smolenskaya-04-640.avif 480w, ../assets/locations/smolenskaya-04-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/smolenskaya-04-640.webp 480w, ../assets/locations/smolenskaya-04-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/smolenskaya-04-640.jpg" data-srcset="../assets/locations/smolenskaya-04-640.jpg 480w, ../assets/locations/smolenskaya-04-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Москва-река с прогулочным теплоходом и мостом, за рекой башни Москва-Сити и гостиница «Украина»" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 2 из 8"><picture><source type="image/avif" data-srcset="../assets/locations/smolenskaya-05-640.avif 480w, ../assets/locations/smolenskaya-05-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/smolenskaya-05-640.webp 480w, ../assets/locations/smolenskaya-05-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/smolenskaya-05-640.jpg" data-srcset="../assets/locations/smolenskaya-05-640.jpg 480w, ../assets/locations/smolenskaya-05-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Высотка МИД со шпилем в закатном свете под облачным небом" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 3 из 8"><picture><source type="image/avif" data-srcset="../assets/locations/smolenskaya-06-640.avif 480w, ../assets/locations/smolenskaya-06-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/smolenskaya-06-640.webp 480w, ../assets/locations/smolenskaya-06-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/smolenskaya-06-640.jpg" data-srcset="../assets/locations/smolenskaya-06-640.jpg 480w, ../assets/locations/smolenskaya-06-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Оранжевый закат за башнями Москва-Сити над крышами жилых кварталов" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 4 из 8"><picture><source type="image/avif" data-srcset="../assets/locations/smolenskaya-07-640.avif 480w, ../assets/locations/smolenskaya-07-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/smolenskaya-07-640.webp 480w, ../assets/locations/smolenskaya-07-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/smolenskaya-07-640.jpg" data-srcset="../assets/locations/smolenskaya-07-640.jpg 480w, ../assets/locations/smolenskaya-07-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Закат над Москвой-рекой: мост, набережная и силуэт сталинской высотки на горизонте" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 5 из 8"><picture><source type="image/avif" data-srcset="../assets/locations/smolenskaya-08-640.avif 480w, ../assets/locations/smolenskaya-08-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/smolenskaya-08-640.webp 480w, ../assets/locations/smolenskaya-08-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/smolenskaya-08-640.jpg" data-srcset="../assets/locations/smolenskaya-08-640.jpg 480w, ../assets/locations/smolenskaya-08-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Вид с кровли на гостиницу «Украина», Москву-реку и башни Сити вечером" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 6 из 8"><picture><source type="image/avif" data-srcset="../assets/locations/smolenskaya-09-640.avif 480w, ../assets/locations/smolenskaya-09-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/smolenskaya-09-640.webp 480w, ../assets/locations/smolenskaya-09-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/smolenskaya-09-640.jpg" data-srcset="../assets/locations/smolenskaya-09-640.jpg 480w, ../assets/locations/smolenskaya-09-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Бородинский мост с вечерним потоком машин, Киевский вокзал и красно-белые трубы на фоне заката" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 7 из 8"><picture><source type="image/avif" data-srcset="../assets/locations/smolenskaya-01-640.avif 480w, ../assets/locations/smolenskaya-01-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/smolenskaya-01-640.webp 480w, ../assets/locations/smolenskaya-01-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/smolenskaya-01-640.jpg" data-srcset="../assets/locations/smolenskaya-01-640.jpg 480w, ../assets/locations/smolenskaya-01-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Ночная Москва-река с подсвеченным арочным мостом, гостиница «Украина» и башни Сити" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 8 из 8"><picture><source type="image/avif" data-srcset="../assets/locations/smolenskaya-02-640.avif 480w, ../assets/locations/smolenskaya-02-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/smolenskaya-02-640.webp 480w, ../assets/locations/smolenskaya-02-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/smolenskaya-02-640.jpg" data-srcset="../assets/locations/smolenskaya-02-640.jpg 480w, ../assets/locations/smolenskaya-02-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Вечерняя панорама набережной: подсвеченная гостиница «Украина» и Москва-Сити" loading="lazy" decoding="async" /></picture></div></div>
             <span class="cat-badge">В расписании</span>
-            <span class="cat-counter" data-total="8" aria-hidden="true">1 / 8</span>
-            
-            <button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button><button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>
+            <div class="cat-dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
           </div>
           <div class="cat-body">
             <div class="cat-top">
@@ -457,16 +419,13 @@
               <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_smolenskaya">Записаться в боте</a>
               <a class="cat-secondary" href="smolenskaya/">Все фото</a>
             </div>
-            <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
           </div>
         </article>
-        <article class="cat-card" data-roof-id="rimskaya-skyline" data-order="6" data-roof-name="Римская" data-slug="rimskaya">
+        <article class="cat-card" data-roof-id="rimskaya-skyline" data-roof-name="Римская" data-slug="rimskaya">
           <div class="cat-media">
             <div class="cat-rail" role="group" aria-roledescription="галерея" aria-label="Фотографии: Римская" tabindex="0"><div class="cat-slide" role="group" aria-label="Фото 1 из 6"><picture><source type="image/avif" data-srcset="../assets/locations/rimskaya-city-sunset-01-640.avif 480w, ../assets/locations/rimskaya-city-sunset-01-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/rimskaya-city-sunset-01-640.webp 480w, ../assets/locations/rimskaya-city-sunset-01-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/rimskaya-city-sunset-01-640.jpg" data-srcset="../assets/locations/rimskaya-city-sunset-01-640.jpg 480w, ../assets/locations/rimskaya-city-sunset-01-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Сталинская высотка на фоне Москва-Сити в золотом свете" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 2 из 6"><picture><source type="image/avif" data-srcset="../assets/locations/rimskaya-city-sunset-07-640.avif 480w, ../assets/locations/rimskaya-city-sunset-07-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/rimskaya-city-sunset-07-640.webp 480w, ../assets/locations/rimskaya-city-sunset-07-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/rimskaya-city-sunset-07-640.jpg" data-srcset="../assets/locations/rimskaya-city-sunset-07-640.jpg 480w, ../assets/locations/rimskaya-city-sunset-07-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Фотосессия на крыше на фоне закатной панорамы Москвы" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 3 из 6"><picture><source type="image/avif" data-srcset="../assets/locations/rimskaya-city-sunset-03-640.avif 360w, ../assets/locations/rimskaya-city-sunset-03-960.avif 540w, ../assets/locations/rimskaya-city-sunset-03-1280.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/rimskaya-city-sunset-03-640.webp 360w, ../assets/locations/rimskaya-city-sunset-03-960.webp 540w, ../assets/locations/rimskaya-city-sunset-03-1280.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/rimskaya-city-sunset-03-640.jpg" data-srcset="../assets/locations/rimskaya-city-sunset-03-640.jpg 360w, ../assets/locations/rimskaya-city-sunset-03-1280.jpg 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="720" height="1280" alt="Закатное солнце над городом, высотка и купола в дымке" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 4 из 6"><picture><source type="image/avif" data-srcset="../assets/locations/rimskaya-city-sunset-04-640.avif 480w, ../assets/locations/rimskaya-city-sunset-04-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/rimskaya-city-sunset-04-640.webp 480w, ../assets/locations/rimskaya-city-sunset-04-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/rimskaya-city-sunset-04-640.jpg" data-srcset="../assets/locations/rimskaya-city-sunset-04-640.jpg 480w, ../assets/locations/rimskaya-city-sunset-04-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Сталинская высотка и подсвеченная церковь в закатной дымке" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 5 из 6"><picture><source type="image/avif" data-srcset="../assets/locations/rimskaya-city-sunset-05-640.avif 480w, ../assets/locations/rimskaya-city-sunset-05-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/rimskaya-city-sunset-05-640.webp 480w, ../assets/locations/rimskaya-city-sunset-05-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/rimskaya-city-sunset-05-640.jpg" data-srcset="../assets/locations/rimskaya-city-sunset-05-640.jpg 480w, ../assets/locations/rimskaya-city-sunset-05-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Крыши домов и облачное вечернее небо над городом" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 6 из 6"><picture><source type="image/avif" data-srcset="../assets/locations/rimskaya-city-sunset-06-640.avif 480w, ../assets/locations/rimskaya-city-sunset-06-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/rimskaya-city-sunset-06-640.webp 480w, ../assets/locations/rimskaya-city-sunset-06-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/rimskaya-city-sunset-06-640.jpg" data-srcset="../assets/locations/rimskaya-city-sunset-06-640.jpg 480w, ../assets/locations/rimskaya-city-sunset-06-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Дневной вид с крыши: храмы, трамвай и сталинская высотка вдали" loading="lazy" decoding="async" /></picture></div></div>
             <span class="cat-badge">В расписании</span>
-            <span class="cat-counter" data-total="6" aria-hidden="true">1 / 6</span>
-            
-            <button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button><button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>
+            <div class="cat-dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i><i></i><i></i><i></i></div>
           </div>
           <div class="cat-body">
             <div class="cat-top">
@@ -479,15 +438,12 @@
               <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_rimskaya">Записаться в боте</a>
               <a class="cat-secondary" href="rimskaya/">Все фото</a>
             </div>
-            <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
           </div>
         </article>
-        <article class="cat-card" data-roof-id="shelepikha-9" data-order="7" data-roof-name="Шелепиха 9 этажей" data-slug="shelepikha-9-etazhey">
+        <article class="cat-card" data-roof-id="shelepikha-9" data-roof-name="Шелепиха 9 этажей" data-slug="shelepikha-9-etazhey">
           <div class="cat-media">
             <div class="cat-rail" role="group" aria-label="Фотография: Шелепиха 9 этажей"><div class="cat-slide" role="group" aria-label="Фото 1 из 1"><picture><source type="image/avif" data-srcset="../assets/locations/shelepikha-9-01-640.avif 464w, ../assets/locations/shelepikha-9-01-960.avif 696w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/shelepikha-9-01-640.webp 464w, ../assets/locations/shelepikha-9-01-960.webp 696w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/shelepikha-9-01-640.jpg" data-srcset="../assets/locations/shelepikha-9-01-640.jpg 464w, ../assets/locations/shelepikha-9-01-1280.jpg 928w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="928" height="1280" alt="Ночные башни Москва-Сити в огнях и силуэт человека на крыше" loading="lazy" decoding="async" /></picture></div></div>
             <span class="cat-badge">В расписании</span>
-            
-            
             
           </div>
           <div class="cat-body">
@@ -501,21 +457,13 @@
               <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_shelepikha_9_etazhey">Записаться в боте</a>
               <a class="cat-secondary" href="shelepikha-9-etazhey/">Все фото</a>
             </div>
-            <p class="cat-off-note" hidden>Пока недоступна — спросите в боте про ближайшие даты</p>
           </div>
         </article>
-
-        </div>
-
-        <h2 class="cat-divider" id="cat-divider">Сейчас недоступны</h2>
-        <div class="cat-feed" id="cat-feed-off">
-        <article class="cat-card is-off" data-roof-id="kurskaya-sunset" data-order="8" data-roof-name="Курская" data-slug="kurskaya">
+        <article class="cat-card" data-roof-id="kurskaya-sunset" data-roof-name="Курская" data-slug="kurskaya" hidden>
           <div class="cat-media">
             <div class="cat-rail" role="group" aria-roledescription="галерея" aria-label="Фотографии: Курская" tabindex="0"><div class="cat-slide" role="group" aria-label="Фото 1 из 4"><picture><source type="image/avif" data-srcset="../assets/locations/kurskaya-center-view-03-640.avif 480w, ../assets/locations/kurskaya-center-view-03-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/kurskaya-center-view-03-640.webp 480w, ../assets/locations/kurskaya-center-view-03-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/kurskaya-center-view-03-640.jpg" data-srcset="../assets/locations/kurskaya-center-view-03-640.jpg 480w, ../assets/locations/kurskaya-center-view-03-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Оранжевый закат над высотками и крышами центра Москвы" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 2 из 4"><picture><source type="image/avif" data-srcset="../assets/locations/kurskaya-center-view-02-640.avif 480w, ../assets/locations/kurskaya-center-view-02-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/kurskaya-center-view-02-640.webp 480w, ../assets/locations/kurskaya-center-view-02-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/kurskaya-center-view-02-640.jpg" data-srcset="../assets/locations/kurskaya-center-view-02-640.jpg 480w, ../assets/locations/kurskaya-center-view-02-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Подсвеченная сталинская высотка в вечернем городе" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 3 из 4"><picture><source type="image/avif" data-srcset="../assets/locations/kurskaya-center-view-01-640.avif 480w, ../assets/locations/kurskaya-center-view-01-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/kurskaya-center-view-01-640.webp 480w, ../assets/locations/kurskaya-center-view-01-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/kurskaya-center-view-01-640.jpg" data-srcset="../assets/locations/kurskaya-center-view-01-640.jpg 480w, ../assets/locations/kurskaya-center-view-01-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Вечерняя панорама исторического центра Москвы" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 4 из 4"><picture><source type="image/avif" data-srcset="../assets/locations/kurskaya-center-view-04-640.avif 480w, ../assets/locations/kurskaya-center-view-04-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/kurskaya-center-view-04-640.webp 480w, ../assets/locations/kurskaya-center-view-04-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/kurskaya-center-view-04-640.jpg" data-srcset="../assets/locations/kurskaya-center-view-04-640.jpg 480w, ../assets/locations/kurskaya-center-view-04-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Купола, городские крыши и Москва-Сити вдалеке" loading="lazy" decoding="async" /></picture></div></div>
             <span class="cat-badge is-off">Пока недоступна</span>
-            <span class="cat-counter" data-total="4" aria-hidden="true">1 / 4</span>
-            <div class="cat-dots" aria-hidden="true"><span class="cat-dot is-active"></span><span class="cat-dot"></span><span class="cat-dot"></span><span class="cat-dot"></span></div>
-            <button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button><button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>
+            <div class="cat-dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i><i></i></div>
           </div>
           <div class="cat-body">
             <div class="cat-top">
@@ -528,16 +476,13 @@
               <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_kurskaya">Записаться в боте</a>
               <a class="cat-secondary" href="kurskaya/">Все фото</a>
             </div>
-            <p class="cat-off-note">Пока недоступна — спросите в боте про ближайшие даты</p>
           </div>
         </article>
-        <article class="cat-card is-off" data-roof-id="taganskaya-skatnaya" data-order="9" data-roof-name="Таганская Скатная" data-slug="taganskaya-skatnaya">
+        <article class="cat-card" data-roof-id="taganskaya-skatnaya" data-roof-name="Таганская Скатная" data-slug="taganskaya-skatnaya" hidden>
           <div class="cat-media">
             <div class="cat-rail" role="group" aria-roledescription="галерея" aria-label="Фотографии: Таганская Скатная" tabindex="0"><div class="cat-slide" role="group" aria-label="Фото 1 из 5"><picture><source type="image/avif" data-srcset="../assets/locations/taganskaya-skatnaya-01-640.avif 480w, ../assets/locations/taganskaya-skatnaya-01-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/taganskaya-skatnaya-01-640.webp 480w, ../assets/locations/taganskaya-skatnaya-01-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-skatnaya-01-640.jpg" data-srcset="../assets/locations/taganskaya-skatnaya-01-640.jpg 480w, ../assets/locations/taganskaya-skatnaya-01-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Скатная крыша и высотка на Котельнической набережной на закате" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 2 из 5"><picture><source type="image/avif" data-srcset="../assets/locations/taganskaya-skatnaya-05-640.avif 480w, ../assets/locations/taganskaya-skatnaya-05-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/taganskaya-skatnaya-05-640.webp 480w, ../assets/locations/taganskaya-skatnaya-05-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-skatnaya-05-640.jpg" data-srcset="../assets/locations/taganskaya-skatnaya-05-640.jpg 480w, ../assets/locations/taganskaya-skatnaya-05-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Вечерний вид на высотку у Краснохолмского моста и Москва-реку" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 3 из 5"><picture><source type="image/avif" data-srcset="../assets/locations/taganskaya-skatnaya-06-640.avif 480w, ../assets/locations/taganskaya-skatnaya-06-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/taganskaya-skatnaya-06-640.webp 480w, ../assets/locations/taganskaya-skatnaya-06-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-skatnaya-06-640.jpg" data-srcset="../assets/locations/taganskaya-skatnaya-06-640.jpg 480w, ../assets/locations/taganskaya-skatnaya-06-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Подсвеченные дома на набережной и Москва-Сити на горизонте" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 4 из 5"><picture><source type="image/avif" data-srcset="../assets/locations/taganskaya-skatnaya-07-640.avif 480w, ../assets/locations/taganskaya-skatnaya-07-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/taganskaya-skatnaya-07-640.webp 480w, ../assets/locations/taganskaya-skatnaya-07-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-skatnaya-07-640.jpg" data-srcset="../assets/locations/taganskaya-skatnaya-07-640.jpg 480w, ../assets/locations/taganskaya-skatnaya-07-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Мост через Москва-реку и вечерние огни города с крыши" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 5 из 5"><picture><source type="image/avif" data-srcset="../assets/locations/taganskaya-skatnaya-04-640.avif 480w, ../assets/locations/taganskaya-skatnaya-04-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/taganskaya-skatnaya-04-640.webp 480w, ../assets/locations/taganskaya-skatnaya-04-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/taganskaya-skatnaya-04-640.jpg" data-srcset="../assets/locations/taganskaya-skatnaya-04-640.jpg 480w, ../assets/locations/taganskaya-skatnaya-04-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Москва-река, набережные и вечерняя панорама центра с крыши" loading="lazy" decoding="async" /></picture></div></div>
             <span class="cat-badge is-off">Пока недоступна</span>
-            <span class="cat-counter" data-total="5" aria-hidden="true">1 / 5</span>
-            <div class="cat-dots" aria-hidden="true"><span class="cat-dot is-active"></span><span class="cat-dot"></span><span class="cat-dot"></span><span class="cat-dot"></span><span class="cat-dot"></span></div>
-            <button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button><button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>
+            <div class="cat-dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i><i></i><i></i></div>
           </div>
           <div class="cat-body">
             <div class="cat-top">
@@ -550,16 +495,13 @@
               <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_taganskaya_skatnaya">Записаться в боте</a>
               <a class="cat-secondary" href="taganskaya-skatnaya/">Все фото</a>
             </div>
-            <p class="cat-off-note">Пока недоступна — спросите в боте про ближайшие даты</p>
           </div>
         </article>
-        <article class="cat-card is-off" data-roof-id="fili-city" data-order="10" data-roof-name="Фили 60 этажей" data-slug="fili-60-etazhey">
+        <article class="cat-card" data-roof-id="fili-city" data-roof-name="Фили 60 этажей" data-slug="fili-60-etazhey" hidden>
           <div class="cat-media">
             <div class="cat-rail" role="group" aria-roledescription="галерея" aria-label="Фотографии: Фили 60 этажей" tabindex="0"><div class="cat-slide" role="group" aria-label="Фото 1 из 5"><picture><source type="image/avif" data-srcset="../assets/locations/fili-moscow-city-05-640.avif 480w, ../assets/locations/fili-moscow-city-05-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/fili-moscow-city-05-640.webp 480w, ../assets/locations/fili-moscow-city-05-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-moscow-city-05-640.jpg" data-srcset="../assets/locations/fili-moscow-city-05-640.jpg 480w, ../assets/locations/fili-moscow-city-05-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Панорама Москва-Сити и Москва-реки с большой высоты вечером" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 2 из 5"><picture><source type="image/avif" data-srcset="../assets/locations/fili-moscow-city-04-640.avif 480w, ../assets/locations/fili-moscow-city-04-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/fili-moscow-city-04-640.webp 480w, ../assets/locations/fili-moscow-city-04-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-moscow-city-04-640.jpg" data-srcset="../assets/locations/fili-moscow-city-04-640.jpg 480w, ../assets/locations/fili-moscow-city-04-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Панорама делового центра Москвы после заката" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 3 из 5"><picture><source type="image/avif" data-srcset="../assets/locations/fili-moscow-city-03-640.avif 480w, ../assets/locations/fili-moscow-city-03-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/fili-moscow-city-03-640.webp 480w, ../assets/locations/fili-moscow-city-03-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-moscow-city-03-640.jpg" data-srcset="../assets/locations/fili-moscow-city-03-640.jpg 480w, ../assets/locations/fili-moscow-city-03-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Вечерний вид на небоскрёбы Москва-Сити" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 4 из 5"><picture><source type="image/avif" data-srcset="../assets/locations/fili-moscow-city-02-640.avif 480w, ../assets/locations/fili-moscow-city-02-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/fili-moscow-city-02-640.webp 480w, ../assets/locations/fili-moscow-city-02-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-moscow-city-02-640.jpg" data-srcset="../assets/locations/fili-moscow-city-02-640.jpg 480w, ../assets/locations/fili-moscow-city-02-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Подсвеченные башни Москва-Сити и изгиб Москва-реки" loading="lazy" decoding="async" /></picture></div><div class="cat-slide" role="group" aria-label="Фото 5 из 5"><picture><source type="image/avif" data-srcset="../assets/locations/fili-moscow-city-01-640.avif 480w, ../assets/locations/fili-moscow-city-01-960.avif 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><source type="image/webp" data-srcset="../assets/locations/fili-moscow-city-01-640.webp 480w, ../assets/locations/fili-moscow-city-01-960.webp 720w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" /><img data-src="../assets/locations/fili-moscow-city-01-640.jpg" data-srcset="../assets/locations/fili-moscow-city-01-640.jpg 480w, ../assets/locations/fili-moscow-city-01-1280.jpg 960w" sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 980px) calc((100vw - 64px) / 2), 360px" width="960" height="1280" alt="Башни Москва-Сити и вечерний город за ограждением высокой площадки" loading="lazy" decoding="async" /></picture></div></div>
             <span class="cat-badge is-off">Пока недоступна</span>
-            <span class="cat-counter" data-total="5" aria-hidden="true">1 / 5</span>
-            <div class="cat-dots" aria-hidden="true"><span class="cat-dot is-active"></span><span class="cat-dot"></span><span class="cat-dot"></span><span class="cat-dot"></span><span class="cat-dot"></span></div>
-            <button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button><button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>
+            <div class="cat-dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i><i></i><i></i></div>
           </div>
           <div class="cat-body">
             <div class="cat-top">
@@ -572,7 +514,6 @@
               <a class="cat-book" href="https://t.me/MoscowRoofTopBot?start=book_fili_60_etazhey">Записаться в боте</a>
               <a class="cat-secondary" href="fili-60-etazhey/">Все фото</a>
             </div>
-            <p class="cat-off-note">Пока недоступна — спросите в боте про ближайшие даты</p>
           </div>
         </article>
 
@@ -654,6 +595,11 @@
         function normalizeRoofName(name) {
           return String(name || '').replace(/ё/g, 'е').replace(/Ё/g, 'Е').replace(/\s+/g, ' ').trim().toLowerCase();
         }
+        function plural(n, one, few, many) {
+          if (n % 10 === 1 && n % 100 !== 11) return one;
+          if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) return few;
+          return many;
+        }
         function formatPrice(value) {
           if (!value) return 'Цена по запросу';
           return new Intl.NumberFormat('ru-RU').format(value) + ' ₽';
@@ -701,6 +647,10 @@
           lazyImages.forEach(revealImage);
         }
 
+        // Фото в карточке — как на сайте: пальцем листайте, мышью ведите по фото
+        // (место курсора = номер кадра). Полоски внизу показывают, сколько кадров и
+        // какой сейчас на экране. Соседние кадры догружаем по намерению: жест пошёл
+        // вбок — на два вперёд, мышь двинулась по фото — все.
         cards.forEach(function (card) {
           var rail = card.querySelector('.cat-rail');
           if (!rail) return;
@@ -713,15 +663,27 @@
             if (!rail.dataset.touched && rail.scrollLeft !== 0) rail.scrollLeft = 0;
           }
           var slides = [].slice.call(rail.querySelectorAll('.cat-slide'));
-          var counter = card.querySelector('.cat-counter');
-          var dots = [].slice.call(card.querySelectorAll('.cat-dot'));
-          var total = counter ? Number(counter.dataset.total) || slides.length : slides.length;
+          var dots = [].slice.call(card.querySelectorAll('.cat-dots i'));
+          var total = slides.length;
+          var current = 0;
+          function revealUpTo(index) {
+            for (var i = 0; i <= Math.min(index, total - 1); i += 1) {
+              var img = slides[i].querySelector('img[data-src]');
+              if (img) revealImage(img);
+            }
+          }
+          function setCurrent(index) {
+            if (index === current) return;
+            if (dots[current]) dots[current].classList.remove('is-active');
+            if (dots[index]) dots[index].classList.add('is-active');
+            current = index;
+          }
           var ticking = false;
           function sync() {
-            var index = Math.round(rail.scrollLeft / Math.max(rail.clientWidth, 1));
-            if (counter) counter.textContent = Math.min(index + 1, total) + ' / ' + total;
-            dots.forEach(function (dot, i) { dot.classList.toggle('is-active', i === index); });
             ticking = false;
+            var index = Math.min(total - 1, Math.round(rail.scrollLeft / Math.max(rail.clientWidth, 1)));
+            setCurrent(index);
+            if (rail.dataset.touched) revealUpTo(index + 2);
           }
           rail.addEventListener(
             'scroll',
@@ -730,18 +692,54 @@
           );
           keepAtStart();
           window.addEventListener('load', keepAtStart);
+          if (total < 2) return;
+
+          // Касание само по себе — ещё не листание: при вертикальной прокрутке
+          // страницы палец тоже попадает на фото. Кадры греем, когда жест пошёл вбок.
+          var touchX = 0;
+          var touchY = 0;
+          var swiping = false;
+          rail.addEventListener('touchstart', function (event) {
+            touchX = event.touches[0].clientX;
+            touchY = event.touches[0].clientY;
+            swiping = false;
+          }, { passive: true });
+          rail.addEventListener('touchmove', function (event) {
+            if (swiping) return;
+            var dx = Math.abs(event.touches[0].clientX - touchX);
+            var dy = Math.abs(event.touches[0].clientY - touchY);
+            if (dx > 8 && dx > dy) {
+              swiping = true;
+              revealUpTo(current + 2);
+            }
+          }, { passive: true });
+
+          // pointerenter приходит и когда страница прокручивается под неподвижной
+          // мышью — поэтому смотрим только на настоящее движение курсора.
+          var media = card.querySelector('.cat-media');
+          media.addEventListener('pointermove', function (event) {
+            if (event.pointerType !== 'mouse' || !(event.movementX || event.movementY)) return;
+            rail.dataset.touched = '1';
+            revealUpTo(total - 1);
+            var rect = rail.getBoundingClientRect();
+            var index = Math.min(total - 1, Math.max(0, Math.floor((event.clientX - rect.left) / rect.width * total)));
+            if (index === current) return;
+            rail.scrollLeft = index * rail.clientWidth;
+            setCurrent(index);
+          });
+          media.addEventListener('pointerleave', function (event) {
+            if (event.pointerType !== 'mouse') return;
+            rail.scrollLeft = 0;
+            setCurrent(0);
+          });
 
           var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-          function step(direction) {
-            rail.scrollBy({ left: direction * rail.clientWidth, behavior: motion.matches ? 'auto' : 'smooth' });
-          }
-          var prev = card.querySelector('.cat-arrow-prev');
-          var next = card.querySelector('.cat-arrow-next');
-          if (prev) prev.addEventListener('click', function () { step(-1); });
-          if (next) next.addEventListener('click', function () { step(1); });
           rail.addEventListener('keydown', function (event) {
-            if (event.key === 'ArrowRight') { event.preventDefault(); step(1); }
-            if (event.key === 'ArrowLeft') { event.preventDefault(); step(-1); }
+            var direction = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
+            if (!direction) return;
+            event.preventDefault();
+            revealUpTo(current + 2);
+            rail.scrollBy({ left: direction * rail.clientWidth, behavior: motion.matches ? 'auto' : 'smooth' });
           });
         });
 
@@ -823,29 +821,10 @@
           try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data })); } catch (e) {}
         }
 
-        // Карточка возвращается на своё место, а не в хвост: data-order — это
-        // позиция крыши в katalog-data.json, и порядок ленты задаёт владелец
-        // папками в «Локации». appendChild сделал бы «вернулась = последняя».
-        function insertByOrder(feed, card) {
-          var order = Number(card.dataset.order || 0);
-          var siblings = feed.children;
-          for (var i = 0; i < siblings.length; i += 1) {
-            if (siblings[i] !== card && Number(siblings[i].dataset.order || 0) > order) {
-              feed.insertBefore(card, siblings[i]);
-              return;
-            }
-          }
-          feed.appendChild(card);
-        }
-
         function applyRoofData(data) {
           if (!data || !data.roofs) return;
-          var liveFeed = document.getElementById('cat-feed');      // на странице крыши их нет
-          var offFeed = document.getElementById('cat-feed-off');
-          var divider = document.getElementById('cat-divider');
           var known = {};
           var available = 0;
-          var moved = [];
           cards.forEach(function (card) {
             var key = normalizeRoofName(card.dataset.roofName);
             known[key] = true;
@@ -872,27 +851,19 @@
             if (isOn) available += 1;
             // Всё ниже — в обе стороны: статусы уже нарисованы при сборке, и
             // живой ответ должен уметь не только спрятать крышу, но и вернуть
-            // её обратно. Раньше is-off только добавлялся, и крыша, снова
-            // ставшая доступной, оставалась серой до перезагрузки.
+            // её обратно.
             card.classList.toggle('is-off', !isOn);
+            // Выключенную крышу в ленте не показываем вовсе — только карточку:
+            // на странице крыши тот же data-roof-name стоит на <main>, его
+            // прятать нельзя, там остаётся бейдж и строка «Пока недоступна».
+            if (card.classList.contains('cat-card')) card.hidden = !isOn;
             var offNote = card.querySelector('.cat-off-note');
             if (offNote) offNote.hidden = isOn;
-            var target = isOn ? liveFeed : offFeed;
-            // Трогаем DOM, только если карточка и правда не в той ленте:
-            // лишний appendChild — это лишний сдвиг вёрстки под пальцем.
-            if (target && card.parentNode !== target) moved.push({ card: card, target: target });
           });
-          moved.forEach(function (m) { insertByOrder(m.target, m.card); });
-          if (offFeed && divider) {
-            var hasOff = offFeed.children.length > 0;
-            offFeed.hidden = !hasOff;
-            divider.hidden = !hasOff;
-          }
 
           if (statusNode) {
-            if (available === cards.length) statusNode.innerHTML = 'Все <b>' + cards.length + '</b> крыш в расписании';
-            else if (available === 0) statusNode.textContent = 'Сегодня все крыши заняты — напишите в бота, подберём дату';
-            else statusNode.innerHTML = 'Сейчас в расписании <b>' + available + '</b> из ' + cards.length + ' крыш';
+            if (available === 0) statusNode.textContent = 'Сегодня все крыши заняты — напишите в бота, подберём дату';
+            else statusNode.innerHTML = 'Сейчас в расписании <b>' + available + '</b> ' + plural(available, 'крыша', 'крыши', 'крыш');
           }
 
           // Крыша есть в таблице, а фотографий на сайте ещё нет — показываем строкой.

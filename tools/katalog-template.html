@@ -55,17 +55,13 @@
       <main>
         <div class="cat-head">
           <h1>Крыши Москвы</h1>
-          <p class="cat-note">{{ROOF_COUNT}} крыш · цена за человека · час на площадке</p>
+          <p class="cat-note">Цена за человека · час на площадке</p>
           <p class="cat-status" id="cat-status" aria-live="polite">{{STATUS_TEXT}}</p>
         </div>
 
+        <!-- Только крыши, включённые в таблице: выключенные лежат здесь же с hidden. -->
         <div class="cat-feed" id="cat-feed">
 <!--CARDS-->
-        </div>
-
-        <h2 class="cat-divider" id="cat-divider"{{OFF_HIDDEN}}>Сейчас недоступны</h2>
-        <div class="cat-feed" id="cat-feed-off"{{OFF_HIDDEN}}>
-<!--CARDS_OFF-->
         </div>
 
         <section class="cat-more" id="cat-more" hidden>

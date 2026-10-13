@@ -221,15 +221,14 @@ def picture(photo: dict, sizes: str, *, eager: bool, prefix: str, ladder: tuple[
     return f"<picture>{sources}{img}</picture>"
 
 
-def render_card(roof: dict, price: int | None, first_card: bool, on: bool | None = None, prefix: str = "../assets/locations/", order: int = 0) -> str:
+def render_card(roof: dict, price: int | None, first_card: bool, on: bool | None = None, prefix: str = "../assets/locations/") -> str:
     photos = roof["photos"]
-    shown = photos
     total = len(photos)
     slides = "".join(
         f'<div class="cat-slide" role="group" aria-label="Фото {i + 1} из {total}">'
         + picture(photo, FEED_SIZES, eager=(i == 0 and first_card), prefix=prefix)
         + "</div>"
-        for i, photo in enumerate(shown)
+        for i, photo in enumerate(photos)
     )
     single = total == 1
     rail_attrs = (
@@ -237,41 +236,38 @@ def render_card(roof: dict, price: int | None, first_card: bool, on: bool | None
         if not single
         else f'role="group" aria-label="Фотография: {esc(roof["title"])}"'
     )
-    counter = "" if single else f'<span class="cat-counter" data-total="{total}" aria-hidden="true">1 / {total}</span>'
-    dots = ""
-    if 2 <= total <= 5:
-        dots = '<div class="cat-dots" aria-hidden="true">' + "".join(
-            f'<span class="cat-dot{" is-active" if i == 0 else ""}"></span>' for i in range(len(shown))
-        ) + "</div>"
-    arrows = (
+    # Полоски по числу кадров — как в карточках на сайте: сразу видно, сколько
+    # фото и какое сейчас на экране.
+    dots = (
         ""
         if single
-        else '<button class="cat-arrow cat-arrow-prev" type="button" aria-label="Предыдущее фото" tabindex="-1">‹</button>'
-        '<button class="cat-arrow cat-arrow-next" type="button" aria-label="Следующее фото" tabindex="-1">›</button>'
+        else '<div class="cat-dots" aria-hidden="true">'
+        + '<i class="is-active"></i>'
+        + "<i></i>" * (total - 1)
+        + "</div>"
     )
     tags = "".join(f"<li>{esc(t)}</li>" for t in roof["tags"])
-    # Бейдж и класс is-off — в разметке, а не в JS: иначе на медленном канале
-    # человек до ответа /api/roofs не видел статусов вовсе, а когда ответ
-    # приходил, карточки прыгали между лентами. Живой ответ теперь только
-    # правит расхождения.
+    # Бейдж — в разметке, а не в JS: иначе на медленном канале человек до
+    # ответа /api/roofs не видел статусов вовсе. Живой ответ только правит
+    # расхождения.
+    #
+    # Выключенную в таблице крышу в ленте не показываем вовсе (просьба
+    # владельца 13.10.2026: серые карточки «Пока недоступна» только мешают).
+    # Карточка остаётся в разметке с hidden: если крышу включат, живой ответ
+    # покажет её без пересборки каталога.
     if on is None:
         badge = '<span class="cat-badge" hidden></span>'
-        card_class = "cat-card"
-        off_note = '<p class="cat-off-note" hidden>'
     else:
         badge = (
             f'<span class="cat-badge{"" if on else " is-off"}">'
             f'{"В расписании" if on else "Пока недоступна"}</span>'
         )
-        card_class = "cat-card" if on else "cat-card is-off"
-        off_note = '<p class="cat-off-note" hidden>' if on else '<p class="cat-off-note">'
-    return f"""        <article class="{card_class}" data-roof-id="{roof['id']}" data-order="{order}" data-roof-name="{esc(roof['sheetName'])}" data-slug="{roof['slug']}">
+    hidden = " hidden" if on is False else ""
+    return f"""        <article class="cat-card" data-roof-id="{roof['id']}" data-roof-name="{esc(roof['sheetName'])}" data-slug="{roof['slug']}"{hidden}>
           <div class="cat-media">
             <div class="cat-rail" {rail_attrs}>{slides}</div>
             {badge}
-            {counter}
             {dots}
-            {arrows}
           </div>
           <div class="cat-body">
             <div class="cat-top">
@@ -284,7 +280,6 @@ def render_card(roof: dict, price: int | None, first_card: bool, on: bool | None
               <a class="cat-book" href="{BOT_URL}?start=book_{payload_for(roof['slug'])}">Записаться в боте</a>
               <a class="cat-secondary" href="{roof['slug']}/">Все фото</a>
             </div>
-            {off_note}Пока недоступна — спросите в боте про ближайшие даты</p>
           </div>
         </article>
 """
@@ -411,58 +406,33 @@ def main() -> int:
     script = (TOOLS / "katalog-shared.js").read_text(encoding="utf-8")
 
     # --- лента ------------------------------------------------------------
-    # Доступные и недоступные раскладываем по лентам уже здесь: раньше это
-    # делал JS после ответа API, и карточки на глазах прыгали вниз.
-    # data-order — место крыши в katalog-data.json. По нему клиент вернёт
-    # карточку на исходную позицию, если живой ответ разойдётся со снапшотом.
-    order_of = {roof["id"]: i for i, roof in enumerate(roofs)}
+    # Одна лента в порядке katalog-data.json (его задаёт владелец папками в
+    # «Локации»). Выключенные крыши лежат в ней же, но скрыты (см. render_card),
+    # поэтому вернувшаяся крыша встаёт на своё место, а не в хвост.
+    # Первый кадр первой видимой карточки грузится сразу: это первый экран.
+    first_live = next((roof["id"] for roof in live), None)
     cards = "".join(
-        render_card(
-            roof, price_for(roof["sheetName"]), index == 0, state_of[roof["id"]], feed_prefix, order_of[roof["id"]]
-        )
-        for index, roof in enumerate(live)
-    )
-    # Если доступных крыш нет вовсе, первый кадр всё равно должен грузиться
-    # сразу: иначе на первом экране не остаётся ни одного eager-кадра и всё
-    # ждёт выполнения скрипта.
-    cards_off = "".join(
-        render_card(
-            roof,
-            price_for(roof["sheetName"]),
-            not live and index == 0,
-            state_of[roof["id"]],
-            feed_prefix,
-            order_of[roof["id"]],
-        )
-        for index, roof in enumerate(off)
+        render_card(roof, price_for(roof["sheetName"]), roof["id"] == first_live, state_of[roof["id"]], feed_prefix)
+        for roof in roofs
     )
     if statuses is None:
         status_text = ""
-    elif not off:
-        status_text = f"Все <b>{len(live)}</b> {plural(len(live), 'крыша', 'крыши', 'крыш')} в расписании"
     elif not live:
         status_text = "Сегодня все крыши заняты — напишите в бота, подберём дату"
     else:
-        status_text = (
-            f"Сейчас в расписании <b>{len(live)}</b> из {len(roofs)} "
-            f"{plural(len(roofs), 'крыши', 'крыш', 'крыш')}"
-        )
+        status_text = f"Сейчас в расписании <b>{len(live)}</b> {plural(len(live), 'крыша', 'крыши', 'крыш')}"
     feed = (TOOLS / "katalog-template.html").read_text(encoding="utf-8")
     feed = (
         feed.replace("/*STYLES*/", styles)
         .replace("/*SCRIPT*/", script)
         .replace("<!--CARDS-->", cards)
-        .replace("<!--CARDS_OFF-->", cards_off)
         .replace("{{STATUS_TEXT}}", status_text)
         .replace("{{ASSETS_PRECONNECT}}", assets_preconnect)
-        .replace("{{OFF_HIDDEN}}", "" if off else " hidden")
-
         .replace("<!--ALIASES_JSON-->", json_for_script(aliases))
         .replace("{{BOT_URL}}", BOT_URL)
         .replace("{{API_URL}}", args.api_url)
         .replace("{{YANDEX_DISK_URL}}", YANDEX_DISK_URL)
         .replace("{{GOOGLE_DRIVE_URL}}", GOOGLE_DRIVE_URL)
-        .replace("{{ROOF_COUNT}}", str(len(roofs)))
     )
     # Данные галерей нужны только лайтбоксу на десктопе.
     feed = feed.replace(
@@ -503,7 +473,7 @@ def main() -> int:
         )
     total_photos = sum(len(r["photos"]) for r in roofs)
     if statuses is not None:
-        status_note = f"{len(live)} в расписании, {len(off)} нет"
+        status_note = f"{len(live)} в расписании, {len(off)} скрыто"
     else:
         status_note = "нет (офлайн-сборка)" if args.offline else "нет (в ответе не было ключа roofs)"
     print(

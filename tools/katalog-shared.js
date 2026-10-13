@@ -36,6 +36,11 @@
         function normalizeRoofName(name) {
           return String(name || '').replace(/ё/g, 'е').replace(/Ё/g, 'Е').replace(/\s+/g, ' ').trim().toLowerCase();
         }
+        function plural(n, one, few, many) {
+          if (n % 10 === 1 && n % 100 !== 11) return one;
+          if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) return few;
+          return many;
+        }
         function formatPrice(value) {
           if (!value) return 'Цена по запросу';
           return new Intl.NumberFormat('ru-RU').format(value) + ' ₽';
@@ -83,6 +88,10 @@
           lazyImages.forEach(revealImage);
         }
 
+        // Фото в карточке — как на сайте: пальцем листайте, мышью ведите по фото
+        // (место курсора = номер кадра). Полоски внизу показывают, сколько кадров и
+        // какой сейчас на экране. Соседние кадры догружаем по намерению: жест пошёл
+        // вбок — на два вперёд, мышь двинулась по фото — все.
         cards.forEach(function (card) {
           var rail = card.querySelector('.cat-rail');
           if (!rail) return;
@@ -95,15 +104,27 @@
             if (!rail.dataset.touched && rail.scrollLeft !== 0) rail.scrollLeft = 0;
           }
           var slides = [].slice.call(rail.querySelectorAll('.cat-slide'));
-          var counter = card.querySelector('.cat-counter');
-          var dots = [].slice.call(card.querySelectorAll('.cat-dot'));
-          var total = counter ? Number(counter.dataset.total) || slides.length : slides.length;
+          var dots = [].slice.call(card.querySelectorAll('.cat-dots i'));
+          var total = slides.length;
+          var current = 0;
+          function revealUpTo(index) {
+            for (var i = 0; i <= Math.min(index, total - 1); i += 1) {
+              var img = slides[i].querySelector('img[data-src]');
+              if (img) revealImage(img);
+            }
+          }
+          function setCurrent(index) {
+            if (index === current) return;
+            if (dots[current]) dots[current].classList.remove('is-active');
+            if (dots[index]) dots[index].classList.add('is-active');
+            current = index;
+          }
           var ticking = false;
           function sync() {
-            var index = Math.round(rail.scrollLeft / Math.max(rail.clientWidth, 1));
-            if (counter) counter.textContent = Math.min(index + 1, total) + ' / ' + total;
-            dots.forEach(function (dot, i) { dot.classList.toggle('is-active', i === index); });
             ticking = false;
+            var index = Math.min(total - 1, Math.round(rail.scrollLeft / Math.max(rail.clientWidth, 1)));
+            setCurrent(index);
+            if (rail.dataset.touched) revealUpTo(index + 2);
           }
           rail.addEventListener(
             'scroll',
@@ -112,18 +133,54 @@
           );
           keepAtStart();
           window.addEventListener('load', keepAtStart);
+          if (total < 2) return;
+
+          // Касание само по себе — ещё не листание: при вертикальной прокрутке
+          // страницы палец тоже попадает на фото. Кадры греем, когда жест пошёл вбок.
+          var touchX = 0;
+          var touchY = 0;
+          var swiping = false;
+          rail.addEventListener('touchstart', function (event) {
+            touchX = event.touches[0].clientX;
+            touchY = event.touches[0].clientY;
+            swiping = false;
+          }, { passive: true });
+          rail.addEventListener('touchmove', function (event) {
+            if (swiping) return;
+            var dx = Math.abs(event.touches[0].clientX - touchX);
+            var dy = Math.abs(event.touches[0].clientY - touchY);
+            if (dx > 8 && dx > dy) {
+              swiping = true;
+              revealUpTo(current + 2);
+            }
+          }, { passive: true });
+
+          // pointerenter приходит и когда страница прокручивается под неподвижной
+          // мышью — поэтому смотрим только на настоящее движение курсора.
+          var media = card.querySelector('.cat-media');
+          media.addEventListener('pointermove', function (event) {
+            if (event.pointerType !== 'mouse' || !(event.movementX || event.movementY)) return;
+            rail.dataset.touched = '1';
+            revealUpTo(total - 1);
+            var rect = rail.getBoundingClientRect();
+            var index = Math.min(total - 1, Math.max(0, Math.floor((event.clientX - rect.left) / rect.width * total)));
+            if (index === current) return;
+            rail.scrollLeft = index * rail.clientWidth;
+            setCurrent(index);
+          });
+          media.addEventListener('pointerleave', function (event) {
+            if (event.pointerType !== 'mouse') return;
+            rail.scrollLeft = 0;
+            setCurrent(0);
+          });
 
           var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-          function step(direction) {
-            rail.scrollBy({ left: direction * rail.clientWidth, behavior: motion.matches ? 'auto' : 'smooth' });
-          }
-          var prev = card.querySelector('.cat-arrow-prev');
-          var next = card.querySelector('.cat-arrow-next');
-          if (prev) prev.addEventListener('click', function () { step(-1); });
-          if (next) next.addEventListener('click', function () { step(1); });
           rail.addEventListener('keydown', function (event) {
-            if (event.key === 'ArrowRight') { event.preventDefault(); step(1); }
-            if (event.key === 'ArrowLeft') { event.preventDefault(); step(-1); }
+            var direction = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
+            if (!direction) return;
+            event.preventDefault();
+            revealUpTo(current + 2);
+            rail.scrollBy({ left: direction * rail.clientWidth, behavior: motion.matches ? 'auto' : 'smooth' });
           });
         });
 
@@ -205,29 +262,10 @@
           try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data })); } catch (e) {}
         }
 
-        // Карточка возвращается на своё место, а не в хвост: data-order — это
-        // позиция крыши в katalog-data.json, и порядок ленты задаёт владелец
-        // папками в «Локации». appendChild сделал бы «вернулась = последняя».
-        function insertByOrder(feed, card) {
-          var order = Number(card.dataset.order || 0);
-          var siblings = feed.children;
-          for (var i = 0; i < siblings.length; i += 1) {
-            if (siblings[i] !== card && Number(siblings[i].dataset.order || 0) > order) {
-              feed.insertBefore(card, siblings[i]);
-              return;
-            }
-          }
-          feed.appendChild(card);
-        }
-
         function applyRoofData(data) {
           if (!data || !data.roofs) return;
-          var liveFeed = document.getElementById('cat-feed');      // на странице крыши их нет
-          var offFeed = document.getElementById('cat-feed-off');
-          var divider = document.getElementById('cat-divider');
           var known = {};
           var available = 0;
-          var moved = [];
           cards.forEach(function (card) {
             var key = normalizeRoofName(card.dataset.roofName);
             known[key] = true;
@@ -254,27 +292,19 @@
             if (isOn) available += 1;
             // Всё ниже — в обе стороны: статусы уже нарисованы при сборке, и
             // живой ответ должен уметь не только спрятать крышу, но и вернуть
-            // её обратно. Раньше is-off только добавлялся, и крыша, снова
-            // ставшая доступной, оставалась серой до перезагрузки.
+            // её обратно.
             card.classList.toggle('is-off', !isOn);
+            // Выключенную крышу в ленте не показываем вовсе — только карточку:
+            // на странице крыши тот же data-roof-name стоит на <main>, его
+            // прятать нельзя, там остаётся бейдж и строка «Пока недоступна».
+            if (card.classList.contains('cat-card')) card.hidden = !isOn;
             var offNote = card.querySelector('.cat-off-note');
             if (offNote) offNote.hidden = isOn;
-            var target = isOn ? liveFeed : offFeed;
-            // Трогаем DOM, только если карточка и правда не в той ленте:
-            // лишний appendChild — это лишний сдвиг вёрстки под пальцем.
-            if (target && card.parentNode !== target) moved.push({ card: card, target: target });
           });
-          moved.forEach(function (m) { insertByOrder(m.target, m.card); });
-          if (offFeed && divider) {
-            var hasOff = offFeed.children.length > 0;
-            offFeed.hidden = !hasOff;
-            divider.hidden = !hasOff;
-          }
 
           if (statusNode) {
-            if (available === cards.length) statusNode.innerHTML = 'Все <b>' + cards.length + '</b> крыш в расписании';
-            else if (available === 0) statusNode.textContent = 'Сегодня все крыши заняты — напишите в бота, подберём дату';
-            else statusNode.innerHTML = 'Сейчас в расписании <b>' + available + '</b> из ' + cards.length + ' крыш';
+            if (available === 0) statusNode.textContent = 'Сегодня все крыши заняты — напишите в бота, подберём дату';
+            else statusNode.innerHTML = 'Сейчас в расписании <b>' + available + '</b> ' + plural(available, 'крыша', 'крыши', 'крыш');
           }
 
           // Крыша есть в таблице, а фотографий на сайте ещё нет — показываем строкой.
