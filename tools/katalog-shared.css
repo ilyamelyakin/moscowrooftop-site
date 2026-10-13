@@ -38,10 +38,10 @@
       }
       .cat-logo { display: flex; align-items: center; gap: 10px; margin: 0; font-weight: 800; letter-spacing: 0.02em; }
       .cat-logo span {
-        display: grid; place-items: center; width: 38px; height: 38px;
-        border: 1px solid var(--line); border-radius: 50%;
-        background: var(--panel); font-size: 0.78rem; color: var(--gold);
+        display: block; flex: none; width: 38px; height: 38px; overflow: hidden; border-radius: 50%;
+        background: linear-gradient(180deg, var(--gold), var(--amber) 60%, var(--rose));
       }
+      .cat-logo svg { display: block; width: 100%; height: 100%; fill: #18100a; }
       .is-miniapp .cat-header, .is-miniapp .cat-footer { display: none; }
 
       .cat-head { padding: 22px 0 6px; }

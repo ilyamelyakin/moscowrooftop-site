@@ -194,17 +194,22 @@ button {
   font-weight: 760;
 }
 
+/* Эмблема: силуэт высотки на закате (тот же рисунок, что в assets/favicon.svg). */
 .brand-mark {
-  display: grid;
+  display: block;
+  flex: none;
   width: 38px;
   height: 38px;
-  place-items: center;
-  border: 1px solid rgba(246, 197, 111, 0.52);
+  overflow: hidden;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(246, 197, 111, 0.24), rgba(255, 111, 97, 0.16));
-  color: var(--gold);
-  font-size: 0.74rem;
-  letter-spacing: 0.08em;
+  background: linear-gradient(180deg, var(--gold), var(--amber) 60%, var(--rose));
+}
+
+.brand-mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: #18100a;
 }
 
 .header-nav {
