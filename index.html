@@ -43,11 +43,22 @@
     <link
       rel="preload"
       as="image"
+      type="image/avif"
       fetchpriority="high"
-      imagesrcset="assets/hero-sunset-768.webp 768w, assets/hero-sunset-1280.webp 1280w, assets/hero-sunset-1920.webp 1920w"
+      media="(orientation: portrait)"
+      imagesrcset="assets/motion/hero-mobile-v1-poster-720.avif 720w, assets/motion/hero-mobile-v1-poster-1080.avif 1080w"
       imagesizes="100vw"
     />
-    <link rel="stylesheet" href="styles.css?v=20261013-emb" />
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      fetchpriority="high"
+      media="(orientation: landscape)"
+      imagesrcset="assets/motion/hero-desktop-v1-poster-1280.avif 1280w, assets/motion/hero-desktop-v1-poster-1920.avif 1920w"
+      imagesizes="100vw"
+    />
+    <link rel="stylesheet" href="styles.css?v=20261013-hero" />
 
     <script type="application/ld+json">
       {
@@ -248,20 +259,49 @@
 
     <main id="top">
       <section class="hero section-dark" aria-label="Moscow Rooftop">
-        <div class="hero-bg" aria-hidden="true">
+        <!-- Заставка = первый кадр ролика: script.js (bindHeroVideo) кладёт ролик поверх, и подмена
+             незаметна. Экран «стоя» — вертикальный ролик, «лёжа» — горизонтальный. -->
+        <div
+          class="hero-bg"
+          aria-hidden="true"
+          data-hero-video-portrait="assets/motion/hero-mobile-v1"
+          data-hero-video-landscape="assets/motion/hero-desktop-v1"
+        >
           <picture>
             <source
+              media="(orientation: portrait)"
+              type="image/avif"
+              srcset="assets/motion/hero-mobile-v1-poster-720.avif 720w, assets/motion/hero-mobile-v1-poster-1080.avif 1080w"
+              sizes="100vw"
+            />
+            <source
+              media="(orientation: portrait)"
               type="image/webp"
-              srcset="assets/hero-sunset-768.webp 768w, assets/hero-sunset-1280.webp 1280w, assets/hero-sunset-1920.webp 1920w"
+              srcset="assets/motion/hero-mobile-v1-poster-720.webp 720w, assets/motion/hero-mobile-v1-poster-1080.webp 1080w"
+              sizes="100vw"
+            />
+            <source
+              media="(orientation: portrait)"
+              srcset="assets/motion/hero-mobile-v1-poster-720.jpg 720w, assets/motion/hero-mobile-v1-poster-1080.jpg 1080w"
+              sizes="100vw"
+            />
+            <source
+              type="image/avif"
+              srcset="assets/motion/hero-desktop-v1-poster-1280.avif 1280w, assets/motion/hero-desktop-v1-poster-1920.avif 1920w"
+              sizes="100vw"
+            />
+            <source
+              type="image/webp"
+              srcset="assets/motion/hero-desktop-v1-poster-1280.webp 1280w, assets/motion/hero-desktop-v1-poster-1920.webp 1920w"
               sizes="100vw"
             />
             <img
               class="hero-image"
-              src="assets/hero-sunset-1280.jpg"
-              srcset="assets/hero-sunset-768.jpg 768w, assets/hero-sunset-1280.jpg 1280w, assets/hero-sunset-1920.jpg 1920w"
+              src="assets/motion/hero-desktop-v1-poster-1280.jpg"
+              srcset="assets/motion/hero-desktop-v1-poster-1280.jpg 1280w, assets/motion/hero-desktop-v1-poster-1920.jpg 1920w"
               sizes="100vw"
               width="1920"
-              height="1920"
+              height="1080"
               fetchpriority="high"
               alt=""
             />
@@ -1440,6 +1480,6 @@
       <span>© Moscow Rooftop</span>
     </footer>
 
-    <script src="script.js?v=20261013-p3b"></script>
+    <script src="script.js?v=20261013-hero"></script>
   </body>
 </html>

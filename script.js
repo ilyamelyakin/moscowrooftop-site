@@ -600,14 +600,109 @@ function bindReadProgress() {
   update();
 }
 
-// «Живая» плитка галереи: короткая беззвучная петля поверх фото. Не грузится при экономии
-// трафика, медленной сети и «уменьшить движение»; играет, только пока плитка на экране.
-function bindLiveTiles() {
-  const tiles = document.querySelectorAll('[data-live-video]');
+// Беззвучные фоновые ролики не грузим при экономии трафика, медленной сети и «уменьшить движение».
+function allowsAmbientVideo() {
   const connection = navigator.connection;
   const slowNetwork = connection?.saveData || /(^|-)(2g|3g)$/.test(connection?.effectiveType || '');
+  return !slowNetwork && !prefersReducedMotion() && 'IntersectionObserver' in window;
+}
 
-  if (!tiles.length || slowNetwork || prefersReducedMotion() || !('IntersectionObserver' in window)) {
+// Шапка главной: ролик поверх заставки (заставка — его первый кадр, подмена незаметна).
+// Экран «стоя» — вертикальный ролик, «лёжа» — горизонтальный. Грузится после load, чтобы не
+// отнимать канал у заставки (LCP), и стоит на паузе, пока шапку не видно.
+function bindHeroVideo() {
+  const holder = document.querySelector('[data-hero-video-landscape]');
+
+  if (!holder || !allowsAmbientVideo()) {
+    return;
+  }
+
+  const portrait = window.matchMedia('(orientation: portrait)');
+  let video = null;
+  let visible = false;
+
+  const drop = () => {
+    holder.classList.remove('is-live');
+    video?.remove();
+    video = null;
+  };
+
+  const mount = () => {
+    drop();
+    // Телефону стоя хватает 720 (низ шапки под затемнением), планшету стоя — 1080;
+    // горизонтальный 1920 — для широких и плотных экранов.
+    const width = holder.clientWidth;
+    const [base, size] = portrait.matches
+      ? [holder.dataset.heroVideoPortrait, width > 540 ? 1080 : 720]
+      : [holder.dataset.heroVideoLandscape, width * (window.devicePixelRatio || 1) > 1400 ? 1920 : 1280];
+    const current = document.createElement('video');
+    current.className = 'hero-video';
+    current.muted = true;
+    current.defaultMuted = true;
+    current.loop = true;
+    current.playsInline = true;
+    current.setAttribute('playsinline', '');
+    current.setAttribute('disablepictureinpicture', '');
+    current.preload = 'auto';
+    [
+      [`${base}-${size}.mp4`, `video/mp4; codecs="av01.0.${size >= 1080 ? '08' : '05'}M.08"`],
+      [`${base}-${size}-h264.mp4`, 'video/mp4; codecs="avc1.640028"'],
+    ].forEach(([src, type]) => {
+      const source = document.createElement('source');
+      source.src = src;
+      source.type = type;
+      current.append(source);
+    });
+    // Ошибка последнего источника — значит, не сыграл ни один: остаётся заставка.
+    current.lastElementChild.addEventListener('error', () => video === current && drop());
+    current.addEventListener('playing', () => holder.classList.add('is-live'), { once: true });
+    holder.append(current);
+    video = current;
+  };
+
+  const play = () => {
+    if (!video || !visible || document.hidden) {
+      return;
+    }
+    const current = video;
+    current.play()?.catch((error) => {
+      // AbortError — успели поставить на паузу до старта. Остальное (например, автозапуск
+      // запрещён режимом энергосбережения iOS) — оставляем заставку.
+      if (error?.name !== 'AbortError' && video === current) {
+        drop();
+      }
+    });
+  };
+
+  const start = () => {
+    mount();
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible) {
+        play();
+      } else {
+        video?.pause();
+      }
+    }).observe(holder);
+    document.addEventListener('visibilitychange', () => (document.hidden ? video?.pause() : play()));
+    portrait.addEventListener?.('change', () => {
+      mount();
+      play();
+    });
+  };
+
+  if (document.readyState === 'complete') {
+    start();
+  } else {
+    window.addEventListener('load', start, { once: true });
+  }
+}
+
+// «Живая» плитка галереи: короткая беззвучная петля поверх фото. Играет, только пока плитка на экране.
+function bindLiveTiles() {
+  const tiles = document.querySelectorAll('[data-live-video]');
+
+  if (!tiles.length || !allowsAmbientVideo()) {
     return;
   }
 
@@ -1490,6 +1585,7 @@ function initSite() {
   bindReadProgress();
   bindTrackedLinks();
   bindGalleryView();
+  bindHeroVideo();
   bindLiveTiles();
   bindRoofVideos();
   bindRoofCatalog();

@@ -306,6 +306,7 @@ button {
 .hero-bg {
   z-index: -3;
   background: #14100e;
+  transform: scale(1.02);
 }
 
 .hero-bg picture {
@@ -314,8 +315,16 @@ button {
   height: 100%;
 }
 
-.hero-image {
-  transform: scale(1.02);
+/* Ролик шапки (script.js, bindHeroVideo): проявляется поверх заставки, когда пошёл. */
+.hero-video {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 600ms var(--ease-out);
+}
+
+.hero-bg.is-live .hero-video {
+  opacity: 1;
 }
 
 .hero-overlay {
@@ -1872,7 +1881,7 @@ a.roof-gallery-button::after {
   background:
     linear-gradient(120deg, rgba(255, 158, 79, 0.22), rgba(255, 111, 97, 0.1) 42%, rgba(147, 197, 253, 0.1)),
     url("assets/hero-sunset-1280.jpg") center / cover no-repeat;
-  /* Блок перекрыт затемнением, поэтому хватает 768-webp — он уже в кэше после hero. */
+  /* Блок перекрыт затемнением, поэтому хватает 768-webp. */
   background:
     linear-gradient(120deg, rgba(255, 158, 79, 0.22), rgba(255, 111, 97, 0.1) 42%, rgba(147, 197, 253, 0.1)),
     image-set(url("assets/hero-sunset-768.webp") type("image/webp")) center / cover no-repeat;
@@ -2263,15 +2272,20 @@ a.roof-gallery-button::after {
     padding-bottom: 24px;
   }
 
-  /* Затемнение только под текстом и снизу: небо и Сити остаются яркими. */
+  /* Затемнение только под текстом и снизу: правая половина ролика остаётся яркой. Стопы
+     подобраны замером по кадрам ролика шапки (каждые 0.5 с, 1280–1920px): на худшем кадре
+     (вспышка салюта, белые вазоны) H1 около 4:1 (норма для крупного 3:1), надпись над H1 —
+     5.9:1, описание — 7.4:1. */
   .hero-overlay {
     background:
-      linear-gradient(90deg, rgba(8, 7, 6, 0.8) 0, rgba(8, 7, 6, 0.45) 40%, transparent 68%),
-      linear-gradient(180deg, rgba(8, 7, 6, 0.35) 0, transparent 20%, transparent 55%, rgba(8, 7, 6, 0.92) 100%);
+      linear-gradient(90deg, rgba(8, 7, 6, 0.84) 0, rgba(8, 7, 6, 0.6) 40%, rgba(8, 7, 6, 0.25) 62%, transparent 80%),
+      linear-gradient(180deg, rgba(8, 7, 6, 0.35) 0, transparent 20%, transparent 42%, rgba(8, 7, 6, 0.92) 100%);
   }
 
-  .hero-image {
-    object-position: 50% 40%;
+  /* Шапка ниже экрана и шире ролика 16:9 — срезаем в основном низ: шпили и солнце вверху. */
+  .hero-image,
+  .hero-video {
+    object-position: 50% 25%;
   }
 
   .booking-panel {
@@ -2695,16 +2709,19 @@ a.roof-gallery-button::after {
     padding: 104px 12px 34px;
   }
 
-  /* Стопы подобраны замером: контраст подписи и H1 не ниже 4.5:1 на 360–390px. */
+  /* Стопы подобраны замером по кадрам вертикального ролика шапки (каждые 0.5 с, 360–390px):
+     на худшем кадре надпись над H1 не ниже 4.8:1, H1 — 4.6:1, описание — 8:1. Затемнение
+     легче прежнего, чтобы ролик было видно; густая полоса на 15–20% — под надписью. */
   .hero-overlay {
     background: linear-gradient(
       180deg,
       rgba(8, 7, 6, 0.3) 0,
-      rgba(8, 7, 6, 0.22) 10%,
-      rgba(8, 7, 6, 0.5) 15%,
-      rgba(8, 7, 6, 0.7) 28%,
-      rgba(8, 7, 6, 0.84) 50%,
-      rgba(8, 7, 6, 0.96) 100%
+      rgba(8, 7, 6, 0.2) 10%,
+      rgba(8, 7, 6, 0.56) 15%,
+      rgba(8, 7, 6, 0.52) 20%,
+      rgba(8, 7, 6, 0.48) 28%,
+      rgba(8, 7, 6, 0.55) 50%,
+      rgba(8, 7, 6, 0.82) 100%
     );
   }
 
@@ -3193,9 +3210,10 @@ a.roof-gallery-button::after {
   }
 }
 
-/* Медленный «наезд» на фото шапки, один раз. Только transform: opacity у LCP не трогаем. */
+/* Медленный «наезд» на шапку, один раз. Только transform: opacity у LCP не трогаем.
+   Двигаем весь .hero-bg — заставку вместе с роликом, иначе при подмене они разъедутся. */
 @media (prefers-reduced-motion: no-preference) {
-  .hero-image {
+  .hero-bg {
     animation: hero-drift 10s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
