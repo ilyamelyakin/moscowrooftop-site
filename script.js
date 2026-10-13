@@ -242,8 +242,10 @@ function normalizeRoofName(value) {
     .trim();
 }
 
+// Автоматические браузеры (Playwright, Selenium — проверки сайта) в счётчики не пускаем:
+// 10–12.10.2026 они дали в GA4 «всплеск» прямых заходов с 8% вовлечённости.
 function isAnalyticsHost() {
-  return ANALYTICS_HOSTS.has(window.location.hostname);
+  return ANALYTICS_HOSTS.has(window.location.hostname) && !navigator.webdriver;
 }
 
 function isRealYMId() {
@@ -1676,8 +1678,8 @@ window.MRTAnalytics = {
 };
 window.trackEvent = trackEvent;
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initSite);
-} else {
-  initSite();
-}
+// script.js стоит последним в <body> на всех страницах: разметка уже разобрана, DOMContentLoaded
+// не ждём. Cloudflare дописывает после него свой маяк type="module", а модули задерживают
+// DOMContentLoaded: если маяк повиснет (мобильные сети РФ режут IP Cloudflare), без этого
+// не заработали бы ни форма заявки, ни счётчики.
+initSite();
