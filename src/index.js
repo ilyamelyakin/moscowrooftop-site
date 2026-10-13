@@ -748,6 +748,19 @@ export default {
       return withByteRanges(request, response);
     }
 
+    // _headers ставит /assets/*, *.css и *.js кеш на 30 дней — и ответу 404 тоже. Мост его
+    // честно хранил: заставку шапки, запрошенную за минуту до выкладки, 13.10.2026 телефоны
+    // получали битой. Ошибку не кешируем, чтобы новый файл появлялся сразу после деплоя.
+    if (response.status === 404) {
+      const headers = new Headers(response.headers);
+      headers.set("Cache-Control", "no-store");
+      return new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers,
+      });
+    }
+
     if (url.hostname.endsWith(".workers.dev")) {
       const headers = new Headers(response.headers);
       headers.set("X-Robots-Tag", "noindex");
