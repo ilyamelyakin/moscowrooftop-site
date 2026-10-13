@@ -59,8 +59,6 @@ p {
 .nav-toggle,
 .roof-card-media,
 .roof-gallery-button,
-.roof-lightbox-close,
-.roof-lightbox-control,
 .stepper-button,
 .social-btn,
 .contact-methods label,
@@ -143,6 +141,39 @@ button {
   -webkit-backdrop-filter: blur(22px);
   backdrop-filter: blur(22px);
   transform: translateX(-50%);
+}
+
+/* Линия прочитанного по нижнему краю шапки: растёт при прокрутке вниз, убывает вверх.
+   Chrome/Safari 26 — через scroll-timeline, остальные — через --read из script.js. */
+.site-header::after {
+  position: absolute;
+  right: 28px;
+  bottom: -1px;
+  left: 28px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--amber), var(--rose));
+  content: "";
+  pointer-events: none;
+  transform: scaleX(var(--read, 0));
+  transform-origin: 0 50%;
+}
+
+@supports (animation-timeline: scroll()) {
+  .site-header::after {
+    animation: read-progress linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+
+@keyframes read-progress {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
 }
 
 .brand,
@@ -373,9 +404,7 @@ h1 {
 }
 
 .stepper-button:active,
-.nav-toggle:active,
-.roof-lightbox-close:active,
-.roof-lightbox-control:active {
+.nav-toggle:active {
   transform: scale(0.92);
   transition-duration: var(--dur-press);
 }
@@ -783,7 +812,57 @@ h1 {
   aspect-ratio: 4 / 5;
   background: var(--ph, #15110e);
   color: inherit;
-  cursor: zoom-in;
+  cursor: pointer;
+}
+
+/* Все кадры крыши в карточке: мышью ведите по фото, пальцем листайте (script.js). */
+.roof-slides {
+  display: flex;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.roof-slides::-webkit-scrollbar {
+  display: none;
+}
+
+.roof-slide {
+  flex: 0 0 100%;
+  height: 100%;
+  scroll-snap-align: start;
+}
+
+/* Полоски по числу кадров; под ними лёгкое затемнение, чтобы их было видно на светлом небе. */
+.roof-dots {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  gap: 4px;
+  padding: 28px 12px 12px;
+  background: linear-gradient(transparent, rgba(8, 7, 6, 0.45));
+  pointer-events: none;
+}
+
+.roof-dots:empty {
+  display: none;
+}
+
+.roof-dots i {
+  height: 3px;
+  flex: 1;
+  border-radius: 2px;
+  background: rgba(255, 248, 236, 0.4);
+  transition: background-color 160ms ease;
+}
+
+.roof-dots i.is-active {
+  background: #fff8ec;
 }
 
 .roof-card-media picture,
@@ -797,19 +876,7 @@ h1 {
 }
 
 .roof-card-media img {
-  transition:
-    transform 320ms ease,
-    filter 160ms ease;
-}
-
-.roof-card-media:focus-visible img {
-  transform: scale(1.035);
-}
-
-@media (hover: hover) {
-  .roof-card:hover .roof-card-media img {
-    transform: scale(1.035);
-  }
+  transition: filter 160ms ease;
 }
 
 /* Карточку целиком не уменьшаем: дёргалась бы при каждой прокрутке. */
@@ -824,37 +891,9 @@ h1 {
 }
 
 .roof-card-media:focus-visible,
-.roof-lightbox button:focus-visible,
 .selected-roof a:focus-visible {
   outline: 3px solid rgba(246, 197, 111, 0.72);
   outline-offset: -3px;
-}
-
-.roof-photo-count {
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(8, 7, 6, 0.62);
-  color: var(--text);
-  font-size: 0.76rem;
-  font-weight: 760;
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-}
-
-.roof-photo-count::before {
-  width: 14px;
-  height: 14px;
-  flex: 0 0 14px;
-  background: currentColor;
-  content: "";
-  -webkit-mask: var(--icon-photos) center / contain no-repeat;
-  mask: var(--icon-photos) center / contain no-repeat;
 }
 
 .roof-card-body {
@@ -943,7 +982,8 @@ h1 {
 }
 
 a.roof-gallery-button {
-  justify-content: flex-end;
+  grid-column: 1 / -1;
+  justify-content: center;
   cursor: pointer;
 }
 
@@ -1011,197 +1051,39 @@ a.roof-gallery-button::after {
   text-underline-offset: 4px;
 }
 
-.roof-lightbox {
-  width: min(1060px, calc(100vw - 24px));
-  max-width: none;
-  max-height: calc(100svh - 24px);
-  overflow: hidden;
-  padding: 0;
-  border: 1px solid rgba(246, 197, 111, 0.3);
-  border-radius: var(--radius);
-  background: #0c0a08;
-  color: var(--text);
-  box-shadow: 0 30px 120px rgba(0, 0, 0, 0.72);
+/* «Живая» плитка: видео проявляется поверх фото, когда пошло (script.js, bindLiveTiles). */
+.gallery-live video {
+  position: absolute;
+  inset: 0;
   opacity: 0;
-  transform: scale(0.96);
-  transition:
-    opacity 150ms var(--ease-out),
-    transform 150ms var(--ease-out);
+  transition: opacity 400ms var(--ease-out);
 }
 
-.roof-lightbox[open] {
+.gallery-live.is-live video {
   opacity: 1;
-  transform: none;
-  transition-duration: 260ms;
 }
 
-@starting-style {
-  .roof-lightbox[open] {
-    opacity: 0;
-    transform: scale(0.96);
-  }
+/* Ролик на странице крыши: запускается по нажатию, грузится только тогда. */
+.gallery-video video {
+  background: #000;
 }
 
-.roof-lightbox::backdrop {
-  background: rgba(4, 3, 2, 0.84);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  opacity: 0;
-  transition: opacity 150ms var(--ease-out);
-}
-
-.roof-lightbox[open]::backdrop {
-  opacity: 1;
-  transition-duration: 260ms;
-}
-
-@starting-style {
-  .roof-lightbox[open]::backdrop {
-    opacity: 0;
-  }
-}
-
-/* Плавное закрытие — только с overlay (Chrome), иначе в Safari мелькает «призрак» окна. */
-@supports (overlay: auto) {
-  .roof-lightbox {
-    transition:
-      opacity 150ms var(--ease-out),
-      transform 150ms var(--ease-out),
-      overlay 150ms allow-discrete,
-      display 150ms allow-discrete;
-  }
-
-  .roof-lightbox::backdrop {
-    transition:
-      opacity 150ms var(--ease-out),
-      overlay 150ms allow-discrete,
-      display 150ms allow-discrete;
-  }
-}
-
-.roof-lightbox-shell {
-  display: grid;
-  max-height: calc(100svh - 24px);
-  grid-template-rows: auto minmax(0, 1fr) auto;
-}
-
-.roof-lightbox-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  padding: 18px 20px;
-  border-bottom: 1px solid var(--line);
-}
-
-.roof-lightbox-header .eyebrow {
-  margin-bottom: 5px;
-}
-
-.roof-lightbox-header h2 {
-  margin: 0;
-  font-size: clamp(1.2rem, 3vw, 1.75rem);
-  line-height: 1.16;
-}
-
-.roof-lightbox-close,
-.roof-lightbox-control {
-  display: grid;
-  flex: 0 0 auto;
-  place-items: center;
-  border: 1px solid rgba(255, 248, 236, 0.2);
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
+.gallery-video figcaption {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(8, 7, 6, 0.62);
   color: var(--text);
-  cursor: pointer;
-  transition:
-    border-color 160ms ease,
-    background 160ms ease,
-    transform var(--dur-ui) var(--ease-out);
+  font-size: 0.78rem;
+  font-weight: 760;
+  pointer-events: none;
+  transition: opacity 200ms ease;
 }
 
-.roof-lightbox-close {
-  width: 42px;
-  height: 42px;
-  font-size: 1.8rem;
-  line-height: 1;
-}
-
-.roof-lightbox-control {
-  width: 46px;
-  height: 46px;
-  font-size: 1.25rem;
-}
-
-@media (hover: hover) {
-  .roof-lightbox-close:hover,
-  .roof-lightbox-control:hover {
-    border-color: rgba(246, 197, 111, 0.65);
-    background: rgba(246, 197, 111, 0.12);
-  }
-}
-
-.roof-lightbox-control[hidden] {
-  display: none;
-}
-
-.roof-lightbox-actions {
-  display: flex;
-  justify-content: center;
-  padding: 0 16px 18px;
-}
-
-.roof-lightbox-stage {
-  display: grid;
-  min-height: 0;
-  align-items: center;
-  grid-template-columns: 64px minmax(0, 1fr) 64px;
-  gap: 8px;
-  padding: 16px;
-}
-
-.roof-lightbox-stage figure {
-  display: grid;
-  grid-column: 2;
-  min-width: 0;
-  min-height: 0;
-  margin: 0;
-  justify-items: center;
-}
-
-.roof-lightbox-stage picture {
-  display: flex;
-  width: 100%;
-  min-height: 0;
-  align-items: center;
-  justify-content: center;
-}
-
-.roof-lightbox-stage img {
-  width: auto;
-  max-width: 100%;
-  height: auto;
-  /* Шапка, подпись «1 из N» и кнопка внизу — фото не должно на них заезжать. */
-  max-height: calc(100vh - 250px);
-  max-height: calc(100svh - 250px);
-  border-radius: 6px;
-  object-fit: contain;
-  transition: opacity 150ms var(--ease-out);
-}
-
-/* Следующий кадр грузится / окно только открыли (script.js, updateLightbox). */
-.roof-lightbox-stage img.is-loading {
-  opacity: 0.55;
-}
-
-.roof-lightbox-stage img.is-pending {
+.gallery-video.is-playing figcaption {
   opacity: 0;
-}
-
-.roof-lightbox-stage figcaption {
-  margin-top: 10px;
-  color: var(--soft);
-  font-size: 0.82rem;
 }
 
 .gallery-large {
@@ -2016,6 +1898,14 @@ a.roof-gallery-button::after {
       linear-gradient(120deg, rgba(255, 158, 79, 0.16), rgba(255, 111, 97, 0.06) 42%, transparent),
       var(--cta-photo-set) center / cover no-repeat;
   }
+  /* На компьютере шапка крыши — версия 1920: берём тот же файл, он уже в кэше. */
+  @media (min-width: 981px) {
+    .final-cta[style*="--cta-photo-set-d"] {
+      background:
+        linear-gradient(120deg, rgba(255, 158, 79, 0.16), rgba(255, 111, 97, 0.06) 42%, transparent),
+        var(--cta-photo-set-d) center / cover no-repeat;
+    }
+  }
 }
 
 .final-cta[style*="--cta-photo"]::before {
@@ -2432,23 +2322,12 @@ a.roof-gallery-button::after {
     padding-block: clamp(28px, 4vw, 56px);
   }
 
-  /* Страницы крыш: вертикальное фото справа целиком по высоте, текст слева на тёмном фоне.
-     Затемнение сплошное почти до края фото (57.5%) и быстро сходит на нет, поэтому шва
-     на стыке не видно, а солнце в углу кадра не превращается в серое пятно. */
-  [data-roof-page] .page-hero img {
-    left: auto;
-    width: 42%;
-  }
-
+  /* Страницы крыш: фото на весь блок, как на посадочных; затемнение слева под текстом
+     плотнее — кадры крыш светлее (дневное небо). */
   [data-roof-page] .page-hero::before {
     background:
-      linear-gradient(90deg, rgb(8, 7, 6) 57.5%, rgba(8, 7, 6, 0.45) 59.5%, rgba(8, 7, 6, 0.12) 62%, rgba(8, 7, 6, 0) 65%),
-      linear-gradient(180deg, rgba(8, 7, 6, 0) 60%, rgba(8, 7, 6, 0.6));
-  }
-
-  /* Текст кончается на 57%, фото начинается с 58%: три кнопки героя от 1200px — в одну строку. */
-  [data-roof-page] .page-hero-content {
-    padding-right: 43%;
+      linear-gradient(90deg, rgba(8, 7, 6, 0.86), rgba(8, 7, 6, 0.5) 55%, rgba(8, 7, 6, 0.18)),
+      linear-gradient(180deg, transparent 40%, rgba(8, 7, 6, 0.7));
   }
 
   [data-roof-page] .page-hero h1 {
@@ -2471,7 +2350,8 @@ a.roof-gallery-button::after {
     flex: 0 1 calc(25% - 11px);
   }
 
-  .inner-page .gallery-item img {
+  .inner-page .gallery-item img,
+  .inner-page .gallery-item video {
     height: auto;
     aspect-ratio: 3 / 4;
   }
@@ -2729,7 +2609,8 @@ a.roof-gallery-button::after {
     flex: 0 1 calc(50% - 7px);
   }
 
-  .inner-page .gallery-item img {
+  .inner-page .gallery-item img,
+  .inner-page .gallery-item video {
     height: auto;
     max-height: 85vh;
     max-height: 85svh;
@@ -2914,102 +2795,6 @@ a.roof-gallery-button::after {
     gap: 10px;
   }
 
-  .roof-lightbox {
-    width: 100vw;
-    max-width: 100vw;
-    height: 100vh;
-    height: 100dvh;
-    max-height: 100vh;
-    max-height: 100dvh;
-    margin: 0;
-    border: 0;
-    border-radius: 0;
-  }
-
-  .roof-lightbox-shell {
-    height: 100%;
-    max-height: none;
-    grid-template-rows: auto minmax(0, 1fr) auto;
-  }
-
-  .roof-lightbox-header {
-    padding: 10px 12px 10px 16px;
-  }
-
-  .roof-lightbox-header .eyebrow {
-    margin-bottom: 2px;
-  }
-
-  .roof-lightbox-stage {
-    position: relative;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0;
-    padding: 0;
-  }
-
-  .roof-lightbox-stage figure {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  .roof-lightbox-stage img {
-    width: 100%;
-    max-height: calc(100vh - 170px);
-    max-height: calc(100dvh - 170px);
-    border-radius: 0;
-  }
-
-  .roof-lightbox-control {
-    position: absolute;
-    top: 50%;
-    z-index: 1;
-    width: 44px;
-    height: 44px;
-    transform: translateY(-50%);
-    background: rgba(10, 8, 7, 0.55);
-  }
-
-  .roof-lightbox-control:active {
-    transform: translateY(-50%) scale(0.92);
-  }
-
-  /* Полноэкранное окно приезжает снизу; размытие под ним не видно. */
-  .roof-lightbox {
-    transform: translateY(20px);
-  }
-
-  .roof-lightbox[open] {
-    transition-duration: 280ms;
-    transition-timing-function: var(--ease-drawer);
-  }
-
-  @starting-style {
-    .roof-lightbox[open] {
-      transform: translateY(20px);
-    }
-  }
-
-  .roof-lightbox::backdrop {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-
-  .roof-lightbox-prev {
-    left: 8px;
-  }
-
-  .roof-lightbox-next {
-    right: 8px;
-  }
-
-  .roof-lightbox-stage figcaption {
-    margin-top: 8px;
-  }
-
-  .roof-lightbox-actions {
-    padding: 8px 16px 12px;
-  }
-
   .trust-grid article {
     min-height: 0;
     padding: 14px;
@@ -3053,7 +2838,8 @@ a.roof-gallery-button::after {
     aspect-ratio: auto;
   }
 
-  .inner-page .gallery-item img {
+  .inner-page .gallery-item img,
+  .inner-page .gallery-item video {
     max-height: 82vh;
     max-height: 82svh;
   }
@@ -3361,78 +3147,13 @@ a.roof-gallery-button::after {
     max-width: 100%;
   }
 
-  .inner-page .gallery-item img {
+  .inner-page .gallery-item img,
+  .inner-page .gallery-item video {
     width: auto;
     max-width: 100%;
     height: calc(100vh - 110px);
     height: calc(100svh - 110px);
     max-height: none;
-  }
-
-  .roof-lightbox {
-    width: 100vw;
-    max-width: 100vw;
-    height: 100vh;
-    height: 100svh;
-    max-height: 100vh;
-    max-height: 100svh;
-    margin: 0;
-    border: 0;
-    border-radius: 0;
-  }
-
-  .roof-lightbox-shell {
-    position: relative;
-    height: 100%;
-    max-height: none;
-    grid-template-rows: minmax(0, 1fr);
-  }
-
-  .roof-lightbox-header {
-    position: absolute;
-    inset: 0 0 auto 0;
-    z-index: 2;
-    padding: 8px 12px;
-    border: 0;
-    background: linear-gradient(rgba(12, 10, 9, 0.85), rgba(12, 10, 9, 0));
-    pointer-events: none;
-  }
-
-  .roof-lightbox-header > * {
-    pointer-events: auto;
-  }
-
-  .roof-lightbox-header .eyebrow {
-    display: none;
-  }
-
-  .roof-lightbox-stage {
-    height: 100%;
-    padding: 6px 8px;
-  }
-
-  /* Снизу справа висит «Выбрать эту крышу» (44px + 10px отступ), а фото с подписью
-     центрируются по высоте — запас 110px, чтобы кнопка не ложилась на угол кадра. */
-  .roof-lightbox-stage img {
-    max-height: calc(100vh - 110px);
-    max-height: calc(100svh - 110px);
-  }
-
-  .roof-lightbox-stage figcaption {
-    margin-top: 4px;
-  }
-
-  .roof-lightbox-actions {
-    position: absolute;
-    right: 12px;
-    bottom: 10px;
-    z-index: 2;
-    padding: 0;
-  }
-
-  .roof-lightbox-actions .btn {
-    width: auto;
-    min-height: 44px;
   }
 }
 
@@ -3464,14 +3185,6 @@ a.roof-gallery-button::after {
 @media (max-width: 340px) {
   .site-header .brand {
     display: none;
-  }
-}
-
-/* Сенсорные экраны. */
-@media (hover: none) {
-  /* Пока окно с фото открыто, страница под ним не прокручивается. */
-  html:has(.roof-lightbox[open]) {
-    overflow: hidden;
   }
 }
 

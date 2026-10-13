@@ -47,7 +47,7 @@
       imagesrcset="assets/hero-sunset-768.webp 768w, assets/hero-sunset-1280.webp 1280w, assets/hero-sunset-1920.webp 1920w"
       imagesizes="100vw"
     />
-    <link rel="stylesheet" href="styles.css?v=20261013-p2b" />
+    <link rel="stylesheet" href="styles.css?v=20261013-p3b" />
 
     <script type="application/ld+json">
       {
@@ -513,25 +513,25 @@
               />
             </picture>
           </figure>
-          <figure class="gallery-item" style="--ph: #33302f">
+          <figure class="gallery-item gallery-live" style="--ph: #2e221d" data-live-video="assets/motion/live-ukraina-v1">
             <picture>
               <source
                 type="image/avif"
-                srcset="assets/locations/smolenskaya-05-640.avif 480w, assets/locations/smolenskaya-05-960.avif 720w, assets/locations/smolenskaya-05-1280.avif 960w"
+                srcset="assets/motion/live-ukraina-v1-poster-640.avif 480w, assets/motion/live-ukraina-v1-poster-960.avif 720w"
                 sizes="(max-width: 640px) 96vw, (max-width: 980px) 48vw, 285px"
               />
               <source
                 type="image/webp"
-                srcset="assets/locations/smolenskaya-05-640.webp 480w, assets/locations/smolenskaya-05-960.webp 720w, assets/locations/smolenskaya-05-1280.webp 960w"
+                srcset="assets/motion/live-ukraina-v1-poster-640.webp 480w, assets/motion/live-ukraina-v1-poster-960.webp 720w"
                 sizes="(max-width: 640px) 96vw, (max-width: 980px) 48vw, 285px"
               />
               <img
-                src="assets/locations/smolenskaya-05-640.jpg"
-                srcset="assets/locations/smolenskaya-05-640.jpg 480w, assets/locations/smolenskaya-05-1280.jpg 960w"
+                src="assets/motion/live-ukraina-v1-poster-640.jpg"
+                srcset="assets/motion/live-ukraina-v1-poster-640.jpg 480w, assets/motion/live-ukraina-v1-poster-960.jpg 720w"
                 sizes="(max-width: 640px) 96vw, (max-width: 980px) 48vw, 285px"
                 width="480"
                 height="640"
-                alt="Высотка МИД со шпилем в закатном свете под облачным небом"
+                alt="Вечерняя Москва с высоты: подсвеченная гостиница «Украина» и башни Москва-Сити на фоне оранжевого заката, внизу по проспекту течёт поток машин"
                 loading="lazy"
                 decoding="async"
               />
@@ -655,30 +655,32 @@
 
         <div class="roof-catalog-grid">
           <article class="roof-card" data-roof-id="fili-city" data-roof-name="Фили 60 этажей">
-            <button class="roof-card-media roof-preview" type="button" data-roof-id="fili-city" aria-label="Посмотреть фотографии локации Фили 60 этажей" style="--ph: #26272c">
-              <picture>
-                <source
-                  type="image/avif"
-                  srcset="assets/locations/fili-moscow-city-05-640.avif 480w, assets/locations/fili-moscow-city-05-960.avif 720w, assets/locations/fili-moscow-city-05-1280.avif 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <source
-                  type="image/webp"
-                  srcset="assets/locations/fili-moscow-city-05-640.webp 480w, assets/locations/fili-moscow-city-05-960.webp 720w, assets/locations/fili-moscow-city-05-1280.webp 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <img
-                  src="assets/locations/fili-moscow-city-05-640.jpg"
-                  srcset="assets/locations/fili-moscow-city-05-640.jpg 480w, assets/locations/fili-moscow-city-05-1280.jpg 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                  width="960"
-                  height="1280"
-                  alt="Вечерняя панорама башен Москва-Сити с высоты 60 этажей"
-                  loading="lazy"
-                />
-              </picture>
-              <span class="roof-photo-count">5 фото</span>
-            </button>
+            <a class="roof-card-media" href="kryshi/fili-60-etazhey/" aria-label="Фили 60 этажей: фото и подробности о крыше" style="--ph: #26272c">
+              <span class="roof-slides">
+                <picture class="roof-slide">
+                  <source
+                    type="image/avif"
+                    srcset="assets/locations/fili-moscow-city-05-640.avif 480w, assets/locations/fili-moscow-city-05-960.avif 720w, assets/locations/fili-moscow-city-05-1280.avif 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <source
+                    type="image/webp"
+                    srcset="assets/locations/fili-moscow-city-05-640.webp 480w, assets/locations/fili-moscow-city-05-960.webp 720w, assets/locations/fili-moscow-city-05-1280.webp 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <img
+                    src="assets/locations/fili-moscow-city-05-640.jpg"
+                    srcset="assets/locations/fili-moscow-city-05-640.jpg 480w, assets/locations/fili-moscow-city-05-1280.jpg 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                    width="960"
+                    height="1280"
+                    alt="Вечерняя панорама башен Москва-Сити с высоты 60 этажей"
+                    loading="lazy"
+                  />
+                </picture>
+              </span>
+              <span class="roof-dots" aria-hidden="true"></span>
+            </a>
             <div class="roof-card-body">
               <h3><a href="kryshi/fili-60-etazhey/">Фили 60 этажей</a></h3>
               <p>Панорама башен делового центра, Москва-реки и вечерних огней с высоты 60 этажей.</p>
@@ -689,36 +691,38 @@
               </ul>
               <div class="roof-card-actions">
                 <button class="btn btn-primary roof-select-button" type="button" data-roof-id="fili-city">Выбрать крышу</button>
-                <button class="roof-gallery-button roof-preview" type="button" data-roof-id="fili-city">Все 5 фото</button><a class="roof-gallery-button" href="kryshi/fili-60-etazhey/">Подробнее</a>
+                <a class="roof-gallery-button" href="kryshi/fili-60-etazhey/">Подробнее</a>
               </div>
             </div>
           </article>
 
           <article class="roof-card" data-roof-id="fili-rooftop" data-roof-name="Фили">
-            <button class="roof-card-media roof-preview" type="button" data-roof-id="fili-rooftop" aria-label="Посмотреть фотографии локации Фили" style="--ph: #2f3032">
-              <picture>
-                <source
-                  type="image/avif"
-                  srcset="assets/locations/fili-rooftop-04-640.avif 480w, assets/locations/fili-rooftop-04-960.avif 720w, assets/locations/fili-rooftop-04-1280.avif 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <source
-                  type="image/webp"
-                  srcset="assets/locations/fili-rooftop-04-640.webp 480w, assets/locations/fili-rooftop-04-960.webp 720w, assets/locations/fili-rooftop-04-1280.webp 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <img
-                  src="assets/locations/fili-rooftop-04-640.jpg"
-                  srcset="assets/locations/fili-rooftop-04-640.jpg 480w, assets/locations/fili-rooftop-04-1280.jpg 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                  width="960"
-                  height="1280"
-                  alt="Башни Москва-Сити в розовом закатном свете, внизу крыша и набережная"
-                  loading="lazy"
-                />
-              </picture>
-              <span class="roof-photo-count">6 фото</span>
-            </button>
+            <a class="roof-card-media" href="kryshi/fili/" aria-label="Фили: фото и подробности о крыше" style="--ph: #2f3032">
+              <span class="roof-slides">
+                <picture class="roof-slide">
+                  <source
+                    type="image/avif"
+                    srcset="assets/locations/fili-rooftop-04-640.avif 480w, assets/locations/fili-rooftop-04-960.avif 720w, assets/locations/fili-rooftop-04-1280.avif 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <source
+                    type="image/webp"
+                    srcset="assets/locations/fili-rooftop-04-640.webp 480w, assets/locations/fili-rooftop-04-960.webp 720w, assets/locations/fili-rooftop-04-1280.webp 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <img
+                    src="assets/locations/fili-rooftop-04-640.jpg"
+                    srcset="assets/locations/fili-rooftop-04-640.jpg 480w, assets/locations/fili-rooftop-04-1280.jpg 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                    width="960"
+                    height="1280"
+                    alt="Башни Москва-Сити в розовом закатном свете, внизу крыша и набережная"
+                    loading="lazy"
+                  />
+                </picture>
+              </span>
+              <span class="roof-dots" aria-hidden="true"></span>
+            </a>
             <div class="roof-card-body">
               <h3><a href="kryshi/fili/">Фили</a></h3>
               <p>Крыша с прямым видом на башни Москва-Сити: Москва-река и жилые кварталы в закатном свете.</p>
@@ -729,36 +733,38 @@
               </ul>
               <div class="roof-card-actions">
                 <button class="btn btn-primary roof-select-button" type="button" data-roof-id="fili-rooftop">Выбрать крышу</button>
-                <button class="roof-gallery-button roof-preview" type="button" data-roof-id="fili-rooftop">Все 6 фото</button><a class="roof-gallery-button" href="kryshi/fili/">Подробнее</a>
+                <a class="roof-gallery-button" href="kryshi/fili/">Подробнее</a>
               </div>
             </div>
           </article>
 
           <article class="roof-card" data-roof-id="kievskaya-skatnaya" data-roof-name="Киевская Скатная">
-            <button class="roof-card-media roof-preview" type="button" data-roof-id="kievskaya-skatnaya" aria-label="Посмотреть фотографии локации Киевская Скатная" style="--ph: #372e2b">
-              <picture>
-                <source
-                  type="image/avif"
-                  srcset="assets/locations/kievskaya-skatnaya-01-640.avif 360w, assets/locations/kievskaya-skatnaya-01-960.avif 540w, assets/locations/kievskaya-skatnaya-01-1280.avif 720w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <source
-                  type="image/webp"
-                  srcset="assets/locations/kievskaya-skatnaya-01-640.webp 360w, assets/locations/kievskaya-skatnaya-01-960.webp 540w, assets/locations/kievskaya-skatnaya-01-1280.webp 720w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <img
-                  src="assets/locations/kievskaya-skatnaya-01-640.jpg"
-                  srcset="assets/locations/kievskaya-skatnaya-01-640.jpg 360w, assets/locations/kievskaya-skatnaya-01-1280.jpg 720w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                  width="720"
-                  height="1280"
-                  alt="Гостиница «Украина» на фоне алого закатного неба"
-                  loading="lazy"
-                />
-              </picture>
-              <span class="roof-photo-count">4 фото</span>
-            </button>
+            <a class="roof-card-media" href="kryshi/kievskaya-skatnaya/" aria-label="Киевская Скатная: фото и подробности о крыше" style="--ph: #372e2b">
+              <span class="roof-slides">
+                <picture class="roof-slide">
+                  <source
+                    type="image/avif"
+                    srcset="assets/locations/kievskaya-skatnaya-01-640.avif 360w, assets/locations/kievskaya-skatnaya-01-960.avif 540w, assets/locations/kievskaya-skatnaya-01-1280.avif 720w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <source
+                    type="image/webp"
+                    srcset="assets/locations/kievskaya-skatnaya-01-640.webp 360w, assets/locations/kievskaya-skatnaya-01-960.webp 540w, assets/locations/kievskaya-skatnaya-01-1280.webp 720w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <img
+                    src="assets/locations/kievskaya-skatnaya-01-640.jpg"
+                    srcset="assets/locations/kievskaya-skatnaya-01-640.jpg 360w, assets/locations/kievskaya-skatnaya-01-1280.jpg 720w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                    width="720"
+                    height="1280"
+                    alt="Гостиница «Украина» на фоне алого закатного неба"
+                    loading="lazy"
+                  />
+                </picture>
+              </span>
+              <span class="roof-dots" aria-hidden="true"></span>
+            </a>
             <div class="roof-card-body">
               <h3><a href="kryshi/kievskaya-skatnaya/">Киевская Скатная</a></h3>
               <p>Скатная крыша у Киевского вокзала: гостиница «Украина», вечерняя подсветка и виды на Москва-Сити.</p>
@@ -769,36 +775,38 @@
               </ul>
               <div class="roof-card-actions">
                 <button class="btn btn-primary roof-select-button" type="button" data-roof-id="kievskaya-skatnaya">Выбрать крышу</button>
-                <button class="roof-gallery-button roof-preview" type="button" data-roof-id="kievskaya-skatnaya">Все 4 фото</button><a class="roof-gallery-button" href="kryshi/kievskaya-skatnaya/">Подробнее</a>
+                <a class="roof-gallery-button" href="kryshi/kievskaya-skatnaya/">Подробнее</a>
               </div>
             </div>
           </article>
 
           <article class="roof-card" data-roof-id="kurskaya-sunset" data-roof-name="Курская">
-            <button class="roof-card-media roof-preview" type="button" data-roof-id="kurskaya-sunset" aria-label="Посмотреть фотографии локации Курская" style="--ph: #35261e">
-              <picture>
-                <source
-                  type="image/avif"
-                  srcset="assets/locations/kurskaya-center-view-03-640.avif 480w, assets/locations/kurskaya-center-view-03-960.avif 720w, assets/locations/kurskaya-center-view-03-1280.avif 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <source
-                  type="image/webp"
-                  srcset="assets/locations/kurskaya-center-view-03-640.webp 480w, assets/locations/kurskaya-center-view-03-960.webp 720w, assets/locations/kurskaya-center-view-03-1280.webp 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <img
-                  src="assets/locations/kurskaya-center-view-03-640.jpg"
-                  srcset="assets/locations/kurskaya-center-view-03-640.jpg 480w, assets/locations/kurskaya-center-view-03-1280.jpg 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                  width="960"
-                  height="1280"
-                  alt="Оранжевый закат над высотками и крышами исторического центра Москвы"
-                  loading="lazy"
-                />
-              </picture>
-              <span class="roof-photo-count">4 фото</span>
-            </button>
+            <a class="roof-card-media" href="kryshi/kurskaya/" aria-label="Курская: фото и подробности о крыше" style="--ph: #35261e">
+              <span class="roof-slides">
+                <picture class="roof-slide">
+                  <source
+                    type="image/avif"
+                    srcset="assets/locations/kurskaya-center-view-03-640.avif 480w, assets/locations/kurskaya-center-view-03-960.avif 720w, assets/locations/kurskaya-center-view-03-1280.avif 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <source
+                    type="image/webp"
+                    srcset="assets/locations/kurskaya-center-view-03-640.webp 480w, assets/locations/kurskaya-center-view-03-960.webp 720w, assets/locations/kurskaya-center-view-03-1280.webp 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <img
+                    src="assets/locations/kurskaya-center-view-03-640.jpg"
+                    srcset="assets/locations/kurskaya-center-view-03-640.jpg 480w, assets/locations/kurskaya-center-view-03-1280.jpg 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                    width="960"
+                    height="1280"
+                    alt="Оранжевый закат над высотками и крышами исторического центра Москвы"
+                    loading="lazy"
+                  />
+                </picture>
+              </span>
+              <span class="roof-dots" aria-hidden="true"></span>
+            </a>
             <div class="roof-card-body">
               <h3><a href="kryshi/kurskaya/">Курская</a></h3>
               <p>Закат над историческим центром: высотки, купола и городские крыши в мягком вечернем свете.</p>
@@ -809,36 +817,38 @@
               </ul>
               <div class="roof-card-actions">
                 <button class="btn btn-primary roof-select-button" type="button" data-roof-id="kurskaya-sunset">Выбрать крышу</button>
-                <button class="roof-gallery-button roof-preview" type="button" data-roof-id="kurskaya-sunset">Все 4 фото</button><a class="roof-gallery-button" href="kryshi/kurskaya/">Подробнее</a>
+                <a class="roof-gallery-button" href="kryshi/kurskaya/">Подробнее</a>
               </div>
             </div>
           </article>
 
           <article class="roof-card" data-roof-id="marksistskaya-high-rise" data-roof-name="Марксистская">
-            <button class="roof-card-media roof-preview" type="button" data-roof-id="marksistskaya-high-rise" aria-label="Посмотреть фотографии локации Марксистская" style="--ph: #372918">
-              <picture>
-                <source
-                  type="image/avif"
-                  srcset="assets/locations/marksistskaya-high-rise-04-640.avif 480w, assets/locations/marksistskaya-high-rise-04-960.avif 720w, assets/locations/marksistskaya-high-rise-04-1280.avif 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <source
-                  type="image/webp"
-                  srcset="assets/locations/marksistskaya-high-rise-04-640.webp 480w, assets/locations/marksistskaya-high-rise-04-960.webp 720w, assets/locations/marksistskaya-high-rise-04-1280.webp 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <img
-                  src="assets/locations/marksistskaya-high-rise-04-640.jpg"
-                  srcset="assets/locations/marksistskaya-high-rise-04-640.jpg 480w, assets/locations/marksistskaya-high-rise-04-1280.jpg 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                  width="960"
-                  height="1280"
-                  alt="Силуэт высотки на Котельнической набережной против закатного солнца"
-                  loading="lazy"
-                />
-              </picture>
-              <span class="roof-photo-count">9 фото</span>
-            </button>
+            <a class="roof-card-media" href="kryshi/marksistskaya/" aria-label="Марксистская: фото и подробности о крыше" style="--ph: #372918">
+              <span class="roof-slides">
+                <picture class="roof-slide">
+                  <source
+                    type="image/avif"
+                    srcset="assets/locations/marksistskaya-high-rise-04-640.avif 480w, assets/locations/marksistskaya-high-rise-04-960.avif 720w, assets/locations/marksistskaya-high-rise-04-1280.avif 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <source
+                    type="image/webp"
+                    srcset="assets/locations/marksistskaya-high-rise-04-640.webp 480w, assets/locations/marksistskaya-high-rise-04-960.webp 720w, assets/locations/marksistskaya-high-rise-04-1280.webp 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <img
+                    src="assets/locations/marksistskaya-high-rise-04-640.jpg"
+                    srcset="assets/locations/marksistskaya-high-rise-04-640.jpg 480w, assets/locations/marksistskaya-high-rise-04-1280.jpg 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                    width="960"
+                    height="1280"
+                    alt="Силуэт высотки на Котельнической набережной против закатного солнца"
+                    loading="lazy"
+                  />
+                </picture>
+              </span>
+              <span class="roof-dots" aria-hidden="true"></span>
+            </a>
             <div class="roof-card-body">
               <h3><a href="kryshi/marksistskaya/">Марксистская</a></h3>
               <p>Выразительный силуэт сталинской высотки и огни вечернего центра.</p>
@@ -849,36 +859,38 @@
               </ul>
               <div class="roof-card-actions">
                 <button class="btn btn-primary roof-select-button" type="button" data-roof-id="marksistskaya-high-rise">Выбрать крышу</button>
-                <button class="roof-gallery-button roof-preview" type="button" data-roof-id="marksistskaya-high-rise">Все 9 фото</button><a class="roof-gallery-button" href="kryshi/marksistskaya/">Подробнее</a>
+                <a class="roof-gallery-button" href="kryshi/marksistskaya/">Подробнее</a>
               </div>
             </div>
           </article>
 
           <article class="roof-card" data-roof-id="novokuznetskaya" data-roof-name="Новокузнецкая">
-            <button class="roof-card-media roof-preview" type="button" data-roof-id="novokuznetskaya" aria-label="Посмотреть фотографии локации Новокузнецкая" style="--ph: #132129">
-              <picture>
-                <source
-                  type="image/avif"
-                  srcset="assets/locations/novokuznetskaya-02-640.avif 480w, assets/locations/novokuznetskaya-02-960.avif 720w, assets/locations/novokuznetskaya-02-1280.avif 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <source
-                  type="image/webp"
-                  srcset="assets/locations/novokuznetskaya-02-640.webp 480w, assets/locations/novokuznetskaya-02-960.webp 720w, assets/locations/novokuznetskaya-02-1280.webp 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <img
-                  src="assets/locations/novokuznetskaya-02-640.jpg"
-                  srcset="assets/locations/novokuznetskaya-02-640.jpg 480w, assets/locations/novokuznetskaya-02-1280.jpg 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                  width="960"
-                  height="1280"
-                  alt="Подсвеченная высотка на Котельнической набережной над Москва-рекой вечером"
-                  loading="lazy"
-                />
-              </picture>
-              <span class="roof-photo-count">2 фото</span>
-            </button>
+            <a class="roof-card-media" href="kryshi/novokuznetskaya/" aria-label="Новокузнецкая: фото и подробности о крыше" style="--ph: #132129">
+              <span class="roof-slides">
+                <picture class="roof-slide">
+                  <source
+                    type="image/avif"
+                    srcset="assets/locations/novokuznetskaya-02-640.avif 480w, assets/locations/novokuznetskaya-02-960.avif 720w, assets/locations/novokuznetskaya-02-1280.avif 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <source
+                    type="image/webp"
+                    srcset="assets/locations/novokuznetskaya-02-640.webp 480w, assets/locations/novokuznetskaya-02-960.webp 720w, assets/locations/novokuznetskaya-02-1280.webp 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <img
+                    src="assets/locations/novokuznetskaya-02-640.jpg"
+                    srcset="assets/locations/novokuznetskaya-02-640.jpg 480w, assets/locations/novokuznetskaya-02-1280.jpg 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                    width="960"
+                    height="1280"
+                    alt="Подсвеченная высотка на Котельнической набережной над Москва-рекой вечером"
+                    loading="lazy"
+                  />
+                </picture>
+              </span>
+              <span class="roof-dots" aria-hidden="true"></span>
+            </a>
             <div class="roof-card-body">
               <h3><a href="kryshi/novokuznetskaya/">Новокузнецкая</a></h3>
               <p>Крыша над Москва-рекой — прямо напротив высотки на Котельнической набережной.</p>
@@ -889,36 +901,38 @@
               </ul>
               <div class="roof-card-actions">
                 <button class="btn btn-primary roof-select-button" type="button" data-roof-id="novokuznetskaya">Выбрать крышу</button>
-                <button class="roof-gallery-button roof-preview" type="button" data-roof-id="novokuznetskaya">Оба фото</button><a class="roof-gallery-button" href="kryshi/novokuznetskaya/">Подробнее</a>
+                <a class="roof-gallery-button" href="kryshi/novokuznetskaya/">Подробнее</a>
               </div>
             </div>
           </article>
 
           <article class="roof-card" data-roof-id="rimskaya-skyline" data-roof-name="Римская">
-            <button class="roof-card-media roof-preview" type="button" data-roof-id="rimskaya-skyline" aria-label="Посмотреть фотографии локации Римская" style="--ph: #352a1d">
-              <picture>
-                <source
-                  type="image/avif"
-                  srcset="assets/locations/rimskaya-city-sunset-01-640.avif 480w, assets/locations/rimskaya-city-sunset-01-960.avif 720w, assets/locations/rimskaya-city-sunset-01-1280.avif 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <source
-                  type="image/webp"
-                  srcset="assets/locations/rimskaya-city-sunset-01-640.webp 480w, assets/locations/rimskaya-city-sunset-01-960.webp 720w, assets/locations/rimskaya-city-sunset-01-1280.webp 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <img
-                  src="assets/locations/rimskaya-city-sunset-01-640.jpg"
-                  srcset="assets/locations/rimskaya-city-sunset-01-640.jpg 480w, assets/locations/rimskaya-city-sunset-01-1280.jpg 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                  width="960"
-                  height="1280"
-                  alt="Сталинская высотка на фоне башен Москва-Сити во время заката"
-                  loading="lazy"
-                />
-              </picture>
-              <span class="roof-photo-count">6 фото</span>
-            </button>
+            <a class="roof-card-media" href="kryshi/rimskaya/" aria-label="Римская: фото и подробности о крыше" style="--ph: #352a1d">
+              <span class="roof-slides">
+                <picture class="roof-slide">
+                  <source
+                    type="image/avif"
+                    srcset="assets/locations/rimskaya-city-sunset-01-640.avif 480w, assets/locations/rimskaya-city-sunset-01-960.avif 720w, assets/locations/rimskaya-city-sunset-01-1280.avif 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <source
+                    type="image/webp"
+                    srcset="assets/locations/rimskaya-city-sunset-01-640.webp 480w, assets/locations/rimskaya-city-sunset-01-960.webp 720w, assets/locations/rimskaya-city-sunset-01-1280.webp 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <img
+                    src="assets/locations/rimskaya-city-sunset-01-640.jpg"
+                    srcset="assets/locations/rimskaya-city-sunset-01-640.jpg 480w, assets/locations/rimskaya-city-sunset-01-1280.jpg 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                    width="960"
+                    height="1280"
+                    alt="Сталинская высотка на фоне башен Москва-Сити во время заката"
+                    loading="lazy"
+                  />
+                </picture>
+              </span>
+              <span class="roof-dots" aria-hidden="true"></span>
+            </a>
             <div class="roof-card-body">
               <h3><a href="kryshi/rimskaya/">Римская</a></h3>
               <p>Классическая Москва на переднем плане и современный деловой центр вдали.</p>
@@ -929,36 +943,38 @@
               </ul>
               <div class="roof-card-actions">
                 <button class="btn btn-primary roof-select-button" type="button" data-roof-id="rimskaya-skyline">Выбрать крышу</button>
-                <button class="roof-gallery-button roof-preview" type="button" data-roof-id="rimskaya-skyline">Все 6 фото</button><a class="roof-gallery-button" href="kryshi/rimskaya/">Подробнее</a>
+                <a class="roof-gallery-button" href="kryshi/rimskaya/">Подробнее</a>
               </div>
             </div>
           </article>
 
           <article class="roof-card" data-roof-id="smolenskaya" data-roof-name="Смоленская">
-            <button class="roof-card-media roof-preview" type="button" data-roof-id="smolenskaya" aria-label="Посмотреть фотографии локации Смоленская" style="--ph: #333333">
-              <picture>
-                <source
-                  type="image/avif"
-                  srcset="assets/locations/smolenskaya-04-640.avif 480w, assets/locations/smolenskaya-04-960.avif 720w, assets/locations/smolenskaya-04-1280.avif 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <source
-                  type="image/webp"
-                  srcset="assets/locations/smolenskaya-04-640.webp 480w, assets/locations/smolenskaya-04-960.webp 720w, assets/locations/smolenskaya-04-1280.webp 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <img
-                  src="assets/locations/smolenskaya-04-640.jpg"
-                  srcset="assets/locations/smolenskaya-04-640.jpg 480w, assets/locations/smolenskaya-04-1280.jpg 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                  width="960"
-                  height="1280"
-                  alt="Москва-река с прогулочным теплоходом и мостом, за рекой башни Москва-Сити и гостиница «Украина»"
-                  loading="lazy"
-                />
-              </picture>
-              <span class="roof-photo-count">8 фото</span>
-            </button>
+            <a class="roof-card-media" href="kryshi/smolenskaya/" aria-label="Смоленская: фото и подробности о крыше" style="--ph: #333333">
+              <span class="roof-slides">
+                <picture class="roof-slide">
+                  <source
+                    type="image/avif"
+                    srcset="assets/locations/smolenskaya-04-640.avif 480w, assets/locations/smolenskaya-04-960.avif 720w, assets/locations/smolenskaya-04-1280.avif 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <source
+                    type="image/webp"
+                    srcset="assets/locations/smolenskaya-04-640.webp 480w, assets/locations/smolenskaya-04-960.webp 720w, assets/locations/smolenskaya-04-1280.webp 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <img
+                    src="assets/locations/smolenskaya-04-640.jpg"
+                    srcset="assets/locations/smolenskaya-04-640.jpg 480w, assets/locations/smolenskaya-04-1280.jpg 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                    width="960"
+                    height="1280"
+                    alt="Москва-река с прогулочным теплоходом и мостом, за рекой башни Москва-Сити и гостиница «Украина»"
+                    loading="lazy"
+                  />
+                </picture>
+              </span>
+              <span class="roof-dots" aria-hidden="true"></span>
+            </a>
             <div class="roof-card-body">
               <h3><a href="kryshi/smolenskaya/">Смоленская</a></h3>
               <p>Крыша с видом на высотку МИД: Бородинский мост, Москва-река, гостиница «Украина» и башни Сити в вечерних огнях.</p>
@@ -969,36 +985,38 @@
               </ul>
               <div class="roof-card-actions">
                 <button class="btn btn-primary roof-select-button" type="button" data-roof-id="smolenskaya">Выбрать крышу</button>
-                <button class="roof-gallery-button roof-preview" type="button" data-roof-id="smolenskaya">Все 8 фото</button><a class="roof-gallery-button" href="kryshi/smolenskaya/">Подробнее</a>
+                <a class="roof-gallery-button" href="kryshi/smolenskaya/">Подробнее</a>
               </div>
             </div>
           </article>
 
           <article class="roof-card" data-roof-id="taganskaya-golden-hour" data-roof-name="Таганская">
-            <button class="roof-card-media roof-preview" type="button" data-roof-id="taganskaya-golden-hour" aria-label="Посмотреть фотографии локации Таганская" style="--ph: #352512">
-              <picture>
-                <source
-                  type="image/avif"
-                  srcset="assets/locations/taganskaya-golden-hour-03-640.avif 480w, assets/locations/taganskaya-golden-hour-03-960.avif 720w, assets/locations/taganskaya-golden-hour-03-1280.avif 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <source
-                  type="image/webp"
-                  srcset="assets/locations/taganskaya-golden-hour-03-640.webp 480w, assets/locations/taganskaya-golden-hour-03-960.webp 720w, assets/locations/taganskaya-golden-hour-03-1280.webp 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <img
-                  src="assets/locations/taganskaya-golden-hour-03-640.jpg"
-                  srcset="assets/locations/taganskaya-golden-hour-03-640.jpg 480w, assets/locations/taganskaya-golden-hour-03-1280.jpg 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                  width="960"
-                  height="1280"
-                  alt="Солнечный диск и силуэты центра Москвы в золотом вечернем свете"
-                  loading="lazy"
-                />
-              </picture>
-              <span class="roof-photo-count">10 фото</span>
-            </button>
+            <a class="roof-card-media" href="kryshi/taganskaya/" aria-label="Таганская: фото и подробности о крыше" style="--ph: #352512">
+              <span class="roof-slides">
+                <picture class="roof-slide">
+                  <source
+                    type="image/avif"
+                    srcset="assets/locations/taganskaya-golden-hour-03-640.avif 480w, assets/locations/taganskaya-golden-hour-03-960.avif 720w, assets/locations/taganskaya-golden-hour-03-1280.avif 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <source
+                    type="image/webp"
+                    srcset="assets/locations/taganskaya-golden-hour-03-640.webp 480w, assets/locations/taganskaya-golden-hour-03-960.webp 720w, assets/locations/taganskaya-golden-hour-03-1280.webp 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <img
+                    src="assets/locations/taganskaya-golden-hour-03-640.jpg"
+                    srcset="assets/locations/taganskaya-golden-hour-03-640.jpg 480w, assets/locations/taganskaya-golden-hour-03-1280.jpg 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                    width="960"
+                    height="1280"
+                    alt="Солнечный диск и силуэты центра Москвы в золотом вечернем свете"
+                    loading="lazy"
+                  />
+                </picture>
+              </span>
+              <span class="roof-dots" aria-hidden="true"></span>
+            </a>
             <div class="roof-card-body">
               <h3><a href="kryshi/taganskaya/">Таганская</a></h3>
               <p>Тёплый свет, панорама центра, Кремль и выразительные городские силуэты.</p>
@@ -1009,36 +1027,38 @@
               </ul>
               <div class="roof-card-actions">
                 <button class="btn btn-primary roof-select-button" type="button" data-roof-id="taganskaya-golden-hour">Выбрать крышу</button>
-                <button class="roof-gallery-button roof-preview" type="button" data-roof-id="taganskaya-golden-hour">Все 10 фото</button><a class="roof-gallery-button" href="kryshi/taganskaya/">Подробнее</a>
+                <a class="roof-gallery-button" href="kryshi/taganskaya/">Подробнее</a>
               </div>
             </div>
           </article>
 
           <article class="roof-card" data-roof-id="taganskaya-skatnaya" data-roof-name="Таганская Скатная">
-            <button class="roof-card-media roof-preview" type="button" data-roof-id="taganskaya-skatnaya" aria-label="Посмотреть фотографии локации Таганская Скатная" style="--ph: #2a2825">
-              <picture>
-                <source
-                  type="image/avif"
-                  srcset="assets/locations/taganskaya-skatnaya-01-640.avif 480w, assets/locations/taganskaya-skatnaya-01-960.avif 720w, assets/locations/taganskaya-skatnaya-01-1280.avif 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <source
-                  type="image/webp"
-                  srcset="assets/locations/taganskaya-skatnaya-01-640.webp 480w, assets/locations/taganskaya-skatnaya-01-960.webp 720w, assets/locations/taganskaya-skatnaya-01-1280.webp 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <img
-                  src="assets/locations/taganskaya-skatnaya-01-640.jpg"
-                  srcset="assets/locations/taganskaya-skatnaya-01-640.jpg 480w, assets/locations/taganskaya-skatnaya-01-1280.jpg 960w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                  width="960"
-                  height="1280"
-                  alt="Скатная крыша и высотка на Котельнической набережной на закате"
-                  loading="lazy"
-                />
-              </picture>
-              <span class="roof-photo-count">5 фото</span>
-            </button>
+            <a class="roof-card-media" href="kryshi/taganskaya-skatnaya/" aria-label="Таганская Скатная: фото и подробности о крыше" style="--ph: #2a2825">
+              <span class="roof-slides">
+                <picture class="roof-slide">
+                  <source
+                    type="image/avif"
+                    srcset="assets/locations/taganskaya-skatnaya-01-640.avif 480w, assets/locations/taganskaya-skatnaya-01-960.avif 720w, assets/locations/taganskaya-skatnaya-01-1280.avif 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <source
+                    type="image/webp"
+                    srcset="assets/locations/taganskaya-skatnaya-01-640.webp 480w, assets/locations/taganskaya-skatnaya-01-960.webp 720w, assets/locations/taganskaya-skatnaya-01-1280.webp 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <img
+                    src="assets/locations/taganskaya-skatnaya-01-640.jpg"
+                    srcset="assets/locations/taganskaya-skatnaya-01-640.jpg 480w, assets/locations/taganskaya-skatnaya-01-1280.jpg 960w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                    width="960"
+                    height="1280"
+                    alt="Скатная крыша и высотка на Котельнической набережной на закате"
+                    loading="lazy"
+                  />
+                </picture>
+              </span>
+              <span class="roof-dots" aria-hidden="true"></span>
+            </a>
             <div class="roof-card-body">
               <h3><a href="kryshi/taganskaya-skatnaya/">Таганская Скатная</a></h3>
               <p>Скатная крыша над старой Таганкой: Москва-река, мосты и высотка на Котельнической.</p>
@@ -1049,36 +1069,38 @@
               </ul>
               <div class="roof-card-actions">
                 <button class="btn btn-primary roof-select-button" type="button" data-roof-id="taganskaya-skatnaya">Выбрать крышу</button>
-                <button class="roof-gallery-button roof-preview" type="button" data-roof-id="taganskaya-skatnaya">Все 5 фото</button><a class="roof-gallery-button" href="kryshi/taganskaya-skatnaya/">Подробнее</a>
+                <a class="roof-gallery-button" href="kryshi/taganskaya-skatnaya/">Подробнее</a>
               </div>
             </div>
           </article>
 
           <article class="roof-card" data-roof-id="shelepikha-9" data-roof-name="Шелепиха 9 этажей">
-            <button class="roof-card-media roof-preview" type="button" data-roof-id="shelepikha-9" aria-label="Посмотреть фотографию локации Шелепиха 9 этажей" style="--ph: #1c1d1e">
-              <picture>
-                <source
-                  type="image/avif"
-                  srcset="assets/locations/shelepikha-9-01-640.avif 464w, assets/locations/shelepikha-9-01-960.avif 696w, assets/locations/shelepikha-9-01-1280.avif 928w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <source
-                  type="image/webp"
-                  srcset="assets/locations/shelepikha-9-01-640.webp 464w, assets/locations/shelepikha-9-01-960.webp 696w, assets/locations/shelepikha-9-01-1280.webp 928w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                />
-                <img
-                  src="assets/locations/shelepikha-9-01-640.jpg"
-                  srcset="assets/locations/shelepikha-9-01-640.jpg 464w, assets/locations/shelepikha-9-01-1280.jpg 928w"
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
-                  width="928"
-                  height="1280"
-                  alt="Ночные башни Москва-Сити в огнях и силуэт человека на крыше"
-                  loading="lazy"
-                />
-              </picture>
-              <span class="roof-photo-count">1 фото</span>
-            </button>
+            <a class="roof-card-media" href="kryshi/shelepikha-9-etazhey/" aria-label="Шелепиха 9 этажей: фото и подробности о крыше" style="--ph: #1c1d1e">
+              <span class="roof-slides">
+                <picture class="roof-slide">
+                  <source
+                    type="image/avif"
+                    srcset="assets/locations/shelepikha-9-01-640.avif 464w, assets/locations/shelepikha-9-01-960.avif 696w, assets/locations/shelepikha-9-01-1280.avif 928w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <source
+                    type="image/webp"
+                    srcset="assets/locations/shelepikha-9-01-640.webp 464w, assets/locations/shelepikha-9-01-960.webp 696w, assets/locations/shelepikha-9-01-1280.webp 928w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                  />
+                  <img
+                    src="assets/locations/shelepikha-9-01-640.jpg"
+                    srcset="assets/locations/shelepikha-9-01-640.jpg 464w, assets/locations/shelepikha-9-01-1280.jpg 928w"
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px"
+                    width="928"
+                    height="1280"
+                    alt="Ночные башни Москва-Сити в огнях и силуэт человека на крыше"
+                    loading="lazy"
+                  />
+                </picture>
+              </span>
+              <span class="roof-dots" aria-hidden="true"></span>
+            </a>
             <div class="roof-card-body">
               <h3><a href="kryshi/shelepikha-9-etazhey/">Шелепиха 9 этажей</a></h3>
               <p>Невысокая крыша с близким видом на небоскрёбы Москва-Сити — эффектные кадры в сумерках.</p>
@@ -1089,7 +1111,7 @@
               </ul>
               <div class="roof-card-actions">
                 <button class="btn btn-primary roof-select-button" type="button" data-roof-id="shelepikha-9">Выбрать крышу</button>
-                <button class="roof-gallery-button roof-preview" type="button" data-roof-id="shelepikha-9">Смотреть фото</button><a class="roof-gallery-button" href="kryshi/shelepikha-9-etazhey/">Подробнее</a>
+                <a class="roof-gallery-button" href="kryshi/shelepikha-9-etazhey/">Подробнее</a>
               </div>
             </div>
           </article>
@@ -1097,34 +1119,6 @@
 
         <p class="roof-catalog-note">Фотографии показывают характер вида. Доступность конкретной локации зависит от даты, времени и погоды. О том, как проходят прогулки и какие бывают форматы, — в гиде <a class="text-link" href="kryshi-moskvy/">«Крыши Москвы»</a>.</p>
       </section>
-
-      <dialog class="roof-lightbox" id="roof-lightbox" aria-labelledby="roof-lightbox-title">
-        <div class="roof-lightbox-shell">
-          <header class="roof-lightbox-header">
-            <div>
-              <p class="eyebrow">Фотографии локации</p>
-              <h2 id="roof-lightbox-title">Крыша Москвы</h2>
-            </div>
-            <button class="roof-lightbox-close" type="button" aria-label="Закрыть просмотр" title="Закрыть">×</button>
-          </header>
-          <div class="roof-lightbox-stage">
-            <button class="roof-lightbox-control roof-lightbox-prev" type="button" aria-label="Предыдущая фотография" title="Предыдущая">←</button>
-            <figure>
-              <picture>
-                <source id="roof-lightbox-source-avif" type="image/avif" />
-                <source id="roof-lightbox-source" type="image/webp" />
-                <!-- Заглушка 1x1: реальный кадр подставляет script.js при открытии. -->
-                <img id="roof-lightbox-image" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" width="960" height="1280" alt="" decoding="async" />
-              </picture>
-              <figcaption id="roof-lightbox-counter">1 из 1</figcaption>
-            </figure>
-            <button class="roof-lightbox-control roof-lightbox-next" type="button" aria-label="Следующая фотография" title="Следующая">→</button>
-          </div>
-          <div class="roof-lightbox-actions">
-            <button class="btn btn-primary roof-lightbox-select" type="button">Выбрать эту крышу</button>
-          </div>
-        </div>
-      </dialog>
 
       <section class="booking section" id="booking">
         <div class="booking-panel">
@@ -1446,6 +1440,6 @@
       <span>© Moscow Rooftop</span>
     </footer>
 
-    <script src="script.js?v=20261013-p2b"></script>
+    <script src="script.js?v=20261013-p3b"></script>
   </body>
 </html>

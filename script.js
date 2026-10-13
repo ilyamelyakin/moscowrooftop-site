@@ -128,8 +128,6 @@ const ROOF_GALLERIES = {
   },
 };
 
-const LIGHTBOX_SIZES = '(max-width: 640px) 100vw, 760px';
-const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
 
 function prefersReducedMotion() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -576,6 +574,131 @@ function bindGalleryView() {
   checkGalleryPosition();
 }
 
+// Линия прочитанного в шапке там, где CSS не умеет scroll-timeline (Firefox, старый Safari).
+function bindReadProgress() {
+  const header = document.querySelector('.site-header');
+  if (!header || (window.CSS?.supports && CSS.supports('animation-timeline: scroll()'))) {
+    return;
+  }
+
+  let queued = false;
+  const update = () => {
+    queued = false;
+    const root = document.documentElement;
+    const max = root.scrollHeight - window.innerHeight;
+    header.style.setProperty('--read', max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)).toFixed(4) : '0');
+  };
+  const queue = () => {
+    if (!queued) {
+      queued = true;
+      window.requestAnimationFrame(update);
+    }
+  };
+
+  window.addEventListener('scroll', queue, { passive: true });
+  window.addEventListener('resize', queue, { passive: true });
+  update();
+}
+
+// «Живая» плитка галереи: короткая беззвучная петля поверх фото. Не грузится при экономии
+// трафика, медленной сети и «уменьшить движение»; играет, только пока плитка на экране.
+function bindLiveTiles() {
+  const tiles = document.querySelectorAll('[data-live-video]');
+  const connection = navigator.connection;
+  const slowNetwork = connection?.saveData || /(^|-)(2g|3g)$/.test(connection?.effectiveType || '');
+
+  if (!tiles.length || slowNetwork || prefersReducedMotion() || !('IntersectionObserver' in window)) {
+    return;
+  }
+
+  let observer = null;
+
+  const createVideo = (tile) => {
+    const base = tile.dataset.liveVideo;
+    const rect = tile.getBoundingClientRect();
+    const scale = Math.max(rect.width / 480, rect.height / 640) * (window.devicePixelRatio || 1);
+    const size = scale > 1.15 ? 720 : 480;
+    const video = document.createElement('video');
+    video.muted = true;
+    video.defaultMuted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.setAttribute('playsinline', '');
+    video.setAttribute('aria-hidden', 'true');
+    video.setAttribute('disablepictureinpicture', '');
+    video.preload = 'auto';
+    [
+      [`${base}-${size}.mp4`, tile.dataset.liveAv1 || 'video/mp4; codecs="av01.0.05M.08"'],
+      [`${base}-${size}-h264.mp4`, 'video/mp4; codecs="avc1.640028"'],
+    ].forEach(([src, type]) => {
+      const source = document.createElement('source');
+      source.src = src;
+      source.type = type;
+      video.append(source);
+    });
+    // Ошибка последнего источника — значит, не сыграл ни один: остаётся фото.
+    video.lastElementChild.addEventListener('error', () => {
+      video.remove();
+      observer.unobserve(tile);
+    });
+    video.addEventListener('playing', () => tile.classList.add('is-live'), { once: true });
+    tile.append(video);
+    return video;
+  };
+
+  observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      const tile = entry.target;
+      let video = tile.querySelector('video');
+      if (entry.intersectionRatio >= 0.5) {
+        video = video || createVideo(tile);
+        video.play()?.catch((error) => {
+          // AbortError — плитку проскролили до старта (сработал pause): попробуем снова.
+          if (error?.name === 'AbortError') {
+            return;
+          }
+          tile.classList.remove('is-live');
+          video.remove();
+          observer.unobserve(tile);
+        });
+      } else if (video && entry.intersectionRatio < 0.1) {
+        video.pause();
+      }
+    });
+  }, { threshold: [0, 0.1, 0.5] });
+
+  tiles.forEach((tile) => observer.observe(tile));
+}
+
+// Ролик на странице крыши: подпись «Видео 0:07» прячется, когда ролик запустили.
+function bindRoofVideos() {
+  const videos = document.querySelectorAll('.gallery-video video');
+  const showPoster = (video) => {
+    if (video.dataset.poster && !video.poster) {
+      video.poster = video.dataset.poster;
+    }
+  };
+  const observer = 'IntersectionObserver' in window
+    ? new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            showPoster(entry.target);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '600px 0px' })
+    : null;
+
+  videos.forEach((video) => {
+    video.addEventListener('play', () => video.parentElement.classList.add('is-playing'));
+    if (observer) {
+      observer.observe(video);
+    } else {
+      showPoster(video);
+    }
+  });
+}
+
 function bindRoofCatalog() {
   const catalog = document.getElementById('catalog');
   const form = document.getElementById('lead-form');
@@ -596,24 +719,8 @@ function bindRoofCatalog() {
     option.dataset.roofId = card.dataset.roofId || '';
     roofInput.append(option);
   });
-  const dialog = document.getElementById('roof-lightbox');
-  const lightboxTitle = document.getElementById('roof-lightbox-title');
-  const lightboxSource = document.getElementById('roof-lightbox-source');
-  const lightboxSourceAvif = document.getElementById('roof-lightbox-source-avif');
-  const lightboxImage = document.getElementById('roof-lightbox-image');
-  const lightboxCounter = document.getElementById('roof-lightbox-counter');
-  const closeButton = dialog?.querySelector('.roof-lightbox-close');
-  const previousButton = dialog?.querySelector('.roof-lightbox-prev');
-  const nextButton = dialog?.querySelector('.roof-lightbox-next');
   let selectedRoofId = '';
-  let activeRoofId = '';
-  let activeImageIndex = 0;
   let hasTrackedCatalogView = false;
-  // Ответы для быстро пролистанных кадров отбрасываем по номеру запроса.
-  let lightboxToken = 0;
-  const preloadedImages = new Set();
-  // Незавершённые подгрузки: base → { roofId, index, img }.
-  const inflightPreloads = new Map();
 
   const getCard = (roofId) => cards.find((card) => card.dataset.roofId === roofId);
 
@@ -685,158 +792,140 @@ function bindRoofCatalog() {
     return `${image.base}-640.${ext} ${width640}w, ${middle}${image.base}-1280.${ext} ${width1280}w`;
   };
 
-  // Следующий кадр — заранее; при экономии трафика не грузим.
-  const preloadLightboxImage = (index) => {
-    const image = ROOF_GALLERIES[activeRoofId]?.images[index];
+  const CARD_SIZES = '(max-width: 640px) calc(100vw - 40px), (max-width: 980px) 50vw, 380px';
 
-    if (!image || preloadedImages.has(image.base) || navigator.connection?.saveData) {
-      return;
-    }
-
-    preloadedImages.add(image.base);
-    const preload = new Image();
-    preload.decoding = 'async';
-    if ('fetchPriority' in preload) {
-      preload.fetchPriority = 'low';
-    }
-    // Тот же формат, что браузер выбрал для показанного кадра, — иначе скачали бы дважды.
-    const ext = (lightboxImage.currentSrc.match(/\.(avif|webp|jpg)(?:$|\?)/) || [])[1] || 'webp';
-    preload.sizes = LIGHTBOX_SIZES;
-    preload.srcset = getSrcset(image, ext);
-    inflightPreloads.set(image.base, { roofId: activeRoofId, index, img: preload });
-    const settle = () => inflightPreloads.delete(image.base);
-    preload.addEventListener('load', settle, { once: true });
-    preload.addEventListener('error', settle, { once: true });
-  };
-
-  // Пролистали кадр, не дождавшись, — его подгрузка не должна отнимать скорость у нужного.
-  const cancelStalePreloads = () => {
-    inflightPreloads.forEach((entry, base) => {
-      if (entry.roofId !== activeRoofId || entry.index !== activeImageIndex) {
-        entry.img.removeAttribute('srcset');
-        entry.img.removeAttribute('src');
-        inflightPreloads.delete(base);
-        preloadedImages.delete(base);
-      }
+  const createSlide = (image) => {
+    const picture = document.createElement('picture');
+    picture.className = 'roof-slide';
+    [['avif', 'image/avif'], ['webp', 'image/webp']].forEach(([ext, type]) => {
+      const source = document.createElement('source');
+      source.type = type;
+      source.sizes = CARD_SIZES;
+      source.srcset = getSrcset(image, ext);
+      picture.append(source);
     });
+    const img = document.createElement('img');
+    const [width640] = image.w || [480, 960];
+    img.width = width640;
+    img.height = 640;
+    img.decoding = 'async';
+    img.alt = image.alt;
+    img.sizes = CARD_SIZES;
+    img.srcset = getSrcset(image, 'jpg');
+    img.src = `${image.base}-640.jpg`;
+    picture.append(img);
+    return picture;
   };
 
-  // direction: 1 — вперёд, -1 — назад, 0 — окно только открыли.
-  const updateLightbox = ({ direction = 0, viaKeyboard = false } = {}) => {
-    const gallery = ROOF_GALLERIES[activeRoofId];
-    const image = gallery?.images[activeImageIndex];
+  // Фото в карточке: мышью — ведите по фото (место курсора = номер кадра), пальцем —
+  // листайте. Кадры догружаются по намерению: мышью — сразу все, пальцем — на два вперёд.
+  const initCardGallery = (card) => {
+    const media = card.querySelector('.roof-card-media');
+    const track = media?.querySelector('.roof-slides');
+    const dots = media?.querySelector('.roof-dots');
+    const roofId = card.dataset.roofId || '';
+    const images = ROOF_GALLERIES[roofId]?.images || [];
 
-    if (!gallery || !image || !lightboxImage || !lightboxSource) {
+    if (!track || !dots || images.length < 2) {
       return;
     }
 
-    cancelStalePreloads();
-    const token = ++lightboxToken;
-    const counterText = `${activeImageIndex + 1} из ${gallery.images.length}`;
+    track.tabIndex = -1;
+    dots.replaceChildren(...images.map(() => document.createElement('i')));
+    dots.firstElementChild.classList.add('is-active');
+    let current = 0;
+    let hasTrackedOpen = false;
+    // Мышью «просмотр» — человек задержался на карточке и увидел хотя бы три кадра,
+    // а не пролетел курсором мимо.
+    const seenByMouse = new Set([0]);
+    let enteredAt = 0;
 
-    lightboxTitle.textContent = gallery.name;
-    if (direction === 0) {
-      // Пока кадр не готов, не показываем фото прошлой крыши.
-      lightboxImage.classList.add('is-pending');
-      lightboxCounter.textContent = counterText;
-    }
-    if (lightboxSourceAvif) {
-      lightboxSourceAvif.srcset = getSrcset(image, 'avif');
-      lightboxSourceAvif.sizes = LIGHTBOX_SIZES;
-    }
-    lightboxSource.srcset = getSrcset(image, 'webp');
-    lightboxSource.sizes = LIGHTBOX_SIZES;
-    lightboxImage.src = `${image.base}-1280.jpg`;
-    lightboxImage.srcset = getSrcset(image, 'jpg');
-    lightboxImage.sizes = LIGHTBOX_SIZES;
-    lightboxImage.alt = image.alt;
-
-    const hasMultipleImages = gallery.images.length > 1;
-    previousButton.hidden = !hasMultipleImages;
-    nextButton.hidden = !hasMultipleImages;
-
-    // Пока грузится новый кадр, на экране прежний (через 120 мс гаснет); номер — вместе с фото.
-    const decoded = typeof lightboxImage.decode === 'function'
-      ? lightboxImage.decode().catch(() => {})
-      : Promise.resolve();
-    const slowTimer = window.setTimeout(() => {
-      if (token === lightboxToken) {
-        lightboxImage.classList.add('is-loading');
+    const ensureSlides = (upTo) => {
+      const last = Math.min(upTo, images.length - 1);
+      for (let index = track.children.length; index <= last; index += 1) {
+        track.append(createSlide(images[index]));
       }
-    }, 120);
+    };
 
-    decoded.then(() => {
-      window.clearTimeout(slowTimer);
-      if (token !== lightboxToken) {
+    const trackOpen = () => {
+      if (!hasTrackedOpen) {
+        hasTrackedOpen = true;
+        trackEvent('roof_card_open', { roof_id: roofId, location: 'catalog' });
+      }
+    };
+
+    const setCurrent = (index) => {
+      if (index === current) {
         return;
       }
+      dots.children[current]?.classList.remove('is-active');
+      dots.children[index]?.classList.add('is-active');
+      current = index;
+    };
 
-      lightboxImage.classList.remove('is-loading', 'is-pending');
-      lightboxCounter.textContent = counterText;
-
-      if (direction !== 0 && typeof lightboxImage.animate === 'function') {
-        lightboxImage.getAnimations().forEach((animation) => animation.cancel());
-        const slide = !prefersReducedMotion() && !viaKeyboard;
-        lightboxImage.animate(
-          slide
-            ? [
-                { opacity: 0.4, transform: `translateX(${direction * 24}px)` },
-                { opacity: 1, transform: 'none' },
-              ]
-            : [{ opacity: 0.4 }, { opacity: 1 }],
-          { duration: slide ? 240 : 120, easing: EASE_OUT }
-        );
-      }
-
-      const count = gallery.images.length;
-      preloadLightboxImage((activeImageIndex + 1) % count);
-      if (direction < 0) {
-        preloadLightboxImage((activeImageIndex - 1 + count) % count);
+    // pointerenter приходит и когда страница прокручивается под неподвижной мышью — кадры
+    // грузим только при настоящем движении курсора.
+    media.addEventListener('pointerenter', (event) => {
+      if (event.pointerType === 'mouse') {
+        enteredAt = performance.now();
       }
     });
+    media.addEventListener('pointermove', (event) => {
+      if (event.pointerType !== 'mouse' || !(event.movementX || event.movementY)) {
+        return;
+      }
+      ensureSlides(images.length - 1);
+      const rect = track.getBoundingClientRect();
+      const ratio = (event.clientX - rect.left) / rect.width;
+      const index = Math.min(images.length - 1, Math.max(0, Math.floor(ratio * images.length)));
+      if (index !== current) {
+        ensureSlides(images.length - 1);
+        track.scrollLeft = index * track.clientWidth;
+        setCurrent(index);
+        seenByMouse.add(index);
+        if (seenByMouse.size >= 3 && performance.now() - enteredAt > 700) {
+          trackOpen();
+        }
+      }
+    });
+    media.addEventListener('pointerleave', (event) => {
+      if (event.pointerType === 'mouse') {
+        track.scrollLeft = 0;
+        setCurrent(0);
+      }
+    });
+    media.addEventListener('focus', () => ensureSlides(1));
+    // Касание само по себе — ещё не листание: при вертикальной прокрутке страницы палец тоже
+    // попадает на фото. Кадры догружаем, когда жест пошёл вбок.
+    let touched = false;
+    let touchX = 0;
+    let touchY = 0;
+    track.addEventListener('touchstart', (event) => {
+      touchX = event.touches[0].clientX;
+      touchY = event.touches[0].clientY;
+    }, { passive: true });
+    track.addEventListener('touchmove', (event) => {
+      if (touched) {
+        return;
+      }
+      const dx = Math.abs(event.touches[0].clientX - touchX);
+      const dy = Math.abs(event.touches[0].clientY - touchY);
+      if (dx > 8 && dx > dy) {
+        touched = true;
+        ensureSlides(current + 2);
+      }
+    }, { passive: true });
+    track.addEventListener('scroll', () => {
+      const index = Math.min(images.length - 1, Math.round(track.scrollLeft / track.clientWidth));
+      ensureSlides(index + 2);
+      setCurrent(index);
+      if (touched && index > 0) {
+        trackOpen();
+      }
+    }, { passive: true });
   };
 
-  const changeLightboxImage = (direction, { viaKeyboard = false } = {}) => {
-    const gallery = ROOF_GALLERIES[activeRoofId];
-
-    // Одно фото — листать некуда, кадр не должен «дёргаться».
-    if (!gallery || gallery.images.length < 2) {
-      return;
-    }
-
-    activeImageIndex = (activeImageIndex + direction + gallery.images.length) % gallery.images.length;
-    updateLightbox({ direction, viaKeyboard });
-  };
-
-  const openLightbox = (roofId) => {
-    if (!dialog || !ROOF_GALLERIES[roofId]) {
-      return;
-    }
-
-    activeRoofId = roofId;
-    activeImageIndex = 0;
-    updateLightbox();
-
-    if (typeof dialog.showModal === 'function') {
-      dialog.showModal();
-    } else {
-      dialog.setAttribute('open', '');
-    }
-
-    trackEvent('roof_card_open', { roof_id: roofId, location: 'catalog' });
-  };
-
-  const closeLightbox = () => {
-    if (!dialog) {
-      return;
-    }
-
-    if (typeof dialog.close === 'function') {
-      dialog.close();
-    } else {
-      dialog.removeAttribute('open');
-    }
-  };
+  cards.forEach(initCardGallery);
 
   catalog.querySelectorAll('.roof-select-button').forEach((button) => {
     button.setAttribute('aria-pressed', 'false');
@@ -847,10 +936,6 @@ function bindRoofCatalog() {
     });
   });
 
-  catalog.querySelectorAll('.roof-preview').forEach((button) => {
-    button.addEventListener('click', () => openLightbox(button.dataset.roofId || ''));
-  });
-
   // Выбор крыши прямо в форме подсвечивает карточку и запоминается.
   roofInput.addEventListener('change', () => {
     const option = roofInput.selectedOptions[0];
@@ -859,65 +944,6 @@ function bindRoofCatalog() {
     if (getCard(roofId)) {
       applySelection(roofId);
       trackEvent('roof_booking_click', { roof_id: roofId, location: 'form_select' });
-    }
-  });
-
-  // Из просмотра фото можно записаться сразу, не возвращаясь к карточке.
-  dialog?.querySelector('.roof-lightbox-select')?.addEventListener('click', () => {
-    const roofId = activeRoofId;
-
-    if (!getCard(roofId)) {
-      return;
-    }
-
-    closeLightbox();
-    applySelection(roofId, { scroll: true });
-    trackEvent('roof_booking_click', { roof_id: roofId, location: 'lightbox' });
-  });
-
-  closeButton?.addEventListener('click', closeLightbox);
-  previousButton?.addEventListener('click', () => changeLightboxImage(-1));
-  nextButton?.addEventListener('click', () => changeLightboxImage(1));
-
-  // Свайп влево/вправо по фото листает кадры (на телефоне стрелки маленькие).
-  const lightboxStage = dialog?.querySelector('.roof-lightbox-stage');
-  let touchStartX = null;
-  let touchStartY = 0;
-  lightboxStage?.addEventListener('touchstart', (event) => {
-    if (event.touches.length !== 1) {
-      touchStartX = null;
-      return;
-    }
-    touchStartX = event.touches[0].clientX;
-    touchStartY = event.touches[0].clientY;
-  }, { passive: true });
-  lightboxStage?.addEventListener('touchend', (event) => {
-    if (touchStartX === null) {
-      return;
-    }
-    const touch = event.changedTouches[0];
-    const dx = touch.clientX - touchStartX;
-    const dy = touch.clientY - touchStartY;
-    touchStartX = null;
-    // Фото увеличено двумя пальцами — не листаем.
-    if ((window.visualViewport?.scale || 1) > 1.01) {
-      return;
-    }
-    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-      changeLightboxImage(dx < 0 ? 1 : -1);
-    }
-  }, { passive: true });
-  dialog?.addEventListener('click', (event) => {
-    if (event.target === dialog) {
-      closeLightbox();
-    }
-  });
-  dialog?.addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowLeft') {
-      changeLightboxImage(-1, { viaKeyboard: true });
-    }
-    if (event.key === 'ArrowRight') {
-      changeLightboxImage(1, { viaKeyboard: true });
     }
   });
 
@@ -1461,8 +1487,11 @@ function initSite() {
   updateTelegramLinks();
   bindAnchorLinks();
   bindMobileNav();
+  bindReadProgress();
   bindTrackedLinks();
   bindGalleryView();
+  bindLiveTiles();
+  bindRoofVideos();
   bindRoofCatalog();
   bindRoofPage();
   bindScrollDepth();

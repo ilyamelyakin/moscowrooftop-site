@@ -625,6 +625,49 @@ async function handleLeadRequest(request, env, url, ctx) {
   return jsonResponse({ ok: true });
 }
 
+// Видео на сайте — короткие ролики до 1 МБ, поэтому диапазон проще вырезать из файла целиком.
+async function withByteRanges(request, response) {
+  const headers = new Headers(response.headers);
+  headers.set("Accept-Ranges", "bytes");
+  const range = request.headers.get("range");
+
+  if (!range || request.method !== "GET") {
+    return new Response(response.body, { status: response.status, headers });
+  }
+
+  const body = await response.arrayBuffer();
+  const size = body.byteLength;
+  // Один диапазон в байтах; всё прочее (несколько диапазонов, чужие единицы, устаревший
+  // If-Range) по RFC 9110 игнорируем и отдаём файл целиком.
+  const match = /^bytes=(\d*)-(\d*)$/.exec(range.trim());
+  const ifRange = request.headers.get("if-range");
+  if (!match || (match[1] === "" && match[2] === "") || (ifRange && ifRange !== response.headers.get("etag"))) {
+    return new Response(body, { status: 200, headers });
+  }
+
+  let start;
+  let end = size - 1;
+  if (match[1] !== "") {
+    start = Number(match[1]);
+    if (match[2] !== "") {
+      end = Math.min(Number(match[2]), size - 1);
+    }
+  } else {
+    start = Math.max(0, size - Number(match[2]));
+  }
+
+  if (start >= size || start > end || (match[1] === "" && Number(match[2]) === 0)) {
+    headers.set("Content-Range", `bytes */${size}`);
+    headers.delete("Content-Length");
+    headers.delete("Cache-Control");
+    return new Response(null, { status: 416, headers });
+  }
+
+  headers.set("Content-Range", `bytes ${start}-${end}/${size}`);
+  headers.set("Content-Length", String(end - start + 1));
+  return new Response(body.slice(start, end + 1), { status: 206, headers });
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -698,6 +741,12 @@ export default {
     }
 
     const response = await env.ASSETS.fetch(new Request(assetUrl.toString(), request));
+
+    // Safari на iPhone не играет видео без ответов на Range (206). Статика Workers их не
+    // отдаёт, а nginx на мосту режет диапазоны только у ответов с Accept-Ranges.
+    if (response.ok && /\.(mp4|webm)$/i.test(assetUrl.pathname)) {
+      return withByteRanges(request, response);
+    }
 
     if (url.hostname.endsWith(".workers.dev")) {
       const headers = new Headers(response.headers);
