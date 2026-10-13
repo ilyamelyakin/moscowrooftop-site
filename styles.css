@@ -63,6 +63,7 @@ p {
 .social-btn,
 .contact-methods label,
 .faq summary,
+.feature-card,
 .related-grid a,
 .audience-grid a {
   -webkit-tap-highlight-color: transparent;
@@ -427,6 +428,7 @@ h1 {
 .social-btn:focus-visible,
 .header-cta:focus-visible,
 .mini-card:focus-visible,
+.feature-card:focus-visible,
 .audience-grid a:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 3px;
@@ -695,6 +697,11 @@ h1 {
 }
 
 .faq details[open] {
+  border-color: rgba(246, 197, 111, 0.36);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+}
+
+.feature-card:active {
   border-color: rgba(246, 197, 111, 0.36);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
 }
@@ -2586,6 +2593,18 @@ a.roof-gallery-button::after {
     grid-column: span 2;
   }
 
+  /* «Москва с высоты» в две колонки: большой кадр, два малых рядом с высоким роликом (3)
+     и внизу два высоких кадра рядом (5, 6) — без пустых ячеек. Широкая полоса здесь срезала бы
+     у вертикальных кадров мост и верх башни. На телефоне ряды ниже пересчитываются от ширины. */
+  .gallery-section .gallery-grid > :nth-child(3),
+  .gallery-section .gallery-grid > :nth-child(n + 5) {
+    grid-row: span 2;
+  }
+
+  .gallery-section .gallery-wide {
+    grid-column: auto;
+  }
+
   .final-cta {
     align-items: flex-start;
     flex-direction: column;
@@ -2797,7 +2816,6 @@ a.roof-gallery-button::after {
     padding-top: 10px;
   }
 
-  .feature-grid,
   .gallery-grid,
   .roof-catalog-grid {
     grid-template-columns: 1fr;
@@ -2822,13 +2840,26 @@ a.roof-gallery-button::after {
     padding: 14px;
   }
 
-  .feature-card img {
-    aspect-ratio: 4 / 5;
+  /* «Что вас ждет»: плитка 2×2 вместо четырёх карточек в столбик — блок короче втрое. */
+  .feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
   }
 
   .feature-card div {
     min-height: auto;
-    padding: 20px;
+    padding: 12px 12px 14px;
+  }
+
+  .feature-card h3 {
+    margin-bottom: 6px;
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .feature-card p {
+    font-size: 0.84rem;
+    line-height: 1.45;
   }
 
   .gallery-grid {
@@ -2848,6 +2879,23 @@ a.roof-gallery-button::after {
 
   .gallery-large {
     aspect-ratio: 1 / 1.2;
+  }
+
+  /* «Москва с высоты» на главной: мозаика из блока до 980px, а не столбик. Высота ряда —
+     от ширины колонки, поэтому пропорции ячеек одинаковы на любом телефоне. */
+  .gallery-section .gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: calc((100vw - 30px) / 2 * 0.75);
+    gap: 10px;
+  }
+
+  .gallery-section .gallery-item {
+    aspect-ratio: auto;
+  }
+
+  .gallery-section .gallery-large {
+    grid-row: span 2;
+    grid-column: span 2;
   }
 
   /* Страницы крыш и фотосессии: по одному кадру в ряд, целиком. */
