@@ -705,7 +705,6 @@ function bindHeroVideo() {
   };
 
   const start = () => {
-    log?.('страница загрузилась (load)');
     mount();
     new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
@@ -723,11 +722,29 @@ function bindHeroVideo() {
     });
   };
 
+  // При «появлении» сайта (html.intro) ролик ставим, когда закончатся сами анимации mr-intro-*:
+  // монтаж <video> посреди них отнимал кадры. Ждём анимации, а не часы — они стартуют с первой
+  // отрисовки, а на мобильной сети она бывает и через секунду; в фоновой вкладке ждут показа.
+  // Отменённая анимация отклоняет finished — catch, чтобы ролик всё равно поставился.
+  // Заставка — первый кадр ролика, разницы не видно.
+  const begin = () => {
+    log?.('страница загрузилась (load)');
+    const entrance = document.documentElement.classList.contains('intro') && document.getAnimations
+      ? document.getAnimations().filter((animation) => animation.animationName?.startsWith('mr-intro') && animation.playState !== 'finished')
+      : [];
+    if (entrance.length) {
+      log?.(`жду конца появления сайта: анимаций ${entrance.length}`);
+      Promise.all(entrance.map((animation) => animation.finished.catch(() => {}))).then(start);
+    } else {
+      start();
+    }
+  };
+
   if (document.readyState === 'complete') {
-    start();
+    begin();
   } else {
     log?.('жду полной загрузки страницы (load)…');
-    window.addEventListener('load', start, { once: true });
+    window.addEventListener('load', begin, { once: true });
     if (log) {
       window.setTimeout(() => document.readyState !== 'complete' && log('load всё ещё не наступил: что-то долго грузится'), 8000);
     }
