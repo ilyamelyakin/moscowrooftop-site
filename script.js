@@ -612,8 +612,21 @@ function allowsAmbientVideo() {
 // отнимать канал у заставки (LCP), и стоит на паузе, пока шапку не видно.
 function bindHeroVideo() {
   const holder = document.querySelector('[data-hero-video-landscape]');
+  const log = heroDebugLog;
+
+  if (log) {
+    const connection = navigator.connection;
+    const probe = document.createElement('video');
+    log(navigator.userAgent);
+    log(connection
+      ? `сеть: ${connection.effectiveType}, rtt ${connection.rtt} мс, ${connection.downlink} Мбит/с, экономия трафика: ${connection.saveData}`
+      : 'сеть: браузер не сообщает');
+    log(`меньше движения: ${prefersReducedMotion()}, стоя: ${window.matchMedia('(orientation: portrait)').matches}, ширина шапки: ${holder?.clientWidth}`);
+    log(`AV1: «${probe.canPlayType('video/mp4; codecs="av01.0.05M.08"')}», H.264: «${probe.canPlayType('video/mp4; codecs="avc1.640028"')}»`);
+  }
 
   if (!holder || !allowsAmbientVideo()) {
+    log?.('ролик не ставим: экономия трафика, медленная сеть или «меньше движения»');
     return;
   }
 
@@ -622,6 +635,9 @@ function bindHeroVideo() {
   let visible = false;
 
   const drop = () => {
+    if (video) {
+      log?.('ролик убран — осталась заставка');
+    }
     holder.classList.remove('is-live');
     video?.remove();
     video = null;
@@ -656,6 +672,19 @@ function bindHeroVideo() {
     // Ошибка последнего источника — значит, не сыграл ни один: остаётся заставка.
     current.lastElementChild.addEventListener('error', () => video === current && drop());
     current.addEventListener('playing', () => holder.classList.add('is-live'), { once: true });
+    if (log) {
+      log(`ставлю ролик ${base.split('/').pop()}-${size}`);
+      current.querySelectorAll('source').forEach((source) => {
+        source.addEventListener('error', () => log(`не подошёл: ${source.src.split('/').pop()}`));
+      });
+      ['loadstart', 'loadedmetadata', 'canplay', 'playing', 'waiting', 'stalled', 'pause', 'error'].forEach((type) => {
+        current.addEventListener(type, () => {
+          const file = current.currentSrc.split('/').pop() || '—';
+          const error = current.error ? `, ошибка ${current.error.code} ${current.error.message || ''}` : '';
+          log(`${type}: ${file}, готовность ${current.readyState}, сеть ${current.networkState}${error}`);
+        });
+      });
+    }
     holder.append(current);
     video = current;
   };
@@ -666,6 +695,7 @@ function bindHeroVideo() {
     }
     const current = video;
     current.play()?.catch((error) => {
+      log?.(`play() отклонён: ${error?.name} ${error?.message || ''}`);
       // AbortError — успели поставить на паузу до старта. Остальное (например, автозапуск
       // запрещён режимом энергосбережения iOS) — оставляем заставку.
       if (error?.name !== 'AbortError' && video === current) {
@@ -675,9 +705,11 @@ function bindHeroVideo() {
   };
 
   const start = () => {
+    log?.('страница загрузилась (load)');
     mount();
     new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
+      log?.(`шапка ${visible ? 'на экране' : 'за экраном'}`);
       if (visible) {
         play();
       } else {
@@ -694,8 +726,33 @@ function bindHeroVideo() {
   if (document.readyState === 'complete') {
     start();
   } else {
+    log?.('жду полной загрузки страницы (load)…');
     window.addEventListener('load', start, { once: true });
+    if (log) {
+      window.setTimeout(() => document.readyState !== 'complete' && log('load всё ещё не наступил: что-то долго грузится'), 8000);
+    }
   }
+}
+
+// Журнал на экране для проверки ролика шапки на телефоне: открыть /?debug-video.
+// Временный — убрать, когда причина найдена. Ловит и ошибки скриптов: если что-то падает
+// раньше bindHeroVideo, ролик просто не ставится.
+const heroDebugLog = /[?&]debug-video(?:[&=]|$)/.test(window.location.search) ? createDebugLog() : null;
+
+function createDebugLog() {
+  const box = document.createElement('pre');
+  box.style.cssText =
+    'position:fixed;left:8px;right:8px;bottom:8px;z-index:9999;max-height:50vh;overflow:auto;margin:0;' +
+    'padding:10px;border-radius:8px;background:rgba(0,0,0,.88);color:#b6f7b0;font:11px/1.45 ui-monospace,monospace;' +
+    'white-space:pre-wrap;word-break:break-word';
+  (document.body || document.documentElement).append(box);
+  const log = (message) => {
+    box.textContent += `${(performance.now() / 1000).toFixed(1)} с  ${message}\n`;
+    box.scrollTop = box.scrollHeight;
+  };
+  window.addEventListener('error', (event) => log(`ошибка скрипта: ${event.message} (${event.filename?.split('/').pop()}:${event.lineno})`));
+  window.addEventListener('unhandledrejection', (event) => log(`ошибка скрипта: ${event.reason?.message || event.reason}`));
+  return log;
 }
 
 // «Живая» плитка галереи: короткая беззвучная петля поверх фото. Играет, только пока плитка на экране.

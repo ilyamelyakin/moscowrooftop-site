@@ -3317,6 +3317,106 @@ a.roof-gallery-button::after {
   }
 }
 
+/* Появление сайта при входе: класс .intro ставит скрипт в <head> (пришли извне или обновили
+   страницу; переходы по сайту — без него). Город проявляется из сумерек, в эмблеме светает,
+   шапка и текст выезжают по очереди. Сдвиг — свойством translate, а не transform: у шапки свой
+   translateX(-50%), у кнопок — scale при нажатии. LCP здесь — фото шапки, а не текст. */
+@media (prefers-reduced-motion: no-preference) {
+  .intro .site-header {
+    animation: mr-intro-drop 700ms var(--ease-out) 60ms backwards;
+  }
+
+  .intro .brand-mark {
+    position: relative;
+  }
+
+  .intro .brand-mark svg {
+    position: relative;
+  }
+
+  /* Ночь в эмблеме уходит вверх: свет поднимается от горизонта за высоткой. */
+  .intro .brand-mark::before {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background: linear-gradient(180deg, #110c0a, #2a1712 55%, #5c2a1f);
+    animation: mr-intro-dawn 1100ms cubic-bezier(0.5, 0, 0.2, 1) 280ms both;
+  }
+
+  .intro .hero-bg::after,
+  .intro .page-hero::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background: #0b0a09;
+    pointer-events: none;
+    animation: mr-intro-dusk 1400ms cubic-bezier(0.33, 0, 0.2, 1) both;
+  }
+
+  /* Над фото и затемнением (-3, -2), под текстом. */
+  .intro .page-hero::after {
+    z-index: -1;
+  }
+
+  .intro :is(.hero-content, .page-hero-content) > * {
+    animation: mr-intro-rise 800ms var(--ease-out) 240ms backwards;
+  }
+
+  .intro :is(.hero-content, .page-hero-content) > :nth-child(2) {
+    animation-delay: 340ms;
+  }
+
+  .intro :is(.hero-content, .page-hero-content) > :nth-child(3) {
+    animation-delay: 460ms;
+  }
+
+  .intro :is(.hero-content, .page-hero-content) > :nth-child(n + 4) {
+    animation-delay: 580ms;
+  }
+}
+
+/* На телефоне фото страницы стоит в потоке (z-index 0), текст над ним (1). Описание здесь
+   часто переставлено под кнопки (order), поэтому описание и кнопки выезжают вместе. */
+@media (prefers-reduced-motion: no-preference) and (max-width: 640px) {
+  .intro .page-hero::after {
+    z-index: 0;
+  }
+
+  .intro :is(.hero-content, .page-hero-content) > :nth-child(n + 3) {
+    animation-delay: 480ms;
+  }
+}
+
+@keyframes mr-intro-drop {
+  from {
+    opacity: 0;
+    translate: 0 -14px;
+  }
+}
+
+@keyframes mr-intro-dawn {
+  to {
+    translate: 0 -101%;
+  }
+}
+
+@keyframes mr-intro-dusk {
+  from {
+    opacity: 0.85;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes mr-intro-rise {
+  from {
+    opacity: 0;
+    translate: 0 18px;
+  }
+}
+
 /* «Уменьшить движение»: без сдвигов, но цвет и проявление — плавно. */
 @media (prefers-reduced-motion: reduce) {
   *,
