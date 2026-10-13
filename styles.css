@@ -19,6 +19,7 @@
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
   --dur-press: 100ms;
   --dur-ui: 200ms;
+  --icon-photos: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='6' width='14' height='14' rx='2'/%3E%3Cpath d='M7 3h11a3 3 0 0 1 3 3v11'/%3E%3Cpath d='m3 16 4-4 4 4 2-2 4 4'/%3E%3C/svg%3E");
   color-scheme: dark;
   accent-color: var(--gold);
 }
@@ -68,6 +69,7 @@ p {
 .audience-grid a {
   -webkit-tap-highlight-color: transparent;
 }
+
 
 a,
 button,
@@ -313,6 +315,7 @@ h1 {
   margin-bottom: 20px;
   font-size: clamp(3rem, 10vw, 7.4rem);
   font-weight: 870;
+  letter-spacing: -0.03em;
   line-height: 0.92;
 }
 
@@ -355,8 +358,7 @@ h1 {
 @media (hover: hover) {
   .btn:hover,
   .social-btn:hover,
-  .feature-card:hover,
-  .audience-grid a:hover {
+  .feature-card:hover {
     transform: translateY(-3px);
   }
 }
@@ -448,25 +450,6 @@ h1 {
   stroke-width: 1.8;
 }
 
-.hero-note {
-  position: absolute;
-  right: max(16px, calc((100vw - 1160px) / 2));
-  bottom: 42px;
-  display: flex;
-  gap: 8px;
-  color: rgba(255, 248, 236, 0.78);
-  font-size: 0.82rem;
-}
-
-.hero-note span {
-  padding: 9px 12px;
-  border: 1px solid rgba(255, 248, 236, 0.14);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.07);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-}
-
 .trust,
 .section,
 .gallery-section,
@@ -485,21 +468,18 @@ h1 {
 
 .trust-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1px;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--line);
-  box-shadow: var(--shadow);
 }
 
 .trust-grid article {
-  min-height: 128px;
+  min-height: 112px;
   padding: 22px;
-  background: rgba(18, 16, 14, 0.9);
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
+  background: rgb(18, 16, 14);
 }
 
 .trust-grid .trust-title {
@@ -616,12 +596,25 @@ h1 {
   text-align: left;
 }
 
+/* H1 на внутренних страницах не меньше 1.3 любого H2. */
 .section-heading h2,
 .final-cta h2 {
   margin-bottom: 14px;
-  font-size: clamp(2.1rem, 5vw, 4.4rem);
+  font-size: clamp(1.75rem, 1.2rem + 1.9vw, 3rem);
   font-weight: 850;
+  letter-spacing: -0.025em;
   line-height: 1;
+}
+
+.inner-page .section-heading h2,
+.inner-page .final-cta h2 {
+  font-size: clamp(1.4rem, 0.9rem + 1.3vw, 2.4rem);
+}
+
+/* Подписи над H2 повторяли заголовок; скрыты стилями — рутина блога копирует разметку. */
+.section-heading > .eyebrow,
+.final-cta .eyebrow {
+  display: none;
 }
 
 .section-heading p:not(.eyebrow) {
@@ -637,9 +630,6 @@ h1 {
 }
 
 .feature-card,
-.step-card,
-.audience-grid article,
-.audience-grid a,
 .faq details {
   border: 1px solid var(--line);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.045));
@@ -661,16 +651,13 @@ h1 {
   display: block;
 }
 
-.faq details[open],
-.audience-grid a:active {
+.faq details[open] {
   border-color: rgba(246, 197, 111, 0.36);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
 }
 
 @media (hover: hover) {
-  .feature-card:hover,
-  .step-card:hover,
-  .audience-grid a:hover {
+  .feature-card:hover {
     border-color: rgba(246, 197, 111, 0.36);
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
   }
@@ -721,7 +708,8 @@ h1 {
   margin: 0;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--bg-soft);
+  /* --ph: оттенок кадра, пока он грузится. */
+  background: var(--ph, var(--bg-soft));
   box-shadow: 0 20px 70px rgba(0, 0, 0, 0.28);
   transition:
     transform 180ms ease,
@@ -793,7 +781,7 @@ h1 {
   border: 0;
   border-radius: 0;
   aspect-ratio: 4 / 5;
-  background: #15110e;
+  background: var(--ph, #15110e);
   color: inherit;
   cursor: zoom-in;
 }
@@ -829,8 +817,13 @@ h1 {
   filter: brightness(0.88);
 }
 
+.roof-gallery-button:focus-visible {
+  border-radius: 4px;
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
 .roof-card-media:focus-visible,
-.roof-gallery-button:focus-visible,
 .roof-lightbox button:focus-visible,
 .selected-roof a:focus-visible {
   outline: 3px solid rgba(246, 197, 111, 0.72);
@@ -841,15 +834,27 @@ h1 {
   position: absolute;
   right: 12px;
   bottom: 12px;
-  padding: 7px 10px;
-  border: 1px solid rgba(255, 248, 236, 0.2);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(10, 8, 7, 0.72);
+  background: rgba(8, 7, 6, 0.62);
   color: var(--text);
   font-size: 0.76rem;
   font-weight: 760;
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.roof-photo-count::before {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  background: currentColor;
+  content: "";
+  -webkit-mask: var(--icon-photos) center / contain no-repeat;
+  mask: var(--icon-photos) center / contain no-repeat;
 }
 
 .roof-card-body {
@@ -884,31 +889,30 @@ h1 {
 .roof-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
   padding: 0;
-  margin: 18px 0 22px;
+  margin: 14px 0 18px;
+  color: rgba(255, 248, 236, 0.7);
+  font-size: 0.86rem;
+  font-weight: 650;
   list-style: none;
 }
 
-.roof-tags li {
-  padding: 7px 10px;
-  border: 1px solid rgba(255, 248, 236, 0.13);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.045);
-  color: rgba(255, 248, 236, 0.76);
-  font-size: 0.76rem;
-  font-weight: 680;
+.roof-tags li + li::before {
+  margin: 0 8px;
+  color: var(--soft);
+  content: "·";
+  content: "·" / "";
 }
 
 .roof-card-actions {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 9px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 12px;
   margin-top: auto;
 }
 
-.roof-card-actions .btn,
-.roof-gallery-button {
+.roof-card-actions .roof-select-button {
+  grid-column: 1 / -1;
   min-height: 48px;
 }
 
@@ -921,32 +925,36 @@ h1 {
 
 .roof-gallery-button {
   display: inline-flex;
+  min-height: 44px;
   align-items: center;
-  justify-content: center;
-  padding: 0 14px;
-  border: 1px solid rgba(255, 248, 236, 0.18);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.055);
-  color: var(--text);
-  font-size: 0.82rem;
+  justify-content: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--gold);
+  font-size: 0.9rem;
   font-weight: 720;
   cursor: zoom-in;
+  text-decoration: underline transparent;
+  text-underline-offset: 4px;
   transition:
-    border-color 160ms ease,
-    background 160ms ease,
+    text-decoration-color 160ms ease,
     transform var(--dur-ui) var(--ease-out);
 }
 
 a.roof-gallery-button {
-  grid-column: 1 / -1;
-  text-decoration: none;
+  justify-content: flex-end;
   cursor: pointer;
+}
+
+a.roof-gallery-button::after {
+  content: "\00a0→";
+  content: "\00a0→" / "";
 }
 
 @media (hover: hover) {
   .roof-gallery-button:hover {
-    border-color: rgba(246, 197, 111, 0.55);
-    background: rgba(246, 197, 111, 0.1);
+    text-decoration-color: currentColor;
   }
 }
 
@@ -1791,47 +1799,119 @@ a.roof-gallery-button {
   overflow: hidden;
 }
 
+/* «Как проходит прогулка» — путь наверх. */
 .steps {
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  margin: 28px 0 28px;
+  max-width: 720px;
+  gap: 36px;
+  margin: 36px auto 32px;
+  padding-left: 56px;
 }
 
 .step-card {
-  min-height: 210px;
-  padding: 24px;
-  border-radius: var(--radius);
+  position: relative;
+}
+
+/* Отрезок пути до следующего кружка (36px — gap .steps). */
+.step-card:not(:last-child)::before {
+  position: absolute;
+  top: 11px;
+  left: -36px;
+  width: 2px;
+  height: calc(100% + 36px);
+  content: "";
+  background: linear-gradient(var(--gold), var(--amber));
+}
+
+.step-card:nth-child(2)::before {
+  background: linear-gradient(var(--amber), var(--rose));
 }
 
 .step-card span {
+  position: absolute;
+  top: -10px;
+  left: -56px;
+  z-index: 1;
   display: grid;
   width: 42px;
   height: 42px;
   place-items: center;
-  margin-bottom: 26px;
+  border: 1px solid rgba(246, 197, 111, 0.5);
   border-radius: 50%;
-  background: rgba(246, 197, 111, 0.15);
+  background: var(--bg);
   color: var(--gold);
   font-weight: 850;
 }
 
-.audience-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .step-card:not(:last-child)::before {
+      transform-origin: 50% 0;
+      animation: ascent-grow linear both;
+      animation-range: entry 60% cover 50%;
+      animation-timeline: view();
+    }
+
+    .step-card span {
+      animation: step-light linear both;
+      animation-range: entry 45% cover 45%;
+      animation-timeline: view();
+    }
+  }
 }
 
-.audience-grid article,
-.audience-grid a {
+.audience-grid {
   display: grid;
-  min-height: 128px;
-  align-items: end;
-  padding: 18px;
-  border-radius: var(--radius);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 40px;
+  border-top: 1px solid var(--line);
+}
+
+.audience-grid a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--line);
   color: var(--text);
-  font-size: 1.05rem;
-  font-weight: 780;
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.audience-grid a::after {
+  flex: 0 0 auto;
+  color: var(--gold);
+  content: "→";
+  content: "→" / "";
+  transition: transform 240ms var(--ease-out);
+}
+
+@media (min-width: 641px) {
+  .audience-grid {
+    column-gap: clamp(40px, 6vw, 96px);
+    border-top: 0;
+  }
+
+  .audience-grid a {
+    justify-content: flex-start;
+  }
+
+  .audience-grid a:nth-child(-n + 2) {
+    border-top: 1px solid var(--line);
+  }
+}
+
+.audience-grid a:active::after {
+  transform: translateX(6px);
+}
+
+@media (hover: hover) {
+  .audience-grid a:hover::after {
+    transform: translateX(6px);
+  }
 }
 
 .faq-list {
@@ -1928,6 +2008,14 @@ a.roof-gallery-button {
   background:
     linear-gradient(120deg, rgba(255, 158, 79, 0.16), rgba(255, 111, 97, 0.06) 42%, transparent),
     var(--cta-photo) center / cover no-repeat;
+}
+
+@supports (background-image: image-set(url("x.avif") type("image/avif"))) {
+  .final-cta[style*="--cta-photo-set"] {
+    background:
+      linear-gradient(120deg, rgba(255, 158, 79, 0.16), rgba(255, 111, 97, 0.06) 42%, transparent),
+      var(--cta-photo-set) center / cover no-repeat;
+  }
 }
 
 .final-cta[style*="--cta-photo"]::before {
@@ -2039,6 +2127,8 @@ a.roof-gallery-button {
   position: absolute;
   inset: 0;
   z-index: -3;
+  /* Кадрирование своей шапки: style="--pos-d: …; --pos-m: …" (компьютер / телефон). */
+  object-position: var(--pos-d, 50% 50%);
 }
 
 .page-hero::before {
@@ -2097,7 +2187,8 @@ a.roof-gallery-button {
 .content-panel h2,
 .side-panel h2 {
   margin-bottom: 16px;
-  font-size: clamp(1.65rem, 3.5vw, 3rem);
+  font-size: clamp(1.4rem, 0.9rem + 1.3vw, 2.4rem);
+  letter-spacing: -0.02em;
   line-height: 1.05;
 }
 
@@ -2197,6 +2288,40 @@ a.roof-gallery-button {
   }
 }
 
+.related-grid .related-photo {
+  display: block;
+  overflow: hidden;
+  margin: -18px -18px 14px;
+  border-radius: var(--radius) var(--radius) 0 0;
+  aspect-ratio: 4 / 3;
+}
+
+/* Обложки в списке статей — фото из шапки статьи. */
+.mini-card .article-photo {
+  display: block;
+  overflow: hidden;
+  margin: -18px -18px 14px;
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: var(--ph, #15110e);
+  aspect-ratio: 4 / 3;
+}
+
+.article-photo img {
+  transition: transform 280ms var(--ease-out);
+}
+
+@media (hover: hover) {
+  .article-card:hover .article-photo img {
+    transform: scale(1.04);
+  }
+}
+
+.related-roof strong::after {
+  color: var(--gold);
+  content: " →";
+  content: " →" / "";
+}
+
 .page-faq,
 .page-section {
   width: var(--container);
@@ -2206,26 +2331,6 @@ a.roof-gallery-button {
 .text-link {
   color: var(--gold);
   font-weight: 760;
-}
-
-/* Карточка крыши: главная кнопка во всю ширину, «Смотреть фото» и «Подробнее» — парой.
-   До 1180px: уже на iPad боком «Выбрать крышу» рядом с «Смотреть фото» переносилось на две строки. */
-@media (max-width: 1180px) {
-  .roof-card-actions {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .roof-card-actions .roof-select-button {
-    grid-column: 1 / -1;
-  }
-
-  a.roof-gallery-button {
-    grid-column: auto;
-  }
-
-  .roof-gallery-button {
-    padding-inline: 10px;
-  }
 }
 
 /* Боковая колонка узкая (200-263px): заголовок «Записаться на крышу «Новокузнецкая»» в 48px
@@ -2272,6 +2377,37 @@ a.roof-gallery-button {
 
   .hero-image {
     object-position: 50% 40%;
+  }
+
+  .booking-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    grid-template-rows: auto 1fr;
+    column-gap: 48px;
+    align-items: start;
+  }
+
+  .booking-copy,
+  .booking-steps {
+    grid-column: 1;
+  }
+
+  .booking-steps {
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin: 28px 0 0;
+  }
+
+  .lead-form-shell {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    max-width: none;
+    margin-top: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
   }
 
   /* Внутренние страницы: шапка страницы по высоте экрана, кнопки записи — без прокрутки. */
@@ -2354,15 +2490,9 @@ a.roof-gallery-button {
     grid-column: span 2;
   }
 
-  /* Шестой кадр — вертикальный закат, в широкой ячейке по центру от него оставались одни
-     крыши. Сдвигаем кадр выше: солнце и силуэт с Москва-Сити попадают в ячейку. */
+  /* Шестой кадр в широкой ячейке: мост и река ниже центра кадра. */
   .gallery-section .gallery-grid > :nth-child(6) img {
-    object-position: center 30%;
-  }
-
-  /* «Для кого»: шесть карточек — 3x2 вместо 5+1. */
-  .audience-grid {
-    grid-template-columns: repeat(3, 1fr);
+    object-position: center 60%;
   }
 
   /* Блоки ссылок: по четыре в ряд, неполный последний ряд — по центру. */
@@ -2374,6 +2504,16 @@ a.roof-gallery-button {
 
   .related-grid > * {
     flex: 0 1 calc(25% - 9px);
+  }
+
+  .related-grid.related-roofs > * {
+    flex-basis: calc(20% - 10px);
+  }
+
+  .related-roofs > .mini-card:not(.related-roof) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   /* Финальный блок: кнопки не сжимаются из-за длинного заголовка и стоят ровной колонкой
@@ -2531,14 +2671,8 @@ a.roof-gallery-button {
     padding-top: 112px;
   }
 
-  .hero-note {
-    display: none;
-  }
-
   .trust-grid,
   .feature-grid,
-  .steps,
-  .audience-grid,
   .roof-catalog-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -2577,7 +2711,6 @@ a.roof-gallery-button {
 
   /* Нечётная последняя карточка в 2 колонках — на всю ширину, без пустой ячейки. */
   .trust-grid > :last-child:nth-child(odd),
-  .steps > :last-child:nth-child(odd),
   .facts-grid > :last-child:nth-child(odd),
   .related-grid > :last-child:nth-child(odd) {
     grid-column: 1 / -1;
@@ -2693,6 +2826,39 @@ a.roof-gallery-button {
     text-shadow: 0 2px 28px rgba(0, 0, 0, 0.35);
   }
 
+  /* Главная: описание под кнопками, как на внутренних страницах. */
+  .hero .hero-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero .hero-lead {
+    order: 3;
+    margin: 20px 0 0;
+  }
+
+  .hero .hero-actions .btn-secondary {
+    width: auto;
+    min-height: 44px;
+    margin-inline: auto;
+    padding: 0 8px;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--gold);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .hero .hero-actions .btn-secondary {
+    gap: 0;
+  }
+
+  .hero .hero-actions .btn-secondary::after {
+    content: "\00a0→";
+    content: "\00a0→" / "";
+  }
+
   .hero .eyebrow {
     color: rgba(255, 248, 236, 0.85);
     text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
@@ -2729,15 +2895,17 @@ a.roof-gallery-button {
   }
 
   .feature-grid,
-  .steps,
   .gallery-grid,
   .roof-catalog-grid {
     grid-template-columns: 1fr;
   }
 
-  .trust-grid,
-  .audience-grid {
+  .trust-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .audience-grid {
+    grid-template-columns: 1fr;
   }
 
   .selected-roof {
@@ -2844,7 +3012,7 @@ a.roof-gallery-button {
 
   .trust-grid article {
     min-height: 0;
-    padding: 14px 16px;
+    padding: 14px;
   }
 
   .feature-card img {
@@ -2934,35 +3102,8 @@ a.roof-gallery-button {
     min-height: 420px;
   }
 
-  .step-card {
-    display: grid;
-    min-height: auto;
-    grid-template-columns: 42px minmax(0, 1fr);
-    column-gap: 14px;
-    align-items: center;
-    padding: 20px;
-  }
-
-  .step-card span,
-  .step-card h3 {
-    margin-bottom: 0;
-  }
-
-  .step-card p {
-    grid-column: 1 / -1;
-    margin-top: 12px;
-  }
-
-  .audience-grid {
-    gap: 10px;
-  }
-
-  .audience-grid article,
   .audience-grid a {
-    min-height: 76px;
-    padding: 14px;
-    font-size: 0.95rem;
-    line-height: 1.25;
+    padding: 18px 0;
   }
 
   .faq summary {
@@ -3011,6 +3152,7 @@ a.roof-gallery-button {
   .page-hero img {
     position: relative;
     z-index: 0;
+    object-position: var(--pos-m, var(--pos-d, 50% 50%));
     height: auto;
     aspect-ratio: 4 / 5;
     max-height: 44vh;
@@ -3066,22 +3208,63 @@ a.roof-gallery-button {
 
   /* Длинные названия крыш в «Поднимемся на крышу «…»?» — только на внутренних страницах. */
   .inner-page .final-cta h2 {
-    font-size: clamp(1.6rem, 8vw, 2.1rem);
+    font-size: clamp(1.4rem, 6.4vw, 1.9rem);
   }
 
-  .content-panel,
+  .content-panel {
+    padding: 0 6px;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+
   .side-panel {
     padding: 22px 18px;
   }
 
   .content-panel > h2:not(:first-child) {
-    margin-top: 32px;
+    margin-top: 44px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
   }
 
-  .facts-grid,
   .related-grid {
     grid-template-columns: 1fr;
     gap: 8px;
+  }
+
+  .facts-grid {
+    display: grid;
+    grid-template-columns: fit-content(40%) minmax(0, 1fr);
+    column-gap: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .facts-grid .mini-card {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: baseline;
+    padding: 13px 6px;
+    border: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .facts-grid .mini-card strong {
+    margin: 0;
+    color: var(--gold);
+    -webkit-hyphens: auto;
+    hyphens: auto;
+  }
+
+  .facts-grid .mini-card > span,
+  .facts-grid .mini-card > p {
+    min-width: 0;
+    overflow-wrap: break-word;
   }
 
   .mini-card {
@@ -3103,6 +3286,15 @@ a.roof-gallery-button {
   .page-section > .related-grid {
     margin-top: 0;
   }
+
+  .related-grid.related-roofs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .related-grid .related-photo,
+  .mini-card .article-photo {
+    margin: -14px -16px 12px;
+  }
 }
 
 /* Телефон боком: экран 320-430px в высоту. Нижняя граница ширины — чтобы блок не включался
@@ -3117,6 +3309,10 @@ a.roof-gallery-button {
   .hero h1,
   .page-hero h1 {
     font-size: clamp(2rem, 10vh, 3rem);
+  }
+
+  .inner-page .final-cta h2 {
+    font-size: 1.5rem;
   }
 
   .hero-lead {
@@ -3254,6 +3450,13 @@ a.roof-gallery-button {
   .roof-card-body {
     padding: 18px;
   }
+
+  .related-roofs strong {
+    font-size: 0.95rem;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+    overflow-wrap: anywhere;
+  }
 }
 
 /* Уже 340px логотип, меню и обе кнопки в строку не помещаются; логотип
@@ -3344,6 +3547,30 @@ a.roof-gallery-button {
 
   to {
     box-shadow: 0 0 0 12px rgba(246, 197, 111, 0);
+  }
+}
+
+@keyframes ascent-grow {
+  from {
+    transform: scaleY(0);
+  }
+
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes step-light {
+  from {
+    border-color: rgba(246, 197, 111, 0.22);
+    color: rgba(246, 197, 111, 0.45);
+    box-shadow: none;
+  }
+
+  to {
+    border-color: var(--gold);
+    color: var(--gold);
+    box-shadow: 0 0 22px rgba(246, 197, 111, 0.35);
   }
 }
 

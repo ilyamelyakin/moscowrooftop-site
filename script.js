@@ -78,7 +78,7 @@ const ROOF_GALLERIES = {
       { base: 'assets/locations/rimskaya-city-sunset-07', alt: 'Фотосессия на крыше на фоне закатной панорамы Москвы' },
       { base: 'assets/locations/rimskaya-city-sunset-03', alt: 'Закатное солнце над городом, высотка и купола в дымке', w: [360, 720] },
       { base: 'assets/locations/rimskaya-city-sunset-04', alt: 'Сталинская высотка и подсвеченная церковь в закатной дымке' },
-      { base: 'assets/locations/rimskaya-city-sunset-05', alt: 'Крыши домов и вечернее небо над городом после заката' },
+      { base: 'assets/locations/rimskaya-city-sunset-05', alt: 'Крыши домов и облачное вечернее небо над городом' },
       { base: 'assets/locations/rimskaya-city-sunset-06', alt: 'Дневной вид с крыши: храмы, трамвай и сталинская высотка вдали' },
     ],
   },
@@ -599,6 +599,7 @@ function bindRoofCatalog() {
   const dialog = document.getElementById('roof-lightbox');
   const lightboxTitle = document.getElementById('roof-lightbox-title');
   const lightboxSource = document.getElementById('roof-lightbox-source');
+  const lightboxSourceAvif = document.getElementById('roof-lightbox-source-avif');
   const lightboxImage = document.getElementById('roof-lightbox-image');
   const lightboxCounter = document.getElementById('roof-lightbox-counter');
   const closeButton = dialog?.querySelector('.roof-lightbox-close');
@@ -677,9 +678,11 @@ function bindRoofCatalog() {
     roofInput.addEventListener(type, () => roofInput.classList.remove('is-confirmed'));
   });
 
-  const getWebpSrcset = (image) => {
+  // AVIF/WebP есть в трёх размерах (640, 960, 1280), JPEG — в двух.
+  const getSrcset = (image, ext) => {
     const [width640, width1280] = image.w || [480, 960];
-    return `${image.base}-640.webp ${width640}w, ${image.base}-1280.webp ${width1280}w`;
+    const middle = ext === 'jpg' ? '' : `${image.base}-960.${ext} ${Math.round(width640 * 1.5)}w, `;
+    return `${image.base}-640.${ext} ${width640}w, ${middle}${image.base}-1280.${ext} ${width1280}w`;
   };
 
   // Следующий кадр — заранее; при экономии трафика не грузим.
@@ -696,8 +699,10 @@ function bindRoofCatalog() {
     if ('fetchPriority' in preload) {
       preload.fetchPriority = 'low';
     }
+    // Тот же формат, что браузер выбрал для показанного кадра, — иначе скачали бы дважды.
+    const ext = (lightboxImage.currentSrc.match(/\.(avif|webp|jpg)(?:$|\?)/) || [])[1] || 'webp';
     preload.sizes = LIGHTBOX_SIZES;
-    preload.srcset = getWebpSrcset(image);
+    preload.srcset = getSrcset(image, ext);
     inflightPreloads.set(image.base, { roofId: activeRoofId, index, img: preload });
     const settle = () => inflightPreloads.delete(image.base);
     preload.addEventListener('load', settle, { once: true });
@@ -725,7 +730,6 @@ function bindRoofCatalog() {
       return;
     }
 
-    const [width640, width1280] = image.w || [480, 960];
     cancelStalePreloads();
     const token = ++lightboxToken;
     const counterText = `${activeImageIndex + 1} из ${gallery.images.length}`;
@@ -736,10 +740,14 @@ function bindRoofCatalog() {
       lightboxImage.classList.add('is-pending');
       lightboxCounter.textContent = counterText;
     }
-    lightboxSource.srcset = getWebpSrcset(image);
+    if (lightboxSourceAvif) {
+      lightboxSourceAvif.srcset = getSrcset(image, 'avif');
+      lightboxSourceAvif.sizes = LIGHTBOX_SIZES;
+    }
+    lightboxSource.srcset = getSrcset(image, 'webp');
     lightboxSource.sizes = LIGHTBOX_SIZES;
     lightboxImage.src = `${image.base}-1280.jpg`;
-    lightboxImage.srcset = `${image.base}-640.jpg ${width640}w, ${image.base}-1280.jpg ${width1280}w`;
+    lightboxImage.srcset = getSrcset(image, 'jpg');
     lightboxImage.sizes = LIGHTBOX_SIZES;
     lightboxImage.alt = image.alt;
 

@@ -31,7 +31,7 @@
     <link rel="icon" href="/assets/favicon-48.png?v=20260725-m" type="image/png" sizes="48x48" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=20260725-m" />
     <link rel="manifest" href="/site.webmanifest?v=20260725-m" />
-    <link rel="stylesheet" href="../styles.css?v=20261013-motion" />
+    <link rel="stylesheet" href="../styles.css?v=20261013-p2b" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -137,20 +137,11 @@
       </nav>
       <section class="page-hero">
         <picture>
-          <source
-            type="image/webp"
-            srcset="../assets/hero-fallback-768.webp 768w, ../assets/hero-fallback-1280.webp 1280w, ../assets/hero-fallback-1920.webp 1920w"
-            sizes="(max-width: 1160px) 100vw, 1160px"
-          />
-          <img
-            src="../assets/hero-fallback-1280.jpg"
-            srcset="../assets/hero-fallback-768.jpg 768w, ../assets/hero-fallback-1280.jpg 1280w, ../assets/hero-fallback-1920.jpg 1920w"
-            sizes="(max-width: 1160px) 100vw, 1160px"
-            width="1920"
-            height="2560"
-            fetchpriority="high"
-            alt="Крыши Москвы с видом на город"
-          />
+          <source media="(min-width: 981px)" type="image/avif" srcset="../assets/locations/marksistskaya-high-rise-09-1280.avif 960w, ../assets/locations/marksistskaya-high-rise-09-1920.avif 1440w" sizes="1160px" />
+          <source media="(min-width: 981px)" type="image/webp" srcset="../assets/locations/marksistskaya-high-rise-09-1280.webp 960w, ../assets/locations/marksistskaya-high-rise-09-1920.webp 1440w" sizes="1160px" />
+          <source type="image/avif" srcset="../assets/locations/marksistskaya-high-rise-09-640.avif 480w, ../assets/locations/marksistskaya-high-rise-09-960.avif 720w, ../assets/locations/marksistskaya-high-rise-09-1280.avif 960w" sizes="(max-width: 1160px) 100vw, 1160px" />
+          <source type="image/webp" srcset="../assets/locations/marksistskaya-high-rise-09-640.webp 480w, ../assets/locations/marksistskaya-high-rise-09-960.webp 720w, ../assets/locations/marksistskaya-high-rise-09-1280.webp 960w" sizes="(max-width: 1160px) 100vw, 1160px" />
+          <img src="../assets/locations/marksistskaya-high-rise-09-1280.jpg" srcset="../assets/locations/marksistskaya-high-rise-09-640.jpg 480w, ../assets/locations/marksistskaya-high-rise-09-1280.jpg 960w" sizes="(max-width: 1160px) 100vw, 1160px" width="960" height="1280" fetchpriority="high" style="--pos-d: 50% 42%; --pos-m: 50% 40%" alt="Башни Москва-Сити в дымке и золотой купол храма над жилыми домами" />
         </picture>
         <div class="page-hero-content">
           <p class="eyebrow">Гид по формату</p>
@@ -272,6 +263,6 @@
       <a class="track-link" href="https://www.tiktok.com/@ilya.melyakin/" target="_blank" rel="noopener" data-goal="tiktok_click">TikTok</a>
       <span>© Moscow Rooftop</span>
     </footer>
-    <script src="../script.js?v=20261013-count"></script>
+    <script src="../script.js?v=20261013-p2b"></script>
   </body>
 </html>
