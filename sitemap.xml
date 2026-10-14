@@ -128,7 +128,7 @@
   </url>
   <url>
     <loc>https://moscowrooftop.ru/blog/</loc>
-    <lastmod>2026-10-13</lastmod>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -177,6 +177,12 @@
   <url>
     <loc>https://moscowrooftop.ru/blog/kuda-svodit-devushku-v-moskve/</loc>
     <lastmod>2026-10-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://moscowrooftop.ru/blog/kak-odetsya-na-kryshu/</loc>
+    <lastmod>2026-10-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
