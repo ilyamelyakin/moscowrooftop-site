@@ -49,6 +49,14 @@ const PRICE_FETCH_TIMEOUT_MS = 4000;
 const PRICE_REFRESH_TIMEOUT_MS = 15000;
 // В таблице «Марксисткая» (без «с»), на сайте — «Марксистская».
 const SHEET_NAME_ALIASES = new Map([["марксистская", "марксисткая"]]);
+// Часы работы отдельных крыш — те же, что ROOF_HOURS в Telegram-боте и в script.js:
+// [открытие, закрытие] в будни Пн–Пт и в выходные Сб–Вс. Прогулка длится час,
+// поэтому последнее время начала — за час до закрытия. Ключ — normalizeRoofName.
+// Форма и так не предлагает другое время; проверка здесь — от заявок в обход неё.
+const ROOF_HOURS = new Map([
+  ["смоленская", { weekday: ["17:00", "22:00"], weekend: ["10:00", "22:00"] }],
+]);
+const EXCURSION_MINUTES = 60;
 // Снапшот таблицы от 2026-07-25 — используется, только если Google недоступен.
 const FALLBACK_ROOF_PRICES = new Map([
   ["фили 60 этажей", 3000],
@@ -198,11 +206,45 @@ function validateLead(lead) {
     return "Выберите крышу из каталога.";
   }
 
+  const roofHoursError = validateRoofHours(lead);
+  if (roofHoursError) {
+    return roofHoursError;
+  }
+
   if (!lead.consent) {
     return "Подтвердите согласие на обработку данных.";
   }
 
   return "";
+}
+
+function shiftClockTime(value, minutes) {
+  const [hours, mins] = value.split(":").map(Number);
+  const total = hours * 60 + mins + minutes;
+
+  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+}
+
+// Время начала на крыше со своими часами (ROOF_HOURS). Дата и время к этому моменту уже
+// проверены — ГГГГ-ММ-ДД и ЧЧ:ММ, поэтому сравниваем строками. День недели берём из самой
+// календарной даты в UTC: дата в заявке и так московская, часовой пояс сервера ни при чём.
+function validateRoofHours(lead) {
+  const rules = ROOF_HOURS.get(normalizeRoofName(lead.roof));
+  if (!rules) {
+    return "";
+  }
+
+  const [year, month, day] = lead.date.split("-").map(Number);
+  const weekDay = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
+  const isWeekend = weekDay === 0 || weekDay === 6;
+  const [opens, closes] = rules[isWeekend ? "weekend" : "weekday"];
+  const lastStart = shiftClockTime(closes, -EXCURSION_MINUTES);
+
+  if (lead.time >= opens && lead.time <= lastStart) {
+    return "";
+  }
+
+  return `${lead.roof} ${isWeekend ? "в выходные" : "в будни"} работает ${opens}–${closes}: выберите время с ${opens} до ${lastStart}.`;
 }
 
 function normalizeRoofName(value) {

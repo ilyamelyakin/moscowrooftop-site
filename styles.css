@@ -3505,6 +3505,140 @@ a.roof-gallery-button::after {
   }
 }
 
+/* Плашка о cookie (script.js, renderCookieBanner). Fixed — вёрстку не сдвигает; z-index под
+   шапкой (20), чтобы раскрытое на телефоне меню разделов оставалось сверху. Выезжает после
+   «появления сайта»: своя анимация mr-cookie-*, ролик шапки ждёт только mr-intro-*. */
+.cookie-banner {
+  position: fixed;
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 19;
+  display: flex;
+  width: min(580px, calc(100vw - 32px));
+  align-items: center;
+  gap: 14px;
+  padding: 14px 14px 14px 18px;
+  border: 1px solid rgba(255, 248, 236, 0.16);
+  border-radius: 18px;
+  background: rgba(14, 12, 10, 0.9);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  color: var(--text);
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+  animation: mr-cookie-in 480ms var(--ease-drawer) 500ms both;
+}
+
+.intro .cookie-banner {
+  animation-delay: 1300ms;
+}
+
+.cookie-banner.is-leaving {
+  animation: mr-cookie-out 200ms var(--ease-out) forwards;
+  pointer-events: none;
+}
+
+.cookie-banner-text {
+  flex: 1 1 auto;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 520;
+  line-height: 1.45;
+}
+
+.cookie-banner-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.cookie-banner-button {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.92rem;
+  font-weight: 800;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--dur-ui) var(--ease-out),
+    background var(--dur-ui) ease,
+    border-color var(--dur-ui) ease;
+}
+
+.cookie-banner-button.is-accept {
+  background: linear-gradient(135deg, var(--gold), var(--amber) 56%, var(--rose));
+  color: #18100a;
+}
+
+/* Вариант с выбором: «Отклонить» того же размера и веса, что «Принять». */
+.cookie-banner-button.is-decline {
+  border-color: rgba(255, 248, 236, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
+.cookie-banner-button:active {
+  transform: scale(0.97);
+  transition-duration: var(--dur-press);
+}
+
+.cookie-banner-button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .cookie-banner-button.is-decline:hover {
+    border-color: rgba(246, 197, 111, 0.55);
+    background: rgba(255, 255, 255, 0.13);
+  }
+}
+
+@media (max-width: 640px) {
+  .cookie-banner {
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    left: 12px;
+    width: auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px 16px;
+  }
+
+  .cookie-banner-text {
+    font-size: 0.88rem;
+  }
+
+  .cookie-banner-actions > .cookie-banner-button {
+    flex: 1 1 0;
+  }
+}
+
+@keyframes mr-cookie-in {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes mr-cookie-out {
+  to {
+    opacity: 0;
+    translate: 0 8px;
+  }
+}
+
 /* «Уменьшить движение»: без сдвигов, но цвет и проявление — плавно. */
 @media (prefers-reduced-motion: reduce) {
   *,

@@ -10,8 +10,9 @@ run_worker_first = true
 html_handling = "none"
 not_found_handling = "404-page"
 
-# moscowrooftop.ru и www смотрят в DNS на nginx на сервере Timeweb, а не на
-# воркер: мобильные операторы в России режут ответы с адресов Cloudflare.
+# moscowrooftop.ru и www смотрят в DNS на nginx на сервере Timeweb
+# (72.56.250.128), а не на воркер: мобильные операторы в России режут
+# ответы с адресов Cloudflare.
 # Возвращать их сюда нельзя — выкладка упрётся в существующие A-записи.
 # Воркер доступен только под служебным именем, у которого nginx и забирает
 # страницы (см. ORIGIN_HOST в src/index.js).

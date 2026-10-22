@@ -59,7 +59,7 @@
       imagesizes="100vw"
     />
     <script>try{var n=performance.getEntriesByType("navigation")[0],t=n?n.type:"navigate",r=document.referrer;if(t=="reload"||t=="navigate"&&!(r&&new URL(r).origin==location.origin))document.documentElement.classList.add("intro")}catch(e){}</script>
-    <link rel="stylesheet" href="styles.css?v=20261013-tiles" />
+    <link rel="stylesheet" href="styles.css?v=20261022-cookie" />
 
     <script type="application/ld+json">
       {
@@ -206,10 +206,6 @@
         ]
       }
     </script>
-
-    <!-- Google tag (GA4) -->
-    <!-- Можно вставить стандартный Google tag сюда. ID также задается в script.js: GA_MEASUREMENT_ID. -->
-    <!-- /Google tag (GA4) -->
 
     <!-- Yandex Metrika counter -->
     <!-- Можно вставить стандартный код Яндекс.Метрики сюда. ID также задается в script.js: YM_COUNTER_ID. -->
@@ -1211,7 +1207,7 @@
 
                 <label class="form-field" for="lead-time">
                   <span>Время</span>
-                  <select id="lead-time" name="time" aria-describedby="lead-time-error" required>
+                  <select id="lead-time" name="time" aria-describedby="lead-time-hint lead-time-error" required>
                     <option value="" selected disabled>Выберите время</option>
                     <optgroup label="Утро">
                       <option>06:00</option><option>06:30</option><option>07:00</option><option>07:30</option>
@@ -1234,6 +1230,7 @@
                       <option>04:00</option><option>04:30</option><option>05:00</option><option>05:30</option>
                     </optgroup>
                   </select>
+                  <small id="lead-time-hint" hidden></small>
                   <small class="field-error" id="lead-time-error"></small>
                 </label>
               </div>
@@ -1251,7 +1248,7 @@
 
                 <label class="form-field" for="lead-name">
                   <span>Ваше имя</span>
-                  <input id="lead-name" name="name" type="text" maxlength="80" autocomplete="name" placeholder="Как к вам обращаться" aria-describedby="lead-name-error" required />
+                  <input id="lead-name" class="ym-disable-keys" name="name" type="text" maxlength="80" autocomplete="name" placeholder="Как к вам обращаться" aria-describedby="lead-name-error" required />
                   <small class="field-error" id="lead-name-error"></small>
                 </label>
               </div>
@@ -1281,6 +1278,7 @@
                 <span id="contact-label">Аккаунт в Telegram или телефон</span>
                 <input
                   id="lead-contact"
+                  class="ym-disable-keys"
                   name="contact"
                   type="text"
                   maxlength="100"
@@ -1297,6 +1295,7 @@
                 <span>Комментарий <small style="font-weight: 520">(необязательно)</small></span>
                 <textarea
                   id="lead-comment"
+                  class="ym-disable-keys"
                   name="comment"
                   maxlength="500"
                   rows="3"
@@ -1308,7 +1307,7 @@
                 <label class="form-consent" for="lead-consent">
                   <input id="lead-consent" name="consent" type="checkbox" aria-describedby="lead-consent-error" required />
                   <span class="consent-check" aria-hidden="true"></span>
-                  <span class="consent-text">Согласен на обработку указанных данных для связи по заявке</span>
+                  <span class="consent-text">Согласен на обработку указанных данных для связи по заявке — <a class="text-link" href="politika-konfidencialnosti/" target="_blank" rel="noopener">политика обработки данных</a></span>
                 </label>
                 <small class="field-error" id="lead-consent-error"></small>
               </div>
@@ -1481,6 +1480,6 @@
       <span>© Moscow Rooftop</span>
     </footer>
 
-    <script src="script.js?v=20261014-init"></script>
+    <script src="script.js?v=20261022-cookie"></script>
   </body>
 </html>

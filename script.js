@@ -1,13 +1,30 @@
 const YM_COUNTER_ID = '110631938';
-const GA_MEASUREMENT_ID = 'G-98JBGFFDDG';
 
 const TELEGRAM_BOT_URL = 'https://t.me/MoscowRoofTopBot';
 const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
 const UTM_STORAGE_KEY = 'moscow_rooftop_utm';
 const PLACEHOLDER_YM_ID = 'YOUR_YM_COUNTER_ID';
-const PLACEHOLDER_GA_ID = 'G-XXXXXXXXXX';
 const ANALYTICS_HOSTS = new Set(['moscowrooftop.ru', 'www.moscowrooftop.ru']);
 const ROOF_SELECTION_KEY = 'moscow_rooftop_selected_roof';
+// Плашка о cookie рендерится из script.js (renderCookieBanner) — общего шаблона у страниц нет.
+// Один флаг на оба варианта:
+//   'notice' — вариант А: одна кнопка «Понятно», Метрика стартует сразу;
+//   'choice' — вариант Б: «Принять» / «Отклонить», Метрика грузится только после «Принять»,
+//              отказ помнится COOKIE_CONSENT_DAYS дней, потом спрашиваем снова.
+// Раздел «Cookies и аналитика» в политике написан под 'notice': при переходе на 'choice'
+// дописать там, что отказаться можно кнопкой в плашке.
+const COOKIE_CONSENT_MODE = 'notice';
+const COOKIE_CONSENT_KEY = 'moscow_rooftop_cookie_consent';
+const COOKIE_CONSENT_DAYS = 180;
+const PRIVACY_POLICY_PATH = '/politika-konfidencialnosti/';
+// Часы работы отдельных крыш — те же, что ROOF_HOURS в Telegram-боте и в воркере
+// (src/index.js): [открытие, закрытие] в будни Пн–Пт и в выходные Сб–Вс. Прогулка
+// длится час, поэтому последнее время начала — за час до закрытия. Ключ — имя
+// крыши после normalizeRoofName. Остальные крыши записываются на любое время из списка.
+const ROOF_HOURS = {
+  'смоленская': { weekday: ['17:00', '22:00'], weekend: ['10:00', '22:00'] },
+};
+const EXCURSION_MINUTES = 60;
 // Image entries may carry `w: [width640, width1280]` when the real pixel
 // widths differ from the default portrait 480/960 pair.
 const ROOF_GALLERIES = {
@@ -252,10 +269,6 @@ function isRealYMId() {
   return Boolean(YM_COUNTER_ID && YM_COUNTER_ID !== PLACEHOLDER_YM_ID);
 }
 
-function isRealGAId() {
-  return Boolean(GA_MEASUREMENT_ID && GA_MEASUREMENT_ID !== PLACEHOLDER_GA_ID);
-}
-
 function initYandexMetrika() {
   if (!isAnalyticsHost() || !isRealYMId() || typeof ym === 'function') {
     return;
@@ -289,38 +302,134 @@ function initYandexMetrika() {
   });
 }
 
-function initGoogleAnalytics() {
-  if (!isAnalyticsHost() || !isRealGAId() || typeof gtag === 'function') {
-    return;
-  }
+// Google Analytics снят 22.10.2026: для сайта в РФ это трансграничная передача данных
+// (отдельное уведомление в РКН до начала передачи), статистики хватает и от Метрики.
 
-  window.dataLayer = window.dataLayer || [];
-  window.gtag = function gtag() {
-    window.dataLayer.push(arguments);
+// Сохранённый ответ на плашку: { mode, value: 'ok' | 'accepted' | 'declined', at } или null,
+// если ответа нет, он старше COOKIE_CONSENT_DAYS или дан другому варианту плашки.
+function readCookieConsent() {
+  try {
+    const record = JSON.parse(localStorage.getItem(COOKIE_CONSENT_KEY) || 'null');
+
+    if (!record || typeof record.at !== 'number' || typeof record.value !== 'string') {
+      return null;
+    }
+
+    if (Date.now() - record.at > COOKIE_CONSENT_DAYS * 24 * 60 * 60 * 1000) {
+      return null;
+    }
+
+    // «Понятно» с уведомления — не согласие для варианта с выбором; и наоборот, после отказа
+    // в варианте с выбором уведомление показываем заново.
+    if (COOKIE_CONSENT_MODE === 'choice' && record.mode !== 'choice') {
+      return null;
+    }
+
+    if (COOKIE_CONSENT_MODE === 'notice' && record.value === 'declined') {
+      return null;
+    }
+
+    return record;
+  } catch (error) {
+    return null;
+  }
+}
+
+function saveCookieConsent(value) {
+  try {
+    localStorage.setItem(
+      COOKIE_CONSENT_KEY,
+      JSON.stringify({ mode: COOKIE_CONSENT_MODE, value, at: Date.now() })
+    );
+  } catch (error) {
+    // Хранилище закрыто (приватный режим): плашка просто покажется и в следующий раз.
+  }
+}
+
+function hasAnalyticsConsent(consent) {
+  return COOKIE_CONSENT_MODE !== 'choice' || consent?.value === 'accepted';
+}
+
+function renderCookieBanner() {
+  const isChoice = COOKIE_CONSENT_MODE === 'choice';
+  const banner = document.createElement('section');
+  banner.className = 'cookie-banner';
+  banner.setAttribute('aria-label', 'Уведомление о cookie');
+
+  const text = document.createElement('p');
+  text.className = 'cookie-banner-text';
+  const link = document.createElement('a');
+  link.className = 'text-link';
+  link.href = PRIVACY_POLICY_PATH;
+  link.textContent = 'политике обработки данных';
+  text.append(
+    isChoice
+      ? 'Сайт использует cookie и Яндекс.Метрику для статистики. Разрешить? Подробнее — в '
+      : 'Сайт использует cookie и Яндекс.Метрику для статистики. Подробнее — в ',
+    link,
+    '.'
+  );
+
+  const actions = document.createElement('div');
+  actions.className = 'cookie-banner-actions';
+
+  const answer = (value) => {
+    saveCookieConsent(value);
+
+    if (value === 'accepted') {
+      initYandexMetrika();
+    }
+
+    let removed = false;
+    const remove = () => {
+      if (!removed) {
+        removed = true;
+        banner.remove();
+      }
+    };
+
+    banner.classList.add('is-leaving');
+    banner.addEventListener('animationend', remove, { once: true });
+    window.setTimeout(remove, 400);
   };
 
-  const script = document.createElement('script');
-  script.async = true;
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_MEASUREMENT_ID)}`;
-  document.head.appendChild(script);
+  const addButton = (label, value, kind) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `cookie-banner-button ${kind}`;
+    button.textContent = label;
+    button.addEventListener('click', () => answer(value));
+    actions.append(button);
+  };
 
-  gtag('js', new Date());
-  gtag('config', GA_MEASUREMENT_ID);
+  if (isChoice) {
+    addButton('Принять', 'accepted', 'is-accept');
+    addButton('Отклонить', 'declined', 'is-decline');
+  } else {
+    addButton('Понятно', 'ok', 'is-accept');
+  }
+
+  banner.append(text, actions);
+  document.body.append(banner);
+}
+
+// Счётчик и плашка о cookie. В варианте 'notice' Метрика стартует сразу, в 'choice' — только
+// с сохранённым «Принять» (или после нажатия, см. renderCookieBanner). Плашка — пока нет ответа.
+function initCookieConsent() {
+  const consent = readCookieConsent();
+
+  if (hasAnalyticsConsent(consent)) {
+    initYandexMetrika();
+  }
+
+  if (!consent) {
+    renderCookieBanner();
+  }
 }
 
 function trackYMGoal(goalName, params = {}) {
   if (isAnalyticsHost() && typeof ym === 'function' && YM_COUNTER_ID !== PLACEHOLDER_YM_ID) {
     ym(YM_COUNTER_ID, 'reachGoal', goalName, params);
-  }
-}
-
-function trackGAEvent(eventName, params = {}) {
-  if (
-    isAnalyticsHost() &&
-    typeof gtag === 'function' &&
-    GA_MEASUREMENT_ID !== PLACEHOLDER_GA_ID
-  ) {
-    gtag('event', eventName, params);
   }
 }
 
@@ -363,7 +472,6 @@ function trackEvent(eventName, params = {}) {
   };
 
   trackYMGoal(eventName, eventParams);
-  trackGAEvent(eventName, eventParams);
 
   // Отладочный лог только вне продакшена, чтобы не шуметь в консоли сайта.
   if (!isAnalyticsHost()) {
@@ -922,6 +1030,8 @@ function bindRoofCatalog() {
     selectedRoofId = roofId;
     roofInput.value = card.dataset.roofName || ROOF_GALLERIES[roofId]?.name || roofId;
     roofInput.dataset.roofId = roofId;
+    // Значение поставлено скриптом, change не придёт — а форме нужно пересобрать время.
+    roofInput.dispatchEvent(new Event('roofchange'));
 
     cards.forEach((item) => {
       const isSelected = item === card;
@@ -1164,6 +1274,7 @@ function bindRoofCatalog() {
     selectedRoofId = '';
     roofInput.value = '';
     roofInput.dataset.roofId = '';
+    roofInput.dispatchEvent(new Event('roofchange'));
     cards.forEach((item) => {
       item.classList.remove('is-selected');
       item.querySelector('.roof-select-button')?.setAttribute('aria-pressed', 'false');
@@ -1342,6 +1453,55 @@ function getMoscowDateValue() {
   return `${values.year}-${values.month}-${values.day}`;
 }
 
+function shiftClockTime(value, minutes) {
+  const [hours, mins] = value.split(':').map(Number);
+  const total = hours * 60 + mins + minutes;
+
+  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+}
+
+// Часы крыши на дату заявки: { kind, first, last, note } — first/last это первое и последнее
+// время начала, в формате ЧЧ:ММ, чтобы сравнивать строками. null — у крыши своих часов нет.
+// Пока дата не выбрана, окно — объединение будней и выходных: не прячем время, которое
+// подойдёт после выбора дня. День недели берём из самой даты в UTC, чтобы часовой пояс
+// браузера не сдвинул субботу на пятницу: дата в форме и так московская.
+function getRoofStartWindow(roofName, date) {
+  const rules = ROOF_HOURS[normalizeRoofName(roofName)];
+
+  if (!rules) {
+    return null;
+  }
+
+  // Word joiner вокруг тире: в узкой колонке подсказка иначе рвёт «10:00–» и «22:00».
+  const range = (from, to) => `${from}⁠–⁠${to}`;
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date || '');
+
+  if (!match) {
+    const [weekdayOpens, weekdayCloses] = rules.weekday;
+    const [weekendOpens, weekendCloses] = rules.weekend;
+    const closes = weekdayCloses > weekendCloses ? weekdayCloses : weekendCloses;
+
+    return {
+      kind: '',
+      first: weekdayOpens < weekendOpens ? weekdayOpens : weekendOpens,
+      last: shiftClockTime(closes, -EXCURSION_MINUTES),
+      note: `Часы крыши: будни ${range(weekdayOpens, weekdayCloses)}, выходные ${range(weekendOpens, weekendCloses)}.`,
+    };
+  }
+
+  const day = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]))).getUTCDay();
+  const kind = day === 0 || day === 6 ? 'weekend' : 'weekday';
+  const [opens, closes] = rules[kind];
+  const last = shiftClockTime(closes, -EXCURSION_MINUTES);
+
+  return {
+    kind,
+    first: opens,
+    last,
+    note: `Часы крыши ${kind === 'weekend' ? 'в выходные' : 'в будни'}: ${range(opens, closes)}, последний слот ${range(last, closes)}.`,
+  };
+}
+
 function isValidContact(method, value) {
   const normalized = value.trim();
   const phoneDigits = normalized.replace(/\D/g, '');
@@ -1387,6 +1547,53 @@ function bindLeadForm() {
   let hasTrackedStart = false;
 
   dateInput.min = getMoscowDateValue();
+
+  const timeInput = form.elements.time;
+  const timeHint = document.getElementById('lead-time-hint');
+  // Полный список времени из разметки. Под часы крыши (ROOF_HOURS) список пересобирается
+  // из него заново: спрятанные через hidden пункты iOS Safari всё равно показывает.
+  const timeGroups = [...timeInput.querySelectorAll('optgroup')].map((group) => ({
+    label: group.label,
+    times: [...group.querySelectorAll('option')].map((option) => option.value),
+  }));
+  let timeWindowKey = 'all';
+
+  const updateTimeOptions = () => {
+    const hours = getRoofStartWindow(roofInput.value, dateInput.value);
+    const key = hours ? `${hours.first}-${hours.last}` : 'all';
+
+    timeHint.textContent = hours?.note || '';
+    timeHint.hidden = !hours;
+
+    if (key === timeWindowKey) {
+      return;
+    }
+
+    timeWindowKey = key;
+    const current = timeInput.value;
+    const isAllowed = (time) => !hours || (time >= hours.first && time <= hours.last);
+
+    timeInput.querySelectorAll('optgroup').forEach((group) => group.remove());
+    timeGroups.forEach(({ label, times }) => {
+      const allowed = times.filter(isAllowed);
+      if (!allowed.length) {
+        return;
+      }
+
+      const group = document.createElement('optgroup');
+      group.label = label;
+      allowed.forEach((time) => group.append(new Option(time)));
+      timeInput.append(group);
+    });
+
+    // Выбранное время пропало из списка — возвращаем «Выберите время», иначе браузер
+    // молча подставил бы первое доступное.
+    timeInput.value = current && isAllowed(current) ? current : '';
+
+    if (current && !isAllowed(current)) {
+      fieldErrors.time.textContent = `${current} в этот день недоступно — выберите другое время.`;
+    }
+  };
 
   const getContactMethod = () =>
     form.querySelector('input[name="contactMethod"]:checked')?.value || 'telegram';
@@ -1475,6 +1682,12 @@ function bindLeadForm() {
     clearFieldError(event.target);
     status.textContent = '';
   });
+
+  // roofchange шлёт каталог, когда подставляет крышу сам: кнопкой на карточке, из ?roof=
+  // или из сохранённого выбора (bindRoofCatalog).
+  ['input', 'change'].forEach((type) => dateInput.addEventListener(type, updateTimeOptions));
+  ['change', 'roofchange'].forEach((type) => roofInput.addEventListener(type, updateTimeOptions));
+  form.addEventListener('reset', () => window.requestAnimationFrame(updateTimeOptions));
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -1598,6 +1811,7 @@ function bindLeadForm() {
   });
 
   updateContactField();
+  updateTimeOptions();
 }
 
 function bindFAQ() {
@@ -1653,8 +1867,7 @@ function initSite() {
   // Без touchstart-обработчика iOS Safari не показывает :active.
   document.addEventListener('touchstart', () => {}, { passive: true });
   saveUTMParams();
-  initYandexMetrika();
-  initGoogleAnalytics();
+  initCookieConsent();
   updateTelegramLinks();
   bindAnchorLinks();
   bindMobileNav();
