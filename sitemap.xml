@@ -128,9 +128,15 @@
   </url>
   <url>
     <loc>https://moscowrooftop.ru/blog/</loc>
-    <lastmod>2026-10-20</lastmod>
+    <lastmod>2026-10-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://moscowrooftop.ru/blog/kryshi-s-vidom-na-moskvu-reku/</loc>
+    <lastmod>2026-10-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://moscowrooftop.ru/blog/kotelnicheskaya-vysotka-s-kryshi/</loc>
